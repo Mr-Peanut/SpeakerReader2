@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">SpeakerReader2</string>
+    <string name="fileChooseButtonText">请选择您想打开的文件</string>
+    <string name="welcomeWords">欢迎使用本app</string>
+    <string name="or">OR</string>
+    <string name="scanFilesButton">扫描本地所有支持文件</string>
+    <string name="recored">历史记录：</string>
+    <string name="backToPre">返回上一层</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="deleteItem">删除记录</string>
+    <string name="cleanAll">清空记录</string>
+    <string name="openRecord">打开</string>
+    <string name="pop">pop</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="settingMenu">设置</string>
+    <string name="lightAdjust">亮度调节</string>
+    <string name="sizeChosen">字号</string>
+    <string name="backgroundSelector">背景选择</string>
+    <string name="fitSystemLightness">跟随系统</string>
+</resources>

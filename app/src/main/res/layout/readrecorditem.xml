@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/recordItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="测试数据" />
+
+    <TextView
+        android:id="@+id/deleteItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/recordItem"
+        android:background="@android:color/holo_red_dark"
+        android:text="@string/deleteItem" />
+
+</RelativeLayout>
