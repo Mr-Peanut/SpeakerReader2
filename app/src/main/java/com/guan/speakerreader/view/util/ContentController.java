@@ -1,12 +1,10 @@
 package com.guan.speakerreader.view.util;
 
 import android.graphics.Paint;
-import android.provider.Settings;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 
-import com.guan.speakerreader.view.adapter.ReaderPagerAdapter;
 import com.guan.speakerreader.view.adapter.ReaderPagerAdapter2;
 
 /**
@@ -29,9 +27,7 @@ public class ContentController {
     private Paint mPaint;
     private float showHeight;
     private float showWidth;
-    private ReaderPagerAdapter mAdapter;
     private ReaderPagerAdapter2 mAdapter2;
-    private int currentPageWords;
     //每次预加载的最大字数暂时设定为3000，后续可以根据情况调整
     private int takenWords=3000;
 
@@ -45,9 +41,6 @@ public class ContentController {
         pageEnd = new SparseIntArray();
     }
 
-    public int getCurrentPageWords() {
-        return currentPageWords;
-    }
 
 
 
@@ -62,10 +55,6 @@ public class ContentController {
         return onShowStart;
     }
 
-    public void setPageCount(int pageCount) {
-        this.pageCount = pageCount;
-//        mAdapter.notifyDataSetChanged();
-    }
     /*
     还要考虑到往前到第0页有字和到最后一页还有字要动态修改页面
      */
@@ -94,16 +83,6 @@ public class ContentController {
         this.showWidth = showWidth;
     }
 
-
-    public ContentController(String filePath, int totalWords, ReaderPagerAdapter adapter,Paint paint) {
-        this.filePath = filePath;
-        this.totalWords = totalWords;
-        this.mAdapter = adapter;
-        this.mPaint=paint;
-        pageContent = new SparseArray<>();
-        pageStart = new SparseIntArray();
-        pageEnd = new SparseIntArray();
-    }
 
     public void initUtils() {
         if (measurePreUtil == null) {
@@ -139,9 +118,8 @@ public class ContentController {
                 //逻辑可能出错了
                 pageStart.put(position, onShowStart);
                 pageEnd.put(position, onShowEnd);
-                currentPageWords = onShowEnd - onShowStart > currentPageWords ? onShowEnd - onShowStart : currentPageWords;
                 if (onShowEnd >= totalWords) {
-                    setPageCount(position + 1);
+                    //标记右边还有
                     Log.e("getContent position: ", String.valueOf(position + 1));
                 }
                 if (onShowEnd < totalWords) {
@@ -173,8 +151,7 @@ public class ContentController {
                 try {
                     String content = TxtReader.readerFromText(filePath, onShowEnd + 1, takenWords);
                     if (content == null) {
-                        //到头了
-                        setPageCount(position + 1);
+                        //到头了右边没了
                         return;
                     }
                     content = measureContent(content);

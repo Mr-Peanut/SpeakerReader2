@@ -41,7 +41,10 @@ public class PageGroup extends ViewGroup {
     private int rightBorder;
     private int childWidth;
     private boolean myChanged=false;
-    private int onshowposition;
+
+
+
+    private int onShowPosition=0;
     private ReaderPagerAdapter2 pagerAdapter;
     private boolean isFirstPage=true;
     private boolean isLastPage=true;
@@ -57,7 +60,13 @@ public class PageGroup extends ViewGroup {
         mTouchSlop= ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
         mScroller=new Scroller(context);
     }
+    public int getOnShowPosition() {
+        return onShowPosition;
+    }
 
+    public void setOnShowPosition(int onShowPosition) {
+        this.onShowPosition = onShowPosition;
+    }
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -119,13 +128,11 @@ public class PageGroup extends ViewGroup {
                 if(getScrollX()+scrolledX< leftBorder){
                     scrollTo(leftBorder,0);
                     //添加向前页的逻辑
-
                     addLeftView();
                     return true;
                 }else if(getScrollX()+childWidth+scrolledX>rightBorder){
                     scrollTo(rightBorder-childWidth,0);
                     //添加向后页的逻辑
-
                     addRightView();
                     return true;
                 }
@@ -153,7 +160,7 @@ public class PageGroup extends ViewGroup {
                 }
                 mScroller.startScroll(getScrollX(),0,dx,0);
                 findPositionByScroll(getScrollX());
-                mPageChangeListener.onPageSelected(onshowposition);
+                mPageChangeListener.onPageSelected(onShowPosition);
                 invalidate();
                 break;
         }
@@ -164,7 +171,7 @@ public class PageGroup extends ViewGroup {
         //通过滑动的位置判断当前页面
         //传入的为滑动距离
         //结果是当前页面
-       onshowposition=scrollX/getWidth();
+       onShowPosition=scrollX/getWidth();
     }
 
     @Override
@@ -185,8 +192,8 @@ public class PageGroup extends ViewGroup {
 //            int newPositon=onshowposition-1;
 //            addView(child,0);
             if(getChildCount()>=3)
-            pagerAdapter.destroyItem(this,onshowposition+2,getChildAt(getChildCount()-1));
-            pagerAdapter.instantiateLeftItem(this,onshowposition-1);
+            pagerAdapter.destroyItem(this,onShowPosition+2,getChildAt(getChildCount()-1));
+            pagerAdapter.instantiateLeftItem(this,onShowPosition-1);
             leftBorder-=childWidth;
             rightBorder-=childWidth;
             myChanged=true;
@@ -202,8 +209,8 @@ public class PageGroup extends ViewGroup {
 //            //chlid 内容修改
 //            addView(child,-1);
             if(getChildCount()>=3)
-            pagerAdapter.destroyItem(this,onshowposition-2,getChildAt(0));
-            pagerAdapter.instantiateRightItem(this,onshowposition+1);
+            pagerAdapter.destroyItem(this,onShowPosition-2,getChildAt(0));
+            pagerAdapter.instantiateRightItem(this,onShowPosition+1);
             leftBorder+=childWidth;
             rightBorder+=childWidth;
             myChanged=true;
@@ -212,9 +219,8 @@ public class PageGroup extends ViewGroup {
     }
     public void skipToChild(){
         //默认跳转到第二个child，除非要求跳转到第一个或者最后一个child
-        View targetView=getChildAt(1);
-        scrollTo(targetView.getLeft(),0);
         //设置和刷新三个view的内容
+        //更新了别忘了position是否要更新
         for(int i=0;i<getChildCount();i++){
             getChildAt(i).invalidate();
         }
@@ -227,7 +233,6 @@ public class PageGroup extends ViewGroup {
     public void setAdapter(ReaderPagerAdapter2 pagerAdapter) {
         this.pagerAdapter = pagerAdapter;
         pagerAdapter.instantiateRightItem(this,0);
-        pagerAdapter.instantiateRightItem(this,1);
         invalidate();
     }
     public void addOnPageChangeListener(ViewPager.OnPageChangeListener onPageChangeListener) {

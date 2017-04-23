@@ -29,13 +29,13 @@ public class ReaderPagerAdapter2 implements View.OnClickListener{
     private Paint mPaint;
     private List<View> instantiatedViews;
 
-    public void setmUpdateSeekBarController(UpdateSeekBarController mUpdateSeekBarController) {
+    public void setUpdateSeekBarController(UpdateSeekBarController mUpdateSeekBarController) {
         this.mUpdateSeekBarController = mUpdateSeekBarController;
     }
 
     private UpdateSeekBarController mUpdateSeekBarController;
 
-    public void setmInnerViewOnClickedListener(InnerViewOnClickedListener mInnerViewOnClickedListener) {
+    public void setInnerViewOnClickedListener(InnerViewOnClickedListener mInnerViewOnClickedListener) {
         this.mInnerViewOnClickedListener = mInnerViewOnClickedListener;
     }
 
@@ -107,17 +107,6 @@ public class ReaderPagerAdapter2 implements View.OnClickListener{
         for(View childView:instantiatedViews){
             childView.invalidate();
         }
-    }
-
-    public int getCount() {
-        Log.e("getCount: ",String.valueOf(getTotalPage()));
-        return getTotalPage();
-    }
-    private int getTotalPage() {
-        return contentController.getPageCount();
-    }
-    public boolean isViewFromObject(View view, Object object) {
-        return view ==object;
     }
     @Override
     public void onClick(View v) {

@@ -40,7 +40,6 @@ import android.widget.TextView;
 
 import com.guan.speakerreader.R;
 import com.guan.speakerreader.view.adapter.ReadRecordAdapter;
-import com.guan.speakerreader.view.adapter.ReaderPagerAdapter;
 import com.guan.speakerreader.view.adapter.ReaderPagerAdapter2;
 import com.guan.speakerreader.view.database.RecordDatabaseHelper;
 import com.guan.speakerreader.view.util.TxtReader;
@@ -302,17 +301,9 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    int pageCount = readerPagerAdapter.getContentController().getCurrentPageWords();
-                    int pageNumber = progress / pageCount;
 //                    readerPagerAdapter.getContentController().setPageCount(pageNumber);
                     //最后一页的逻辑
-                    if (progress >= totalWords - pageCount) {
-                        readerPagerAdapter.getContentController().setContentFromPage(pageNumber - 1, totalWords - pageCount);
-                    } else if (progress <= pageCount) {
-                        readerPagerAdapter.getContentController().setContentFromPage(0, 0);
-                    } else {
-                        readerPagerAdapter.getContentController().setContentFromPage(pageNumber - 1, progress);
-                    }
+                    readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), progress);
                     contentPager.skipToChild();
                 }
                 statusText.setText(String.valueOf(progress / totalWords * 100) + "%");
@@ -328,15 +319,13 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
 
             }
         });
-        readerPagerAdapter.setmUpdateSeekBarController(this);
-        readerPagerAdapter.setmInnerViewOnClickedListener(this);
+        readerPagerAdapter.setUpdateSeekBarController(this);
+        readerPagerAdapter.setInnerViewOnClickedListener(this);
         contentPager.setAdapter(readerPagerAdapter);
         if (marked == 0) {
-            readerPagerAdapter.getContentController().setPageCount(1);
             readerPagerAdapter.getContentController().setContentFromPage(0, marked);
         } else {
-            readerPagerAdapter.getContentController().setPageCount(100);
-            readerPagerAdapter.getContentController().setContentFromPage(99, marked);
+            readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), marked);
         }
         contentPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -607,7 +596,7 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
         }
     }
 
-    class BackgroundSelectorListener implements View.OnClickListener {
+    private class BackgroundSelectorListener implements View.OnClickListener {
 
         @Override
         public void onClick(View v) {
