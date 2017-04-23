@@ -3,16 +3,14 @@ package com.guan.speakerreader.view.view;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
-import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.guan.speakerreader.view.util.ContentController;
-
 /**
  * Created by guans on 2017/3/18.
  */
@@ -106,11 +104,16 @@ public class TextReaderView extends View {
         setShowCount(wordCount);
     }
 
-    public String getmContent() {
+    @Override
+    protected boolean dispatchHoverEvent(MotionEvent event) {
+        return super.dispatchHoverEvent(event);
+    }
+
+    public String getContent() {
         return mContent;
     }
 
-    public void setmContent(String mContent) {
+    public void setContent(String mContent) {
         this.mContent = mContent;
     }
 

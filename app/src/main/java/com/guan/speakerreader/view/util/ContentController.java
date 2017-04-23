@@ -22,7 +22,6 @@ public class ContentController {
     private MeasurePreUtil measurePreUtil;
     private PagesArrangeUtil pagesArrangeUtil;
     private int marked = 0;
-    private int pageCount = 1;
     private int totalWords;
     private Paint mPaint;
     private float showHeight;
@@ -39,13 +38,6 @@ public class ContentController {
         pageContent = new SparseArray<>();
         pageStart = new SparseIntArray();
         pageEnd = new SparseIntArray();
-    }
-
-
-
-
-    public int getPageCount() {
-        return pageCount;
     }
     public void setOnShowStart(int onShowStart) {
         this.onShowStart = onShowStart;
@@ -124,7 +116,6 @@ public class ContentController {
                 }
                 if (onShowEnd < totalWords) {
                     //重复加出错当重画时出错
-                    pageCount++;
 //                    mAdapter.notifyDataSetChanged();
                     getContentNextShow(position);
                 }
@@ -161,7 +152,6 @@ public class ContentController {
                     pageEnd.put(position + 1, onShowEnd + content.length());
                     //当取完后一页还有字，页码加1加重复了
                     if (onShowEnd + content.length() < totalWords) {
-                        pageCount++;
 //                        mAdapter.notifyDataSetChanged();
                     }
                     //这边添加逻辑或者判断，当页面到最后一页时还有内容就继续添加页数
@@ -248,7 +238,7 @@ public class ContentController {
         //把更新后的位置通知给seekbar可以通过handler实现或者广播，或者一个接口
     }
 
-    public void setMarked(int marked) {
+    private void setMarked(int marked) {
         this.marked = marked;
     }
 

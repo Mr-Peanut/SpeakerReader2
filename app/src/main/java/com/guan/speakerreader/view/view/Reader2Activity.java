@@ -303,6 +303,7 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
                 if (fromUser) {
 //                    readerPagerAdapter.getContentController().setPageCount(pageNumber);
                     //最后一页的逻辑
+                    readerPagerAdapter.getContentController().reMeasure();
                     readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), progress);
                     contentPager.skipToChild();
                 }

@@ -46,8 +46,8 @@ public class PageGroup extends ViewGroup {
 
     private int onShowPosition=0;
     private ReaderPagerAdapter2 pagerAdapter;
-    private boolean isFirstPage=true;
-    private boolean isLastPage=true;
+    private boolean isFirstPage=false;
+    private boolean isLastPage=false;
     private ViewPager.OnPageChangeListener mPageChangeListener;
 
     public PageGroup(Context context) {
@@ -81,7 +81,7 @@ public class PageGroup extends ViewGroup {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
 //        Log.d("onLayout","not changed");
         if(changed||myChanged){
-//            Log.d("onLayout","changed");
+            Log.d("onLayout","changed");
             int childCount=getChildCount();
             for (int i = 0; i < childCount; i++) {
                 View child = getChildAt(i);
@@ -124,7 +124,7 @@ public class PageGroup extends ViewGroup {
         switch (event.getAction()){
             case MotionEvent.ACTION_MOVE:
                 mXMove=event.getRawX();
-                int scrolledX= (int)((mXDown-mXLastMove)/10) ;
+                int scrolledX= (int)((mXDown-mXLastMove)) ;
                 if(getScrollX()+scrolledX< leftBorder){
                     scrollTo(leftBorder,0);
                     //添加向前页的逻辑
@@ -136,7 +136,8 @@ public class PageGroup extends ViewGroup {
                     addRightView();
                     return true;
                 }
-                scrollBy(scrolledX,0);
+//                scrollBy(scrolledX,0);
+                scrollBy(scrolledX-getScrollX(),0);
                 mXLastMove=mXMove;
                 break;
             case MotionEvent.ACTION_UP:
@@ -182,6 +183,7 @@ public class PageGroup extends ViewGroup {
        }
     }
     private void addLeftView(){
+        Log.e("leftadd","addLeft");
         if(!isFirstPage){
 //            viewRecycler.add(getChildAt(getChildCount()-1));
 //            removeViewAt(getChildCount()-1);
@@ -202,6 +204,7 @@ public class PageGroup extends ViewGroup {
 
     }
     private void addRightView(){
+        Log.e("rightadd","addright");
         if(!isLastPage){
 //            viewRecycler.add(getChildAt(0));
 //            removeViewAt(0);

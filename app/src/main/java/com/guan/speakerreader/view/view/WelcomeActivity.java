@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.guan.speakerreader.R;
+import com.guan.speakerreader.view.adapter.ReadRecordAdapter;
 import com.guan.speakerreader.view.database.RecordDatabaseHelper;
 
 import java.io.File;
