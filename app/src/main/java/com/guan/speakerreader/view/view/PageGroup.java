@@ -48,6 +48,7 @@ public class PageGroup extends ViewGroup {
     private ReaderPagerAdapter2 pagerAdapter;
     private boolean isFirstPage=false;
     private boolean isLastPage=false;
+    private int hasScrolledX;
     private ViewPager.OnPageChangeListener mPageChangeListener;
 
     public PageGroup(Context context) {
@@ -106,7 +107,9 @@ public class PageGroup extends ViewGroup {
             case MotionEvent.ACTION_DOWN:
                 mXDown=ev.getRawX();
                 mXLastMove=mXDown;
+                hasScrolledX= getScrollX();
                 break;
+
             case MotionEvent.ACTION_MOVE:
                 mXMove=ev.getRawX();
                 float diff=Math.abs(mXMove-mXDown);
@@ -125,19 +128,19 @@ public class PageGroup extends ViewGroup {
             case MotionEvent.ACTION_MOVE:
                 mXMove=event.getRawX();
                 int scrolledX= (int)((mXDown-mXLastMove)) ;
-                if(getScrollX()+scrolledX< leftBorder){
+                if(hasScrolledX+scrolledX< leftBorder){
                     scrollTo(leftBorder,0);
                     //添加向前页的逻辑
                     addLeftView();
                     return true;
-                }else if(getScrollX()+childWidth+scrolledX>rightBorder){
+                }else if(hasScrolledX+childWidth+scrolledX>rightBorder){
                     scrollTo(rightBorder-childWidth,0);
                     //添加向后页的逻辑
                     addRightView();
                     return true;
                 }
 //                scrollBy(scrolledX,0);
-                scrollBy(scrolledX-getScrollX(),0);
+                scrollTo(hasScrolledX+scrolledX,0);
                 mXLastMove=mXMove;
                 break;
             case MotionEvent.ACTION_UP:
@@ -201,7 +204,6 @@ public class PageGroup extends ViewGroup {
             myChanged=true;
             invalidate();
         }
-
     }
     private void addRightView(){
         Log.e("rightadd","addright");
