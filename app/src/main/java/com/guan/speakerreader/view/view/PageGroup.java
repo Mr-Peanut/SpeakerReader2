@@ -128,13 +128,13 @@ public class PageGroup extends ViewGroup {
             case MotionEvent.ACTION_MOVE:
                 mXMove=event.getRawX();
                 int scrolledX= (int)((mXDown-mXLastMove)) ;
-                if(hasScrolledX+scrolledX< leftBorder){
-                    scrollTo(leftBorder,0);
+                if(getScrollX()+scrolledX< leftBorder){
+//                    scrollTo(leftBorder,0);
                     //添加向前页的逻辑
                     addLeftView();
                     return true;
-                }else if(hasScrolledX+childWidth+scrolledX>rightBorder){
-                    scrollTo(rightBorder-childWidth,0);
+                }else if(getScrollX()+scrolledX+childWidth>rightBorder){
+//                    scrollTo(rightBorder-childWidth,0);
                     //添加向后页的逻辑
                     addRightView();
                     return true;
@@ -144,11 +144,6 @@ public class PageGroup extends ViewGroup {
                 mXLastMove=mXMove;
                 break;
             case MotionEvent.ACTION_UP:
-//                int targetIndex=(getScrollX()+getWidth()/2)/getWidth();
-                //dx 为要移动的距离最终距离是getscroll+dx
-//                int dx=targetIndex*getWidth()-getScrollX();
-//                int dx=targetIndex*getWidth()-getScrollX();
-                //
                 int hasScroll=(getScrollX()>=0?getScrollX():-getScrollX())%getWidth();
                 int dx;
                 if(getScrollX()<=0){
@@ -202,7 +197,7 @@ public class PageGroup extends ViewGroup {
             leftBorder-=childWidth;
             rightBorder-=childWidth;
             myChanged=true;
-            invalidate();
+//            invalidate();
         }
     }
     private void addRightView(){
@@ -219,7 +214,7 @@ public class PageGroup extends ViewGroup {
             leftBorder+=childWidth;
             rightBorder+=childWidth;
             myChanged=true;
-            invalidate();
+//            invalidate();
         }
     }
     public void skipToChild(){
@@ -238,6 +233,8 @@ public class PageGroup extends ViewGroup {
     public void setAdapter(ReaderPagerAdapter2 pagerAdapter) {
         this.pagerAdapter = pagerAdapter;
         pagerAdapter.instantiateRightItem(this,0);
+        //预判一下要不要加载第二页
+        pagerAdapter.instantiateRightItem(this,1);
         invalidate();
     }
     public void addOnPageChangeListener(ViewPager.OnPageChangeListener onPageChangeListener) {
