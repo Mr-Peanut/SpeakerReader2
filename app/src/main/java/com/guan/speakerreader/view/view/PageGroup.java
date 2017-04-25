@@ -227,8 +227,12 @@ public class PageGroup extends ViewGroup {
         this.pagerAdapter = pagerAdapter;
         mContentController=pagerAdapter.getContentController();
         pagerAdapter.instantiateRightItem(this,0);
+        getChildAt(0).invalidate();
+        if(mContentController.getPageEnd().get(0)<mContentController.getTotalWords())
         //预判一下要不要加载第二页
-//        pagerAdapter.instantiateRightItem(this,1);
+        pagerAdapter.instantiateRightItem(this,1);
+        if(mContentController.getPageStart().get(0)>0)
+            pagerAdapter.instantiateLeftItem(this,-1);
         invalidate();
     }
     public void addOnPageChangeListener(OnPageChangeListener onPageChangeListener) {

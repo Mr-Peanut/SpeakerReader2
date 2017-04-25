@@ -228,8 +228,6 @@ public class ContentController {
         pageContent.clear();
         pageStart.clear();
         pageEnd.clear();
-        fillContentList(onShowPage);
-        mAdapter2.invalidateViews();
     }
     /*
     动态调整页面：
