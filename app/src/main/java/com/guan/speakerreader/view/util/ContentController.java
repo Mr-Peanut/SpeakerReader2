@@ -94,9 +94,7 @@ public class ContentController {
             pagesArrangeUtil.setShowWidth(showWidth);
         }
         //当尺寸没有具体变化时不要清理
-        pageContent.clear();
-        pageStart.clear();
-        pageEnd.clear();
+       reMeasure();
     }
 
     //交给view调用
