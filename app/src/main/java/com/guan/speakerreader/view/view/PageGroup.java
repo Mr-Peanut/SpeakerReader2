@@ -42,13 +42,10 @@ public class PageGroup extends ViewGroup {
     private int childWidth;
     private boolean myChanged=false;
     private ContentController mContentController;
-
     private int onShowPosition=0;
     private ReaderPagerAdapter2 pagerAdapter;
-    private boolean isFirstPage=false;
-    private boolean isLastPage=false;
     private int hasScrolledX;
-    private ViewPager.OnPageChangeListener mPageChangeListener;
+    private OnPageChangeListener mPageChangeListener;
     public PageGroup(Context context) {
         super(context);
     }
@@ -70,31 +67,24 @@ public class PageGroup extends ViewGroup {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         measureChildren(widthMeasureSpec,heightMeasureSpec);
-//        View child;
-//        for (int i = 0; i < getChildCount(); i++) {
-//            child = getChildAt(i);
-//            measureChild(child, widthMeasureSpec, heightMeasureSpec);
-//        }
     }
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-//        Log.d("onLayout","not changed");
+        Log.e("onLayout",String.valueOf(getChildCount()));
         if(changed||myChanged){
-            Log.d("onLayout","changed");
+
             int childCount=getChildCount();
+
             for (int i = 0; i < childCount; i++) {
                 View child = getChildAt(i);
                 //此处应该添加一个变量来记录上次滑动后的初始位置和结束位置
                 child.layout(i*child.getMeasuredWidth()+leftBorder,0,(i+1)*child.getMeasuredWidth()+leftBorder,child.getMeasuredHeight());
-//                Log.e("childLocation","第"+String.valueOf(i)+"页"+String.valueOf(i*child.getMeasuredWidth()+leftBorder)+"和"+String.valueOf((i+1)*child.getMeasuredWidth()+leftBorder));
             }
             if(getChildCount()!=0){
                 if(childWidth==0)
                     childWidth=getChildAt(0).getMeasuredWidth();
                 leftBorder=getChildAt(0).getLeft();
-//            Log.e("leftBorder", String.valueOf(leftBorder));
                 rightBorder=getChildAt(getChildCount()-1).getRight();
-//            Log.e("rightBorder", String.valueOf(rightBorder));
             }
             myChanged=false;
         }
@@ -103,6 +93,7 @@ public class PageGroup extends ViewGroup {
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         switch (ev.getAction()){
             case MotionEvent.ACTION_DOWN:
+
                 mXDown=ev.getRawX();
                 mXLastMove=mXDown;
                 hasScrolledX= getScrollX();
@@ -119,7 +110,6 @@ public class PageGroup extends ViewGroup {
         }
         return super.onInterceptTouchEvent(ev);
     }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()){
@@ -176,18 +166,20 @@ public class PageGroup extends ViewGroup {
 
     @Override
     public void computeScroll() {
-       if(mScroller.computeScrollOffset()){
-           scrollTo(mScroller.getCurrX(),mScroller.getCurrY());
-           invalidate();
-       }else if(mScroller.getCurrX()==getScrollX()){
-           findPositionByScroll(getScrollX());
-           //刷新layout           
-           mPageChangeListener.onPageSelected(onShowPosition);
-           flushLayout(onShowPosition);
-       }
+        if (getChildCount()!=0){
+            if (mScroller.computeScrollOffset()) {
+                scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
+                invalidate();
+            } else if (mScroller.getCurrX() == getScrollX()) {
+                findPositionByScroll(getScrollX());
+                //刷新layout
+                    mPageChangeListener.onPageSelected(onShowPosition);
+                    flushLayout();
+                Log.e("scroll",String.valueOf(getScaleX()));
+                }
+            }
     }
-
-    private void flushLayout(int onShowPosition) {
+    private void flushLayout() {
         if(getScrollX()==leftBorder){
             addLeftView();
         }
@@ -195,41 +187,27 @@ public class PageGroup extends ViewGroup {
             addRightView();
         }
     }
-
     private void addLeftView(){
-        Log.e("leftadd","addLeft");
-        if(!isFirstPage){
-//            viewRecycler.add(getChildAt(getChildCount()-1));
-//            removeViewAt(getChildCount()-1);
-//            View child=viewRecycler.remove(0);
-            //chlid 内容修改后续添加adapter控制页面
-            //修改child页面内容
-            //获取child的新position
-//            int newPositon=onshowposition-1;
-//            addView(child,0);
+        if(mContentController.getPageStart().indexOfKey(onShowPosition)>=0&&mContentController.getPageStart().get(onShowPosition)>0){
             if(getChildCount()>=3)
             pagerAdapter.destroyItem(this,onShowPosition+2,getChildAt(getChildCount()-1));
             pagerAdapter.instantiateLeftItem(this,onShowPosition-1);
             leftBorder-=childWidth;
             rightBorder-=childWidth;
             myChanged=true;
+            Log.e("leftadd","addLeft");
 //            invalidate();
         }
     }
     private void addRightView(){
-        Log.e("rightadd","addright");
-        if(!isLastPage){
-//            viewRecycler.add(getChildAt(0));
-//            removeViewAt(0);
-//            View child=viewRecycler.remove(0);
-//            //chlid 内容修改
-//            addView(child,-1);
+        if(mContentController.getPageEnd().indexOfKey(onShowPosition)>=0&&mContentController.getPageEnd().get(onShowPosition)<mContentController.getTotalWords()){
             if(getChildCount()>=3)
             pagerAdapter.destroyItem(this,onShowPosition-2,getChildAt(0));
             pagerAdapter.instantiateRightItem(this,onShowPosition+1);
             leftBorder+=childWidth;
             rightBorder+=childWidth;
             myChanged=true;
+            Log.e("rightadd","addright");
 //            invalidate();
         }
     }
@@ -241,7 +219,6 @@ public class PageGroup extends ViewGroup {
             getChildAt(i).invalidate();
         }
     }
-
     public ReaderPagerAdapter2 getAdapter() {
         return pagerAdapter;
     }
@@ -251,10 +228,15 @@ public class PageGroup extends ViewGroup {
         mContentController=pagerAdapter.getContentController();
         pagerAdapter.instantiateRightItem(this,0);
         //预判一下要不要加载第二页
-        pagerAdapter.instantiateRightItem(this,1);
+//        pagerAdapter.instantiateRightItem(this,1);
         invalidate();
     }
-    public void addOnPageChangeListener(ViewPager.OnPageChangeListener onPageChangeListener) {
+    public void addOnPageChangeListener(OnPageChangeListener onPageChangeListener) {
         mPageChangeListener=onPageChangeListener;
+    }
+    interface OnPageChangeListener{
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
+        public void onPageSelected(int position);
+        public void onPageScrollStateChanged(int state);
     }
 }

@@ -296,7 +296,6 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
     private void initAdapter() {
         readerSeekBar.setMax(totalWords);
         readerPagerAdapter = new ReaderPagerAdapter2(this, targetPath, totalWords, textPaint);
-
         readerSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -322,13 +321,7 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
         });
         readerPagerAdapter.setUpdateSeekBarController(this);
         readerPagerAdapter.setInnerViewOnClickedListener(this);
-        contentPager.setAdapter(readerPagerAdapter);
-        if (marked == 0) {
-            readerPagerAdapter.getContentController().setContentFromPage(0, marked);
-        } else {
-            readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), marked);
-        }
-        contentPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        contentPager.addOnPageChangeListener(new PageGroup.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -336,21 +329,20 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
 
             @Override
             public void onPageSelected(int position) {
-                //初始化时第一页不执行
-                //当最后一页还有字数的话设置总页面+1
-                //当最前页还有字数的话设置第0页为第一页
-                //但是要注意如果position发生了改变之前的位置信息也要改变
-                Log.e("pageChange",String.valueOf(position));
+//                Log.e("pageChange",String.valueOf(position));
                 readerPagerAdapter.getContentController().notifyPageChanged(position);
-//                readerSeekBar.setProgress(readerPagerAdapter.getContentController().getOnShowStart());
-                //添加进度条控制
-
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
             }
         });
+        if (marked == 0) {
+            readerPagerAdapter.getContentController().setContentFromPage(0, marked);
+        } else {
+            readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), marked);
+        }
+        contentPager.setAdapter(readerPagerAdapter);
     }
 
     private void initPath() {

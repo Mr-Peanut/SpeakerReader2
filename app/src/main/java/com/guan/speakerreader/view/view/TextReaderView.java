@@ -52,9 +52,10 @@ public class TextReaderView extends View {
             mContentController.initUtils();
         }
       mContent=mContentController.getContent(position);
-        if(position==0){
-            mContentController.notifyPageChanged(position);
-        }
+        Log.e("Content",mContent);
+//        if(position==0){
+//            mContentController.notifyPageChanged(position);
+//        }
         if (mContent != null) {
             setContent(mContent, canvas);
             drawFinishedIntent.putExtra("showCount", showCount);
@@ -66,7 +67,6 @@ public class TextReaderView extends View {
         }
         super.onDraw(canvas);
     }
-
     private void setContent(final String content, Canvas canvas) {
         char[] buffer = new char[1];
         float totalLineWidth = 0;
@@ -137,7 +137,12 @@ public class TextReaderView extends View {
         super.onDetachedFromWindow();
     }
 
-    public void setmContentController(ContentController mContentController) {
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return super.onTouchEvent(event);
+    }
+
+    public void setContentController(ContentController mContentController) {
         this.mContentController = mContentController;
     }
 }

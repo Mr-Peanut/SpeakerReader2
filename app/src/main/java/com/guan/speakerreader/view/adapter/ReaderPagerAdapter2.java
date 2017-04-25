@@ -2,8 +2,6 @@ package com.guan.speakerreader.view.adapter;
 
 import android.content.Context;
 import android.graphics.Paint;
-import android.support.v4.view.PagerAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,11 +50,11 @@ public class ReaderPagerAdapter2 implements View.OnClickListener{
         this.filePath=filePath;
         this.mPaint = paint;
         viewList=new ArrayList<>();
-        contentController=new ContentController(filePath,totalWords,this,mPaint);
         instantiatedViews=new ArrayList<>();
+        contentController=new ContentController(filePath,totalWords,this,mPaint);
     }
     public Object instantiateLeftItem(ViewGroup container, int position) {
-        TextReaderView textReaderView;
+        final TextReaderView textReaderView;
         View view = null;
         if(viewList.size()>0){
             view=viewList.remove(0).get();
@@ -67,7 +65,7 @@ public class ReaderPagerAdapter2 implements View.OnClickListener{
         textReaderView= (TextReaderView) view.findViewById(R.id.contentView);
         ((TextView)(view.findViewById(R.id.foot))).setText("第"+position+"页");
         textReaderView.setPosition(position);
-        textReaderView.setmContentController(contentController);
+        textReaderView.setContentController(contentController);
         textReaderView.setmPaint(mPaint);
         instantiatedViews.add(view);
         container.addView(view,0);
@@ -87,7 +85,7 @@ public class ReaderPagerAdapter2 implements View.OnClickListener{
         textReaderView= (TextReaderView) view.findViewById(R.id.contentView);
         ((TextView)(view.findViewById(R.id.foot))).setText("第"+position+"页");
         textReaderView.setPosition(position);
-        textReaderView.setmContentController(contentController);
+        textReaderView.setContentController(contentController);
         textReaderView.setmPaint(mPaint);
         instantiatedViews.add(view);
         container.addView(view,-1);
@@ -95,7 +93,6 @@ public class ReaderPagerAdapter2 implements View.OnClickListener{
 //        textReaderView.invalidate();
         return view;
     }
-
     public void destroyItem(ViewGroup container, int position, Object object) {
         View view= (View) object;
         container.removeView(view);
@@ -104,8 +101,10 @@ public class ReaderPagerAdapter2 implements View.OnClickListener{
         viewList.add(new WeakReference<>(view));
     }
     public void invalidateViews(){
-        for(View childView:instantiatedViews){
-            childView.invalidate();
+        if(instantiatedViews.size()!=0){
+            for(View childView:instantiatedViews){
+                childView.invalidate();
+            }
         }
     }
     @Override
