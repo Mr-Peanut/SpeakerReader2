@@ -41,8 +41,7 @@ public class PageGroup extends ViewGroup {
     private int rightBorder;
     private int childWidth;
     private boolean myChanged=false;
-
-
+    private ContentController mContentController;
 
     private int onShowPosition=0;
     private ReaderPagerAdapter2 pagerAdapter;
@@ -50,7 +49,6 @@ public class PageGroup extends ViewGroup {
     private boolean isLastPage=false;
     private int hasScrolledX;
     private ViewPager.OnPageChangeListener mPageChangeListener;
-
     public PageGroup(Context context) {
         super(context);
     }
@@ -128,15 +126,20 @@ public class PageGroup extends ViewGroup {
             case MotionEvent.ACTION_MOVE:
                 mXMove=event.getRawX();
                 int scrolledX= (int)((mXDown-mXLastMove)) ;
+                if(hasScrolledX+scrolledX<leftBorder){
+                    scrollTo(leftBorder,0);
+                    return true;
+                }else if(hasScrolledX+scrolledX+getWidth()>rightBorder){
+                    scrollTo(rightBorder-getWidth(),0);
+                    return true;
+                }
 //                if(getScrollX()+scrolledX< leftBorder){
-////                    scrollTo(leftBorder,0);
+//                    scrollTo(leftBorder,0);
 //                    //添加向前页的逻辑
-//                    addLeftView();
+//
 //                    return true;
 //                }else if(getScrollX()+scrolledX+childWidth>rightBorder){
-////                    scrollTo(rightBorder-childWidth,0);
-//                    //添加向后页的逻辑
-//                    addRightView();
+//                    scrollTo(rightBorder-childWidth,0);
 //                    return true;
 //                }
 //                scrollBy(scrolledX,0);
@@ -245,6 +248,7 @@ public class PageGroup extends ViewGroup {
 
     public void setAdapter(ReaderPagerAdapter2 pagerAdapter) {
         this.pagerAdapter = pagerAdapter;
+        mContentController=pagerAdapter.getContentController();
         pagerAdapter.instantiateRightItem(this,0);
         //预判一下要不要加载第二页
         pagerAdapter.instantiateRightItem(this,1);
