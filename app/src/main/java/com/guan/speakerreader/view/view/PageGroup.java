@@ -128,17 +128,17 @@ public class PageGroup extends ViewGroup {
             case MotionEvent.ACTION_MOVE:
                 mXMove=event.getRawX();
                 int scrolledX= (int)((mXDown-mXLastMove)) ;
-                if(getScrollX()+scrolledX< leftBorder){
-//                    scrollTo(leftBorder,0);
-                    //添加向前页的逻辑
-                    addLeftView();
-                    return true;
-                }else if(getScrollX()+scrolledX+childWidth>rightBorder){
-//                    scrollTo(rightBorder-childWidth,0);
-                    //添加向后页的逻辑
-                    addRightView();
-                    return true;
-                }
+//                if(getScrollX()+scrolledX< leftBorder){
+////                    scrollTo(leftBorder,0);
+//                    //添加向前页的逻辑
+//                    addLeftView();
+//                    return true;
+//                }else if(getScrollX()+scrolledX+childWidth>rightBorder){
+////                    scrollTo(rightBorder-childWidth,0);
+//                    //添加向后页的逻辑
+//                    addRightView();
+//                    return true;
+//                }
 //                scrollBy(scrolledX,0);
                 scrollTo(hasScrolledX+scrolledX,0);
                 mXLastMove=mXMove;
@@ -158,8 +158,6 @@ public class PageGroup extends ViewGroup {
                         dx=-hasScroll;
                 }
                 mScroller.startScroll(getScrollX(),0,dx,0);
-                findPositionByScroll(getScrollX());
-                mPageChangeListener.onPageSelected(onShowPosition);
                 invalidate();
                 break;
         }
@@ -178,8 +176,23 @@ public class PageGroup extends ViewGroup {
        if(mScroller.computeScrollOffset()){
            scrollTo(mScroller.getCurrX(),mScroller.getCurrY());
            invalidate();
+       }else if(mScroller.getCurrX()==getScrollX()){
+           findPositionByScroll(getScrollX());
+           //刷新layout           
+           mPageChangeListener.onPageSelected(onShowPosition);
+           flushLayout(onShowPosition);
        }
     }
+
+    private void flushLayout(int onShowPosition) {
+        if(getScrollX()==leftBorder){
+            addLeftView();
+        }
+        if(getScrollX()+getWidth()==rightBorder){
+            addRightView();
+        }
+    }
+
     private void addLeftView(){
         Log.e("leftadd","addLeft");
         if(!isFirstPage){

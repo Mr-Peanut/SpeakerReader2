@@ -340,6 +340,7 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
                 //当最后一页还有字数的话设置总页面+1
                 //当最前页还有字数的话设置第0页为第一页
                 //但是要注意如果position发生了改变之前的位置信息也要改变
+                Log.e("pageChange",String.valueOf(position));
                 readerPagerAdapter.getContentController().notifyPageChanged(position);
 //                readerSeekBar.setProgress(readerPagerAdapter.getContentController().getOnShowStart());
                 //添加进度条控制
