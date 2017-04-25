@@ -1,10 +1,8 @@
 package com.guan.speakerreader.view.util;
 
 import android.graphics.Paint;
-import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
-
 import com.guan.speakerreader.view.adapter.ReaderPagerAdapter2;
 
 /**
@@ -29,6 +27,16 @@ public class ContentController {
     private ReaderPagerAdapter2 mAdapter2;
     //每次预加载的最大字数暂时设定为3000，后续可以根据情况调整
     private int takenWords=3000;
+    public SparseIntArray getPageStart() {
+        return pageStart;
+    }
+
+    public SparseIntArray getPageEnd() {
+        return pageEnd;
+    }
+    public int getTotalWords() {
+        return totalWords;
+    }
 
     public ContentController(String filePath, int totalWords, ReaderPagerAdapter2 readerPagerAdapter2, Paint mPaint) {
         this.filePath = filePath;
@@ -46,10 +54,6 @@ public class ContentController {
     public int getOnShowStart() {
         return onShowStart;
     }
-
-    /*
-    还要考虑到往前到第0页有字和到最后一页还有字要动态修改页面
-     */
 
     public Paint getPaint() {
         return mPaint;
@@ -110,13 +114,11 @@ public class ContentController {
                 //逻辑可能出错了
                 pageStart.put(position, onShowStart);
                 pageEnd.put(position, onShowEnd);
-                if (onShowEnd >= totalWords) {
-                    //标记右边还有
-                    Log.e("getContent position: ", String.valueOf(position + 1));
-                }
+//                if (onShowEnd >= totalWords) {
+//                    //标记右边还有
+//                    Log.e("getContent position: ", String.valueOf(position + 1));
+//                }
                 if (onShowEnd < totalWords) {
-                    //重复加出错当重画时出错
-//                    mAdapter.notifyDataSetChanged();
                     getContentNextShow(position);
                 }
                 if (onShowStart > 0)
@@ -151,9 +153,6 @@ public class ContentController {
                     pageStart.put(position + 1, onShowEnd + 1);
                     pageEnd.put(position + 1, onShowEnd + content.length());
                     //当取完后一页还有字，页码加1加重复了
-                    if (onShowEnd + content.length() < totalWords) {
-//                        mAdapter.notifyDataSetChanged();
-                    }
                     //这边添加逻辑或者判断，当页面到最后一页时还有内容就继续添加页数
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -165,12 +164,7 @@ public class ContentController {
     }
 
     private void getContentPreShow(int position) {
-        if(position==0||onShowStart==0){
-            //通知不让滑动
-            //可以通知view
-            return;
-        }
-        if (pageContent.indexOfKey(position - 1) < 0 && position >= 1) {
+        if (pageContent.indexOfKey(position - 1) < 0 ) {
             //这一段也有可以优化当已经测量过直接取用测量的
             if (pageStart.indexOfKey(position - 1) >= 0 && pageEnd.indexOfKey(position - 1) >= 0) {
                 try {
@@ -190,18 +184,12 @@ public class ContentController {
                     pageContent.put(position - 1, content);
                     pageStart.put(position - 1, onShowStart - content.length());
                     pageEnd.put(position - 1, onShowStart - 1);
-                    if (position - 1 == 0 && onShowStart - content.length() > 0) {
-                        //前面还有字，要做调整，第0页变成第1页，相关的三个记录的list要重新初始化,而且要修改pagecount
-                        //难道要新建一个Adapter？参照C++的拷贝构造，重新构造一个Adapter，前面
-                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
         pageContent.delete(position + 2);
-        pageStart.delete(position + 2);
-        pageEnd.delete(position + 2);
     }
 
     private String measureContent(String content) {
@@ -219,15 +207,11 @@ public class ContentController {
     }
 
     public void notifyPageChanged(int position) {
-        if (position == 0) {
-            setMarked(0);
-        }//此处有大问题的，没有同步更新marked和onShow start的值因此每次取用字数都是从0开始取的
-        // 的位置，思路新建一个表，从表中取值
-        //从前往后选这个方法可以，但是如果从当中选值的话，这样做不行
         if (pageStart.indexOfKey(position) >= 0 && pageEnd.indexOfKey(position) >= 0) {
             onShowStart = pageStart.get(position);
             onShowEnd = pageEnd.get(position);
             setPageNumber(position);
+            if(onShowEnd<totalWords)
             getContentNextShow(position);
         } else {
             getContent(position);
@@ -244,6 +228,7 @@ public class ContentController {
 
     //下面方法设置为从当中某一页打开
     public void setContentFromPage(int pageNumberOnShow, int marked) {
+        reMeasure();
         setMarked(marked);
         notifyPageChanged(pageNumberOnShow);
     }
