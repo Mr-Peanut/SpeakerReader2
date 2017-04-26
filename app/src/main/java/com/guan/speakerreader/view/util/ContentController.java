@@ -42,6 +42,7 @@ public class ContentController {
     public ContentController(String filePath, int totalWords, ReaderPagerAdapter2 readerPagerAdapter2, Paint mPaint) {
         this.filePath = filePath;
         this.totalWords = totalWords;
+        Log.e("totalWordscons", String.valueOf(totalWords));
         this.mAdapter2 = readerPagerAdapter2;
         this.mPaint=mPaint;
         pageContent = new SparseArray<>();
@@ -146,7 +147,9 @@ public class ContentController {
                 //对content start和end进行赋值修改
                 try {
                     String content = TxtReader.readerFromText(filePath, onShowEnd + 1, takenWords);
+                    Log.e("contentBeforeMeasure", String.valueOf(content.length()));
                     content = measureContent(content);
+                    Log.e("contentAfterMeasure", String.valueOf(content.length()));
                     //对content start和end进行赋值修改
                     pageContent.put(position + 1, content);
 //                    Log.e("contentListNext",content);
@@ -179,10 +182,10 @@ public class ContentController {
                         content = TxtReader.readerFromTextPre(filePath, onShowStart - takenWords, takenWords);
                     }
                     content = measurePreContent(content);
-//                    Log.e("contentListPre",content);
                     pageContent.put(position - 1, content);
                     pageStart.put(position - 1, onShowStart - content.length());
                     pageEnd.put(position - 1, onShowStart - 1);
+                    Log.e("endpre"+String.valueOf(position-1)+"page",String.valueOf(onShowStart - 1));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -234,9 +237,16 @@ public class ContentController {
         pageStart.clear();
         pageEnd.clear();
         fillContentList(onShowPage);
-        if(getPageEnd().get(onShowPage)==totalWords&&mPageGroup!=null)
-        //删除最后一个view
-        mPageGroup.destroyRight();
+        Log.e("onShowEndRemeasur",String.valueOf(onShowEnd));
+        Log.e("totalwords",String.valueOf(totalWords));
+        if(onShowEnd>=totalWords&&mPageGroup!=null){
+            //删除最后一个view
+            Log.e("detory","detory");
+            mPageGroup.destroyRight();
+        }
+        if(onShowStart==0&&mPageGroup!=null){
+            mPageGroup.destroyLeft();
+        }
     }
 
     public void setmPageGroup(PageGroup mPageGroup) {

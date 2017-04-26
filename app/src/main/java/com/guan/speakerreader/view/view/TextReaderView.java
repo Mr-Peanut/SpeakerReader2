@@ -31,7 +31,7 @@ public class TextReaderView extends View {
         stringBuffer = new StringBuffer();
     }
 
-    public void setmPaint(Paint mPaint) {
+    public void setPaint(Paint mPaint) {
         this.mPaint = mPaint;
     }
 
@@ -52,7 +52,7 @@ public class TextReaderView extends View {
             mContentController.initUtils();
         }
       mContent=mContentController.getContent(position);
-        Log.e("Content",mContent);
+        Log.e("ContentLength", String.valueOf(mContent.length()));
 //        if(position==0){
 //            mContentController.notifyPageChanged(position);
 //        }

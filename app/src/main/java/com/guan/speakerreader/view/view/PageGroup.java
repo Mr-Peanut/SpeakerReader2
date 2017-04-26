@@ -162,6 +162,8 @@ public class PageGroup extends ViewGroup {
                     findPositionByScroll(getScrollX());
                 //刷新layout
                     mPageChangeListener.onPageSelected(onShowPosition);
+                   if(getChildCount()==1)
+                    addRightView();
                     if(!isFirstLayout)
                     flushLayout();
                 Log.e("scroll",String.valueOf(getScrollX()));
@@ -225,8 +227,8 @@ public class PageGroup extends ViewGroup {
 //                    Log.e("runnable","add right");
 //                    Log.e("onShowEnd",String.valueOf(mContentController.getPageEnd().get(onShowPosition)));
 //                    Log.e("totalWords",String.valueOf(mContentController.getTotalWords()));
-                    pagerAdapter.instantiateRightItem(PageGroup.this,1);
-                    rightBorder+=childWidth;
+//                    pagerAdapter.instantiateRightItem(PageGroup.this,1);
+//                    rightBorder+=childWidth;
 //                }
                 if(mContentController.getPageStart().get(onShowPosition)>0){
                     Log.e("runnable","add left");
@@ -241,16 +243,26 @@ public class PageGroup extends ViewGroup {
     public void addOnPageChangeListener(OnPageChangeListener onPageChangeListener) {
         mPageChangeListener=onPageChangeListener;
     }
+
+
+
     interface OnPageChangeListener{
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
         public void onPageSelected(int position);
         public void onPageScrollStateChanged(int state);
     }
     public void destroyRight(){
-        if(getChildCount()>=2){
+        Log.e("destoreyRight","destoreyRight");
+        if(getChildAt(getChildCount()-1).getLeft()==getScrollX()+childWidth&&getChildCount()>1){
             removeViewAt(getChildCount()-1);
             rightBorder-=childWidth;
             invalidate();
+        }
+    }
+    public void destroyLeft() {
+        if(getChildAt(0).getRight()==getScrollX()){
+            removeViewAt(0);
+            leftBorder+=childWidth;
         }
     }
 }

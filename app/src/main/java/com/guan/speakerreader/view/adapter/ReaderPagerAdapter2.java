@@ -66,7 +66,7 @@ public class ReaderPagerAdapter2 implements View.OnClickListener{
         ((TextView)(view.findViewById(R.id.foot))).setText("第"+position+"页");
         textReaderView.setPosition(position);
         textReaderView.setContentController(contentController);
-        textReaderView.setmPaint(mPaint);
+        textReaderView.setPaint(mPaint);
         instantiatedViews.add(view);
         container.addView(view,0);
         view.setOnClickListener(this);
@@ -86,7 +86,7 @@ public class ReaderPagerAdapter2 implements View.OnClickListener{
         ((TextView)(view.findViewById(R.id.foot))).setText("第"+position+"页");
         textReaderView.setPosition(position);
         textReaderView.setContentController(contentController);
-        textReaderView.setmPaint(mPaint);
+        textReaderView.setPaint(mPaint);
         instantiatedViews.add(view);
         container.addView(view,-1);
         view.setOnClickListener(this);

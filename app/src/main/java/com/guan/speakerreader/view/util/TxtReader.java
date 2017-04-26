@@ -1,5 +1,7 @@
 package com.guan.speakerreader.view.util;
 
+import android.util.Log;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -28,18 +30,19 @@ public class TxtReader {
         char[] buff = new char[buffLength];
         int times = 0;
         int left = limit;
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
         bufferedReader.skip(marked);
-        while (bufferedReader.read(buff) != -1 && left > 0) {
+        int temp=0;
+        while ((temp=bufferedReader.read(buff)) != -1 && left > 0) {
             if (left < buffLength) {
-                stringBuffer.append(buff, 0, left);
+                stringBuilder.append(buff, 0, temp<=left?temp:left);
                 break;
             }
-            stringBuffer.append(buff);
+            stringBuilder.append(buff);
             times++;
             left = limit - times * buffLength;
         }
-        String result = stringBuffer.toString();
+        String result = stringBuilder.toString();
         bufferedReader.close();
         inputStream.close();
         return result;
@@ -143,6 +146,7 @@ public class TxtReader {
             e.printStackTrace();
             return 0;
         }
+        Log.e("formatTotalWords", String.valueOf(totalWords));
         return totalWords;
     }
 }
