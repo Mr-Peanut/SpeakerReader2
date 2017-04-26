@@ -102,7 +102,7 @@ public class ContentController {
             String content = TxtReader.readerFromText(filePath, marked, takenWords);
             onShowStart = marked;
             content = measureContent(content);
-            Log.e("contentList",content);
+//            Log.e("contentList",content);
             pageContent.put(position, content);
             onShowEnd = marked + content.length() - 1;
             //逻辑可能出错了
@@ -145,7 +145,7 @@ public class ContentController {
                     content = measureContent(content);
                     //对content start和end进行赋值修改
                     pageContent.put(position + 1, content);
-                    Log.e("contentListNext",content);
+//                    Log.e("contentListNext",content);
                     pageStart.put(position + 1, onShowEnd + 1);
                     pageEnd.put(position + 1, onShowEnd + content.length());
                     //当取完后一页还有字，页码加1加重复了
@@ -175,7 +175,7 @@ public class ContentController {
                         content = TxtReader.readerFromTextPre(filePath, onShowStart - takenWords, takenWords);
                     }
                     content = measurePreContent(content);
-                    Log.e("contentListPre",content);
+//                    Log.e("contentListPre",content);
                     pageContent.put(position - 1, content);
                     pageStart.put(position - 1, onShowStart - content.length());
                     pageEnd.put(position - 1, onShowStart - 1);
