@@ -342,6 +342,7 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
         } else {
             readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), marked);
         }
+        readerPagerAdapter.getContentController().setmPageGroup(contentPager);
         contentPager.setAdapter(readerPagerAdapter);
     }
 

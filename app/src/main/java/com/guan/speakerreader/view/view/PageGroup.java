@@ -221,12 +221,14 @@ public class PageGroup extends ViewGroup {
         getChildAt(0).post(new Runnable() {
             @Override
             public void run() {
-                if(mContentController.getPageEnd().get(0)<mContentController.getTotalWords()&&PageGroup.this.getChildAt(1)==null){
-                    Log.e("runnable","add right");
+//                if(mContentController.getPageEnd().get(onShowPosition)<mContentController.getTotalWords()&&PageGroup.this.getChildAt(1)==null){
+//                    Log.e("runnable","add right");
+//                    Log.e("onShowEnd",String.valueOf(mContentController.getPageEnd().get(onShowPosition)));
+//                    Log.e("totalWords",String.valueOf(mContentController.getTotalWords()));
                     pagerAdapter.instantiateRightItem(PageGroup.this,1);
                     rightBorder+=childWidth;
-                }
-                if(mContentController.getPageStart().get(0)>0){
+//                }
+                if(mContentController.getPageStart().get(onShowPosition)>0){
                     Log.e("runnable","add left");
                     pagerAdapter.instantiateLeftItem(PageGroup.this,-1);
                     leftBorder-=childWidth;
@@ -243,5 +245,12 @@ public class PageGroup extends ViewGroup {
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
         public void onPageSelected(int position);
         public void onPageScrollStateChanged(int state);
+    }
+    public void destroyRight(){
+        if(getChildCount()>=2){
+            removeViewAt(getChildCount()-1);
+            rightBorder-=childWidth;
+            invalidate();
+        }
     }
 }

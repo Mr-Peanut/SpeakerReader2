@@ -5,12 +5,14 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import com.guan.speakerreader.view.adapter.ReaderPagerAdapter2;
+import com.guan.speakerreader.view.view.PageGroup;
 
 /**
  * Created by guans on 2017/4/3.
  */
 
 public class ContentController {
+    private PageGroup mPageGroup;
     private int onShowPage;
     private String filePath;
     private SparseArray<String> pageContent;
@@ -45,7 +47,8 @@ public class ContentController {
         pageContent = new SparseArray<>();
         pageStart = new SparseIntArray();
         pageEnd = new SparseIntArray();
-        initUtils();
+        measurePreUtil = new MeasurePreUtil(mPaint, showHeight, showWidth);
+        pagesArrangeUtil = new PagesArrangeUtil(filePath, mPaint, showWidth, showHeight);
     }
     public void setOnShowStart(int onShowStart) {
         this.onShowStart = onShowStart;
@@ -104,6 +107,8 @@ public class ContentController {
             content = measureContent(content);
 //            Log.e("contentList",content);
             pageContent.put(position, content);
+//            if(content.length()!=0)
+//                return;
             onShowEnd = marked + content.length() - 1;
             //逻辑可能出错了
             pageStart.put(position, onShowStart);
@@ -112,7 +117,7 @@ public class ContentController {
 //                    //标记右边还有
 //                    Log.e("getContent position: ", String.valueOf(position + 1));
 //                }
-            if (onShowEnd < totalWords) {
+            if (onShowEnd!=-1&&onShowEnd < totalWords) {
                 getContentNextShow(position);
             }
             if (onShowStart > 0)
@@ -129,7 +134,6 @@ public class ContentController {
         }
             return pageContent.get(position);
     }
-
     private void getContentNextShow(int position) {
         if (pageContent.indexOfKey(position + 1) < 0) {
             if (pageStart.indexOfKey(position + 1) >= 0 && pageEnd.indexOfKey(position + 1) >= 0) {
@@ -198,10 +202,11 @@ public class ContentController {
         return measurePreUtil.prePageContentLength(content);
     }
     public void notifyPageChanged(int position) {
+        onShowPage=position;
         if (pageStart.indexOfKey(position) >= 0 && pageEnd.indexOfKey(position) >= 0) {
             onShowStart = pageStart.get(position);
             onShowEnd = pageEnd.get(position);
-            if(onShowEnd<totalWords)
+            if(onShowEnd<totalWords&&onShowEnd!=-1)
             getContentNextShow(position);
             if(onShowStart>0)
                 getContentPreShow(position);
@@ -228,6 +233,14 @@ public class ContentController {
         pageContent.clear();
         pageStart.clear();
         pageEnd.clear();
+        fillContentList(onShowPage);
+        if(getPageEnd().get(onShowPage)==totalWords&&mPageGroup!=null)
+        //删除最后一个view
+        mPageGroup.destroyRight();
+    }
+
+    public void setmPageGroup(PageGroup mPageGroup) {
+        this.mPageGroup = mPageGroup;
     }
     /*
     动态调整页面：
