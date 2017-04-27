@@ -3,21 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <TextView
-        android:id="@+id/foot"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:textSize="10sp"
-        tools:ignore="RelativeOverlap"
-        tools:text="第几页" />
-
     <com.guan.speakerreader.view.view.TextReaderView
         android:id="@+id/contentView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:layout_above="@+id/foot" />
+        />
 </RelativeLayout>

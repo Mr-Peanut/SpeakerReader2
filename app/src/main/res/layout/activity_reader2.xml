@@ -23,13 +23,11 @@
         android:fitsSystemWindows="true">
         <LinearLayout
             android:id="@+id/fullscreen_content_controls"
-            style="?metaButtonBarStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
             android:background="#ffffff"
-            android:orientation="vertical"
-           >
+            android:orientation="vertical">
             <!--android:background="@color/black_overlay"-->
             <SeekBar
                 android:layout_marginTop="10dp"

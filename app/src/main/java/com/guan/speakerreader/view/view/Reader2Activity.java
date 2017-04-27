@@ -137,8 +137,8 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reader2);
         mVisible = true;
+        setContentView(R.layout.activity_reader2);
         initDataBase();
         // Set up the user interaction to manually show or hide the system UI.
         // Upon interacting with UI controls, delay any scheduled hide()
@@ -360,9 +360,7 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
         storageCachePath = storageCache.getAbsolutePath();
     }
 
-
     private void initView() {
-//        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         contentPager = (PageGroup) findViewById(R.id.contentPager);
         readerSeekBar = (SeekBar) findViewById(R.id.readerSeekBar);
@@ -559,7 +557,6 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
         contentPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         mVisible = true;
-
         // Schedule a runnable to display UI elements after a delay
         mHideHandler.removeCallbacks(mHidePart2Runnable);
         mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
