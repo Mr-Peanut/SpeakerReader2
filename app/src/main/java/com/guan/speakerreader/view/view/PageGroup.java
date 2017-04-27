@@ -162,6 +162,8 @@ public class PageGroup extends ViewGroup {
                     findPositionByScroll(getScrollX());
                 //刷新layout
                     mPageChangeListener.onPageSelected(onShowPosition);
+                   if(getChildCount()==1)
+                    addRightView();
                     if(!isFirstLayout)
                     flushLayout();
                 Log.e("scroll",String.valueOf(getScrollX()));
@@ -186,7 +188,6 @@ public class PageGroup extends ViewGroup {
                 rightBorder-=childWidth;
             myChanged=true;
             Log.e("leftadd","addLeft");
-//            invalidate();
         }
     }
     private void addRightView(){
@@ -199,7 +200,6 @@ public class PageGroup extends ViewGroup {
             leftBorder += childWidth;
             myChanged=true;
             Log.e("rightadd","addright");
-//            invalidate();
         }
     }
     public void skipToChild(){
@@ -222,11 +222,11 @@ public class PageGroup extends ViewGroup {
             @Override
             public void run() {
 //                if(mContentController.getPageEnd().get(onShowPosition)<mContentController.getTotalWords()&&PageGroup.this.getChildAt(1)==null){
-                    Log.e("runnable","add right");
+//                    Log.e("runnable","add right");
 //                    Log.e("onShowEnd",String.valueOf(mContentController.getPageEnd().get(onShowPosition)));
 //                    Log.e("totalWords",String.valueOf(mContentController.getTotalWords()));
-                    pagerAdapter.instantiateRightItem(PageGroup.this,1);
-                    rightBorder+=childWidth;
+//                    pagerAdapter.instantiateRightItem(PageGroup.this,1);
+//                    rightBorder+=childWidth;
 //                }
                 if(mContentController.getPageStart().get(onShowPosition)>0){
                     Log.e("runnable","add left");
@@ -242,13 +242,7 @@ public class PageGroup extends ViewGroup {
         mPageChangeListener=onPageChangeListener;
     }
 
-    public void destroyLeft() {
-        if(getScrollX()==getChildAt(0).getRight()){
-           pagerAdapter.destroyItem(this,onShowPosition-1,getChildAt(0));
-            leftBorder+=childWidth;
-            invalidate();
-        }
-    }
+
 
     interface OnPageChangeListener{
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
@@ -256,10 +250,17 @@ public class PageGroup extends ViewGroup {
         public void onPageScrollStateChanged(int state);
     }
     public void destroyRight(){
-        Log.e("destoryRight","destoryRight");
-        if(getChildCount()>=2){
-            pagerAdapter.destroyItem(this,onShowPosition+1,getChildAt(getChildCount()-1));
+        Log.e("destoreyRight","destoreyRight");
+        if(getChildAt(getChildCount()-1).getLeft()==getScrollX()+childWidth&&getChildCount()>1){
+            removeViewAt(getChildCount()-1);
             rightBorder-=childWidth;
+            invalidate();
+        }
+    }
+    public void destroyLeft() {
+        if(getChildAt(0).getRight()==getScrollX()){
+            removeViewAt(0);
+            leftBorder+=childWidth;
             invalidate();
         }
     }

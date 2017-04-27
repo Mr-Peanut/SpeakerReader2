@@ -29,9 +29,10 @@
             android:layout_gravity="bottom|center_horizontal"
             android:background="#ffffff"
             android:orientation="vertical"
-            tools:ignore="UselessParent">
+           >
             <!--android:background="@color/black_overlay"-->
             <SeekBar
+                android:layout_marginTop="10dp"
                 android:id="@+id/readerSeekBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
