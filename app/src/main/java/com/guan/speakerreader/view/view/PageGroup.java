@@ -241,6 +241,15 @@ public class PageGroup extends ViewGroup {
     public void addOnPageChangeListener(OnPageChangeListener onPageChangeListener) {
         mPageChangeListener=onPageChangeListener;
     }
+
+    public void destroyLeft() {
+        if(getScrollX()==getChildAt(0).getRight()){
+           pagerAdapter.destroyItem(this,onShowPosition-1,getChildAt(0));
+            leftBorder+=childWidth;
+            invalidate();
+        }
+    }
+
     interface OnPageChangeListener{
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
         public void onPageSelected(int position);
@@ -249,7 +258,7 @@ public class PageGroup extends ViewGroup {
     public void destroyRight(){
         Log.e("destoryRight","destoryRight");
         if(getChildCount()>=2){
-            removeViewAt(getChildCount()-1);
+            pagerAdapter.destroyItem(this,onShowPosition+1,getChildAt(getChildCount()-1));
             rightBorder-=childWidth;
             invalidate();
         }

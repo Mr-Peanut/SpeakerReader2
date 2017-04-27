@@ -70,7 +70,7 @@ public class ReaderPagerAdapter2 implements View.OnClickListener{
         instantiatedViews.add(view);
         container.addView(view,0);
         view.setOnClickListener(this);
-//        textReaderView.invalidate();
+        textReaderView.invalidate();
         return view;
     }
     public Object instantiateRightItem(ViewGroup container, int position) {
@@ -90,7 +90,7 @@ public class ReaderPagerAdapter2 implements View.OnClickListener{
         instantiatedViews.add(view);
         container.addView(view,-1);
         view.setOnClickListener(this);
-//        textReaderView.invalidate();
+        textReaderView.invalidate();
         return view;
     }
     public void destroyItem(ViewGroup container, int position, Object object) {
