@@ -71,6 +71,7 @@ public class ReaderPagerAdapter2 implements View.OnClickListener{
         container.addView(view,0);
         view.setOnClickListener(this);
         textReaderView.invalidate();
+        //
         return view;
     }
     public Object instantiateRightItem(ViewGroup container, int position) {
