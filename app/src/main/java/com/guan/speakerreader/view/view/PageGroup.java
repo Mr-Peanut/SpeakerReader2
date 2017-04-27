@@ -191,7 +191,7 @@ public class PageGroup extends ViewGroup {
         }
     }
     private void addRightView(){
-        if(mContentController.getPageEnd().indexOfKey(onShowPosition)>=0&&mContentController.getPageEnd().get(onShowPosition)<mContentController.getTotalWords()){
+        if(mContentController.getPageEnd().indexOfKey(onShowPosition)>=0&&mContentController.getPageEnd().get(onShowPosition)!=-1&&mContentController.getPageEnd().get(onShowPosition)<mContentController.getTotalWords()){
             if(getChildCount()>=3)
             pagerAdapter.destroyItem(this,onShowPosition-2,getChildAt(0));
             pagerAdapter.instantiateRightItem(this,onShowPosition+1);

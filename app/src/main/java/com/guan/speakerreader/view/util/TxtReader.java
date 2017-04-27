@@ -34,8 +34,12 @@ public class TxtReader {
         bufferedReader.skip(marked);
         int temp=0;
         while ((temp=bufferedReader.read(buff)) != -1 && left > 0) {
+            if(temp<left&&temp<buffLength){
+                stringBuilder.append(buff, 0, temp);
+                break;
+            }
             if (left < buffLength) {
-                stringBuilder.append(buff, 0, temp<=left?temp:left);
+                stringBuilder.append(buff, 0, left);
                 break;
             }
             stringBuilder.append(buff);

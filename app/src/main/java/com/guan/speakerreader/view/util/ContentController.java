@@ -231,7 +231,6 @@ public class ContentController {
         setMarked(marked);
         notifyPageChanged(pageNumberOnShow);
     }
-
     public void reMeasure() {
         pageContent.clear();
         pageStart.clear();
