@@ -118,7 +118,7 @@ public class ContentController {
 //                    //标记右边还有
 //                    Log.e("getContent position: ", String.valueOf(position + 1));
 //                }
-            if (onShowEnd!=-1&&onShowEnd < totalWords) {
+            if (onShowEnd!=-1&&onShowEnd < totalWords-1) {
                 getContentNextShow(position);
             }
             if (onShowStart > 0)
@@ -209,7 +209,7 @@ public class ContentController {
         if (pageStart.indexOfKey(position) >= 0 && pageEnd.indexOfKey(position) >= 0) {
             onShowStart = pageStart.get(position);
             onShowEnd = pageEnd.get(position);
-            if(onShowEnd<totalWords&&onShowEnd!=-1)
+            if(onShowEnd<totalWords-1&&onShowEnd!=-1)
             getContentNextShow(position);
             if(onShowStart>0)
                 getContentPreShow(position);
@@ -238,7 +238,7 @@ public class ContentController {
         fillContentList(onShowPage);
         Log.e("onShowEndRemeasur",String.valueOf(onShowEnd));
         Log.e("totalwords",String.valueOf(totalWords));
-        if(onShowEnd>=totalWords&&mPageGroup!=null){
+        if(onShowEnd>=totalWords-1&&mPageGroup!=null){
             //删除最后一个view
             Log.e("detory","detory");
             mPageGroup.destroyRight();
