@@ -92,9 +92,9 @@ public class TextReaderView extends View {
                 }
                 totalLineWidth += wordWith;
                 wordCount++;
-                stringBuffer.append(buffer);
                 if (buffer[0] == '\n')
                     break;
+                stringBuffer.append(buffer);
             }
             totalRowHeight = totalRowHeight + lineHeight;
             canvas.drawText(stringBuffer.toString(), lineStartX, totalRowHeight + getPaddingTop(), mPaint);

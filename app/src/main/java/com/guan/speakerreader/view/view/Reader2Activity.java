@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -60,6 +61,7 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
     private Paint textPaint;
     private String targetPath;
     private String storageCachePath;
+    private View rootView;
     private int marked;
     private RecordDatabaseHelper recordDatabaseHelper;
     //
@@ -97,7 +99,8 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                     | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            );
         }
     };
     private View mControlsView;
@@ -155,7 +158,6 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
            getTotalWords();
        }else{
 //           Log.e("startFlag","Start from record");
-
            totalWords=startIntent.getIntExtra("totalWords",0);
 //           Log.e("totalWords",String.valueOf(totalWords));
            targetPath=startIntent.getStringExtra("formatPath");
@@ -300,13 +302,17 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-//                    readerPagerAdapter.getContentController().setPageCount(pageNumber);
-                    //最后一页的逻辑
-                    readerPagerAdapter.getContentController().reMeasure();
-                    readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), progress);
+                    if(progress>=totalWords-100)
+                        readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), totalWords-100);
+                    else if(progress<100){
+                        readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), 0);
+                    }else {
+                        readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), progress);
+                }
                     contentPager.skipToChild();
                 }
-                statusText.setText(String.valueOf(progress / totalWords * 100) + "%");
+
+//                statusText.setText(progress / totalWords * 100 + "%");
             }
 
             @Override
@@ -316,11 +322,11 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
         });
         readerPagerAdapter.setUpdateSeekBarController(this);
         readerPagerAdapter.setInnerViewOnClickedListener(this);
+
         contentPager.addOnPageChangeListener(new PageGroup.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -329,7 +335,7 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
 
             @Override
             public void onPageSelected(int position) {
-//                Log.e("pageChange",String.valueOf(position));
+                Log.e("pageChange",String.valueOf(position));
                 readerPagerAdapter.getContentController().notifyPageChanged(position);
             }
 
@@ -342,8 +348,9 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
         } else {
             readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), marked);
         }
-        readerPagerAdapter.getContentController().setmPageGroup(contentPager);
         contentPager.setAdapter(readerPagerAdapter);
+        readerPagerAdapter.getContentController().setmPageGroup(contentPager);
+
     }
 
     private void initPath() {
@@ -361,6 +368,7 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
     }
 
     private void initView() {
+        rootView=findViewById(R.id.rootView);
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         contentPager = (PageGroup) findViewById(R.id.contentPager);
         readerSeekBar = (SeekBar) findViewById(R.id.readerSeekBar);
@@ -408,6 +416,7 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
             settingWindow.setContentView(popuWindowsView);
         }
         settingWindow.showAtLocation(mControlsView, Gravity.BOTTOM, 0, 0);
+
 //        settingWindow.showAsDropDown(settingMenu);
 
     }
@@ -548,6 +557,7 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
         mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
         if (settingWindow != null && settingWindow.isShowing()) {
             settingWindow.dismiss();
+
         }
     }
 

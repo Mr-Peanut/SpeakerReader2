@@ -1,24 +1,17 @@
 package com.guan.speakerreader.view.view;
 
 import android.content.Context;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewConfigurationCompat;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Scroller;
 
 import com.guan.speakerreader.view.adapter.ReaderPagerAdapter2;
 import com.guan.speakerreader.view.util.ContentController;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by guans on 2017/4/20.
@@ -67,6 +60,12 @@ public class PageGroup extends ViewGroup {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         measureChildren(widthMeasureSpec,heightMeasureSpec);
+        if(mContentController!=null&&getChildAt(0)!=null&&mContentController.getShowWidth()!=getChildAt(0).getMeasuredWidth()){
+            mContentController.setShowHeight(getChildAt(0).getMeasuredHeight());
+            Log.e("0 measure", String.valueOf(getChildAt(0).getMeasuredWidth()));
+            mContentController.setShowWidth(getChildAt(0).getMeasuredWidth());
+            mContentController.initUtils();
+        }
     }
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
@@ -76,11 +75,15 @@ public class PageGroup extends ViewGroup {
             for (int i = 0; i < childCount; i++) {
                 View child = getChildAt(i);
                 //此处应该添加一个变量来记录上次滑动后的初始位置和结束位置
-                child.layout(i*child.getMeasuredWidth()+leftBorder,0,(i+1)*child.getMeasuredWidth()+leftBorder,child.getMeasuredHeight());
+//                child.layout(i*child.getMeasuredWidth()+leftBorder,0,(i+1)*child.getMeasuredWidth()+leftBorder,child.getMeasuredHeight());
+                child.layout(i*getMeasuredWidth()+leftBorder,0,(i+1)*getMeasuredWidth()+leftBorder,getMeasuredHeight());
+
             }
             if(getChildCount()!=0){
-                if(childWidth==0)
+                Log.e("0 Layout", String.valueOf(getChildAt(0).getMeasuredWidth()));
+                if(childWidth==0&&childWidth!=getChildAt(0).getMeasuredWidth())
                     childWidth=getChildAt(0).getMeasuredWidth();
+                    Log.e("childWidth", String.valueOf(childWidth)+"  "+getMeasuredWidth());
                     leftBorder=getChildAt(0).getLeft();
                     rightBorder=getChildAt(getChildCount()-1).getRight();
             }
@@ -91,7 +94,6 @@ public class PageGroup extends ViewGroup {
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         switch (ev.getAction()){
             case MotionEvent.ACTION_DOWN:
-
                 mXDown=ev.getRawX();
                 mXLastMove=mXDown;
                 hasScrolledX= getScrollX();
@@ -117,24 +119,24 @@ public class PageGroup extends ViewGroup {
                 if(hasScrolledX+scrolledX<leftBorder){
                     scrollTo(leftBorder,0);
                     return true;
-                }else if(hasScrolledX+scrolledX+getWidth()>rightBorder){
-                    scrollTo(rightBorder-getWidth(),0);
+                }else if(hasScrolledX+scrolledX+getMeasuredWidth()>rightBorder){
+                    scrollTo(rightBorder-getMeasuredWidth(),0);
                     return true;
                 }
                 scrollTo(hasScrolledX+scrolledX,0);
                 mXLastMove=mXMove;
                 break;
             case MotionEvent.ACTION_UP:
-                int hasScroll=(getScrollX()>=0?getScrollX():-getScrollX())%getWidth();
+                int hasScroll=(getScrollX()>=0?getScrollX():-getScrollX())%getMeasuredWidth();
                 int dx;
                 if(getScrollX()<=0){
-                    if(hasScroll>=getWidth()/2)
-                        dx=hasScroll-getWidth();
+                    if(hasScroll>=getMeasuredWidth()/2)
+                        dx=hasScroll-getMeasuredWidth();
                     else
                         dx=hasScroll;
                 }else {
-                    if(hasScroll>=getWidth()/2)
-                        dx=getWidth()-hasScroll;
+                    if(hasScroll>=getMeasuredWidth()/2)
+                        dx=getMeasuredWidth()-hasScroll;
                     else
                         dx=-hasScroll;
                 }
@@ -149,7 +151,7 @@ public class PageGroup extends ViewGroup {
         //通过滑动的位置判断当前页面
         //传入的为滑动距离
         //结果是当前页面
-       onShowPosition=scrollX/getWidth();
+       onShowPosition=scrollX/getMeasuredWidth();
     }
 
     @Override
@@ -174,7 +176,7 @@ public class PageGroup extends ViewGroup {
         Log.e("flushLayout","flushLayout");
         if(getScrollX()==leftBorder){
             addLeftView();
-        }else if(getScrollX()+getWidth()==rightBorder){
+        }else if(getScrollX()+getMeasuredWidth()==rightBorder){
             addRightView();
         }
     }
@@ -183,9 +185,11 @@ public class PageGroup extends ViewGroup {
             if(getChildCount()>=3)
             pagerAdapter.destroyItem(this,onShowPosition+2,getChildAt(getChildCount()-1));
             pagerAdapter.instantiateLeftItem(this,onShowPosition-1);
-            leftBorder-=childWidth;
-            if(rightBorder-leftBorder>=4*childWidth)
-                rightBorder-=childWidth;
+//            leftBorder-=childWidth;
+            leftBorder-=getMeasuredWidth();
+            if(rightBorder-leftBorder>=4*getMeasuredWidth())
+//                rightBorder-=childWidth;
+                rightBorder-=getMeasuredWidth();
             myChanged=true;
             Log.e("leftadd","addLeft");
         }
@@ -195,20 +199,20 @@ public class PageGroup extends ViewGroup {
             if(getChildCount()>=3)
             pagerAdapter.destroyItem(this,onShowPosition-2,getChildAt(0));
             pagerAdapter.instantiateRightItem(this,onShowPosition+1);
-            rightBorder += childWidth;
-            if(rightBorder-leftBorder>=4*childWidth)
-            leftBorder += childWidth;
+//            rightBorder += childWidth;
+            rightBorder += getMeasuredWidth();
+            if(rightBorder-leftBorder>=4*getMeasuredWidth())
+//            leftBorder += childWidth;
+            leftBorder += getMeasuredWidth();
             myChanged=true;
             Log.e("rightadd","addright");
         }
     }
     public void skipToChild(){
-        //默认跳转到第二个child，除非要求跳转到第一个或者最后一个child
-        //设置和刷新三个view的内容
-        //更新了别忘了position是否要更新
-        for(int i=0;i<getChildCount();i++){
-            getChildAt(i).invalidate();
-        }
+//        for(int i=0;i<getChildCount();i++){
+//            getChildAt(i).invalidate();
+//        }
+        pagerAdapter.invalidateViews();
     }
     public ReaderPagerAdapter2 getAdapter() {
         return pagerAdapter;
@@ -231,7 +235,8 @@ public class PageGroup extends ViewGroup {
                 if(mContentController.getPageStart().get(onShowPosition)>0){
                     Log.e("runnable","add left");
                     pagerAdapter.instantiateLeftItem(PageGroup.this,-1);
-                    leftBorder-=childWidth;
+//                    leftBorder-=childWidth;
+                    leftBorder-=getMeasuredWidth();
                 }
                 isFirstLayout=false;
                 myChanged=true;
@@ -241,9 +246,6 @@ public class PageGroup extends ViewGroup {
     public void addOnPageChangeListener(OnPageChangeListener onPageChangeListener) {
         mPageChangeListener=onPageChangeListener;
     }
-
-
-
     interface OnPageChangeListener{
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
         public void onPageSelected(int position);
@@ -252,15 +254,17 @@ public class PageGroup extends ViewGroup {
     public void destroyRight(){
         Log.e("destoreyRight","destoreyRight");
         if(getChildAt(getChildCount()-1).getLeft()==getScrollX()+childWidth&&getChildCount()>1){
-            removeViewAt(getChildCount()-1);
-            rightBorder-=childWidth;
+            pagerAdapter.destroyItem(this,onShowPosition+1,getChildAt(getChildCount()-1));
+//            rightBorder-=childWidth;
+            rightBorder-=getMeasuredWidth();
             invalidate();
         }
     }
     public void destroyLeft() {
-        if(getChildAt(0).getRight()==getScrollX()){
-            removeViewAt(0);
-            leftBorder+=childWidth;
+        if(getChildAt(0).getRight()==getScrollX()&&getChildCount()!=1){
+            pagerAdapter.destroyItem(this,onShowPosition-1,getChildAt(0));
+//            leftBorder+=childWidth;
+            leftBorder+=getMeasuredWidth();
             invalidate();
         }
     }

@@ -193,7 +193,6 @@ public class ContentController {
         }
         pageContent.delete(position + 2);
     }
-
     private String measureContent(String content) {
         //通过功能类measure util进行测量计算
 //        Log.e("pagesArrangeUtil",String.valueOf(pagesArrangeUtil==null));
@@ -227,27 +226,30 @@ public class ContentController {
 
     //下面方法设置为从当中某一页打开
     public void setContentFromPage(int pageNumberOnShow, int marked) {
-        reMeasure();
         setMarked(marked);
+        if(getShowWidth()==0)
+            return;
+        reMeasure();
         notifyPageChanged(pageNumberOnShow);
     }
     public void reMeasure() {
         pageContent.clear();
         pageStart.clear();
         pageEnd.clear();
+        Log.e("remeasure","remeasure");
         fillContentList(onShowPage);
         Log.e("onShowEndRemeasur",String.valueOf(onShowEnd));
         Log.e("totalwords",String.valueOf(totalWords));
         if(onShowEnd>=totalWords-1&&mPageGroup!=null){
             //删除最后一个view
-            Log.e("detory","detory");
+            Log.e("detory","detoryRight");
             mPageGroup.destroyRight();
         }
         if(onShowStart==0&&mPageGroup!=null){
+            Log.e("detory","detoryLeft");
             mPageGroup.destroyLeft();
         }
     }
-
     public void setmPageGroup(PageGroup mPageGroup) {
         this.mPageGroup = mPageGroup;
     }

@@ -2,6 +2,7 @@ package com.guan.speakerreader.view.adapter;
 
 import android.content.Context;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,6 +89,7 @@ public class ReaderPagerAdapter2 implements View.OnClickListener{
         textReaderView.setPaint(mPaint);
         instantiatedViews.add(view);
         container.addView(view,-1);
+        Log.e("add Right","add Right");
         view.setOnClickListener(this);
         textReaderView.invalidate();
         return view;
