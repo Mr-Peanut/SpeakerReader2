@@ -220,7 +220,7 @@ public class ContentController {
         //把更新后的位置通知给seekbar可以通过handler实现或者广播，或者一个接口
     }
 
-    private void setMarked(int marked) {
+    public void setMarked(int marked) {
         this.marked = marked;
     }
 
@@ -229,8 +229,9 @@ public class ContentController {
         setMarked(marked);
         if(getShowWidth()==0)
             return;
+        onShowPage=pageNumberOnShow;
         reMeasure();
-        notifyPageChanged(pageNumberOnShow);
+//        notifyPageChanged(pageNumberOnShow);
     }
     public void reMeasure() {
         pageContent.clear();
@@ -250,7 +251,7 @@ public class ContentController {
             mPageGroup.destroyLeft();
         }
     }
-    public void setmPageGroup(PageGroup mPageGroup) {
+    public void setPageGroup(PageGroup mPageGroup) {
         this.mPageGroup = mPageGroup;
     }
     /*

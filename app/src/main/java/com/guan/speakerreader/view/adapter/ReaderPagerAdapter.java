@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.guan.speakerreader.R;
 import com.guan.speakerreader.view.util.ContentController;
+import com.guan.speakerreader.view.view.PageGroup;
 import com.guan.speakerreader.view.view.TextReaderView;
 
 import java.lang.ref.WeakReference;
@@ -54,7 +55,7 @@ public class ReaderPagerAdapter implements View.OnClickListener{
         instantiatedViews=new ArrayList<>();
         contentController=new ContentController(filePath,totalWords,this,mPaint);
     }
-    public Object instantiateLeftItem(ViewGroup container, int position) {
+    public Object instantiateLeftItem(PageGroup container, int position) {
         final TextReaderView textReaderView;
         View view = null;
         if(viewList.size()>0){
@@ -69,11 +70,12 @@ public class ReaderPagerAdapter implements View.OnClickListener{
         textReaderView.setPaint(mPaint);
         instantiatedViews.add(view);
         container.addView(view,0);
+        container.getViewHashMap().put(position,view);
         view.setOnClickListener(this);
         textReaderView.invalidate();
         return view;
     }
-    public Object instantiateRightItem(ViewGroup container, int position) {
+    public Object instantiateRightItem(PageGroup container, int position) {
         TextReaderView textReaderView;
         View view = null;
         if(viewList.size()>0){
@@ -88,16 +90,18 @@ public class ReaderPagerAdapter implements View.OnClickListener{
         textReaderView.setPaint(mPaint);
         instantiatedViews.add(view);
         container.addView(view,-1);
+        container.getViewHashMap().put(position,view);
         Log.e("add Right","add Right");
         view.setOnClickListener(this);
         textReaderView.invalidate();
         return view;
     }
-    public void destroyItem(ViewGroup container, int position, Object object) {
+    public void destroyItem(PageGroup container, int position, Object object) {
         View view= (View) object;
         container.removeView(view);
         view.setOnClickListener(null);
         instantiatedViews.remove(view);
+        container.getViewHashMap().remove(position);
         viewList.add(new WeakReference<>(view));
     }
     public void invalidateViews(){

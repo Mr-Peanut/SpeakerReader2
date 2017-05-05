@@ -13,6 +13,9 @@ import android.widget.Scroller;
 import com.guan.speakerreader.view.adapter.ReaderPagerAdapter;
 import com.guan.speakerreader.view.util.ContentController;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * Created by guans on 2017/4/20.
  */
@@ -39,6 +42,12 @@ public class PageGroup extends ViewGroup {
     private int hasScrolledX;
     private OnPageChangeListener mPageChangeListener;
     private boolean isFirstLayout=true;
+    private HashMap<Integer,View> viewHashMap;
+
+    public HashMap<Integer, View> getViewHashMap() {
+        return viewHashMap;
+    }
+
     public PageGroup(Context context) {
         super(context);
     }
@@ -48,6 +57,7 @@ public class PageGroup extends ViewGroup {
         ViewConfiguration configuration=ViewConfiguration.get(context);
         mTouchSlop= ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
         mScroller=new Scroller(context);
+        viewHashMap=new HashMap<>();
     }
     public int getOnShowPosition() {
         return onShowPosition;
@@ -253,7 +263,7 @@ public class PageGroup extends ViewGroup {
     }
     public void destroyRight(){
         Log.e("destoreyRight","destoreyRight");
-        if(getChildAt(getChildCount()-1).getLeft()==getScrollX()+childWidth&&getChildCount()>1){
+        if(getChildAt(getChildCount()-1).getLeft()==getScrollX()+getMeasuredWidth()&&getChildCount()>1){
             pagerAdapter.destroyItem(this,onShowPosition+1,getChildAt(getChildCount()-1));
 //            rightBorder-=childWidth;
             rightBorder-=getMeasuredWidth();
@@ -261,11 +271,16 @@ public class PageGroup extends ViewGroup {
         }
     }
     public void destroyLeft() {
+        Log.e("destoreyLeft","destoreyLeft");
         if(getChildAt(0).getRight()==getScrollX()&&getChildCount()!=1){
             pagerAdapter.destroyItem(this,onShowPosition-1,getChildAt(0));
 //            leftBorder+=childWidth;
             leftBorder+=getMeasuredWidth();
             invalidate();
         }
+    }
+    public View getCurrentView(){
+        Log.e("getOnshow",String.valueOf(onShowPosition));
+        return viewHashMap.get(onShowPosition);
     }
 }

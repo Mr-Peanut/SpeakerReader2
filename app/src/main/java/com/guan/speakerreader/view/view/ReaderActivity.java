@@ -28,13 +28,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.guan.speakerreader.R;
@@ -348,7 +346,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), marked);
         }
         contentPager.setAdapter(readerPagerAdapter);
-        readerPagerAdapter.getContentController().setmPageGroup(contentPager);
+        readerPagerAdapter.getContentController().setPageGroup(contentPager);
 
     }
 
@@ -500,7 +498,6 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         getWindow().setAttributes(windowManagerLayoutParams);
     }
 
-
     private void initBackgroundSelectedView(View view) {
         BackgroundSelectorListener listener = new BackgroundSelectorListener();
         TextView black = (TextView) view.findViewById(R.id.black);
@@ -641,7 +638,11 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
                     break;
             }
             textPaint.setTextSize(textSize);
-            readerPagerAdapter.invalidateViews();
+            int marked=readerSeekBar.getProgress();
+            Log.e("markedchange",String.valueOf(marked));
+            readerPagerAdapter.getContentController().setMarked(marked);
+            readerPagerAdapter.getContentController().reMeasure();
+            contentPager.getCurrentView().invalidate();
             ((TextView)(settingWindow.getContentView().findViewById(R.id.textSizeShow))).setText(String.valueOf(textSize));
         }
     }
