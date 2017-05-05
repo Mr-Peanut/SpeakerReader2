@@ -60,6 +60,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     private String targetPath;
     private String storageCachePath;
     private View rootView;
+    private int textSize;
     private int marked;
     private RecordDatabaseHelper recordDatabaseHelper;
     //
@@ -396,26 +397,27 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             SeekBar lightAdjuster = (SeekBar) popuWindowsView.findViewById(R.id.lightAdjuster);
             CheckBox checkBox = (CheckBox) popuWindowsView.findViewById(R.id.fitSystemLightness);
             setScreenLightness(checkBox, lightAdjuster);
-            Spinner textSizeSelector = (Spinner) popuWindowsView.findViewById(R.id.textSizeSpinner);
-//            String[] textSize=getApplicationContext().getResources().getStringArray(R.array.textSize);
-//            List<String> textSizeList= Arrays.asList(textSize);
-//            textSizeSelector.setSelection(textSizeList.indexOf(String.valueOf(textPaint.getTextSize())));
-            textSizeSelector.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    float textSize = Float.parseFloat((String) parent.getSelectedItem());
-                    if (textSize != textPaint.getTextSize())
-                        textPaint.setTextSize(textSize);
-                    readerPagerAdapter.getContentController().reMeasure();
-//                    readerPagerAdapter.getContentController().notifyPageChanged(contentPager.getCurrentItem());
-                    readerPagerAdapter.invalidateViews();
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
-            });
+            initTextSizeChosenView(popuWindowsView);
+//            Spinner textSizeSelector = (Spinner) popuWindowsView.findViewById(R.id.textSizeSpinner);
+////            String[] textSize=getApplicationContext().getResources().getStringArray(R.array.textSize);
+////            List<String> textSizeList= Arrays.asList(textSize);
+////            textSizeSelector.setSelection(textSizeList.indexOf(String.valueOf(textPaint.getTextSize())));
+//            textSizeSelector.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+//                @Override
+//                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                    float textSize = Float.parseFloat((String) parent.getSelectedItem());
+//                    if (textSize != textPaint.getTextSize())
+//                        textPaint.setTextSize(textSize);
+//                    readerPagerAdapter.getContentController().reMeasure();
+////                    readerPagerAdapter.getContentController().notifyPageChanged(contentPager.getCurrentItem());
+//                    readerPagerAdapter.invalidateViews();
+//                }
+//
+//                @Override
+//                public void onNothingSelected(AdapterView<?> parent) {
+//
+//                }
+//            });
             initBackgroundSelectedView(popuWindowsView);
             settingWindow.setContentView(popuWindowsView);
         }
@@ -423,6 +425,17 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
 
 //        settingWindow.showAsDropDown(settingMenu);
 
+    }
+
+    private void initTextSizeChosenView(View view) {
+        TextView textSizeShow= (TextView) view.findViewById(R.id.textSizeShow);
+        textSize= (int) textPaint.getTextSize();
+        textSizeShow.setText(String.valueOf(textSize));
+        Button textSizePlus= (Button) view.findViewById(R.id.textSizePlus);
+        Button textSizeMinus= (Button) view.findViewById(R.id.textSizeMinus);
+        TextSizeAdjustListener textSizeAdjustListener=new TextSizeAdjustListener();
+        textSizePlus.setOnClickListener(textSizeAdjustListener);
+        textSizeMinus.setOnClickListener(textSizeAdjustListener);
     }
 
     private void setScreenLightness(final CheckBox checkBox, final SeekBar lightAdjuster) {
@@ -611,6 +624,25 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             textPaint.setColor(((TextView) v).getPaint().getColor());
             contentPager.invalidate();
             ReaderActivity.this.hide();
+        }
+    }
+    private class TextSizeAdjustListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.textSizePlus:
+                    if(textSize<=75)
+                    textSize+=5;
+                    break;
+                case R.id.textSizeMinus:
+                    if(textSize>=25)
+                    textSize-=5;
+                    break;
+            }
+            textPaint.setTextSize(textSize);
+            readerPagerAdapter.invalidateViews();
+            ((TextView)(settingWindow.getContentView().findViewById(R.id.textSizeShow))).setText(String.valueOf(textSize));
         }
     }
 }
