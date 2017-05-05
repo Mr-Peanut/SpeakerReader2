@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -183,8 +184,16 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         if (textPaint == null) {
             textPaint = new Paint();
             //默认值
-            textPaint.setTextSize(55.0f);
-            textPaint.setColor(Color.BLACK);
+            int textSize=getSettingFromSharedPreferences("TextSize");
+            if(textSize==-100)
+               textPaint.setTextSize(55.0f);
+            else
+                textPaint.setTextSize(textSize);
+            int textColor=getSettingFromSharedPreferences("TextColor");
+            if(textSize==-100)
+               textPaint.setColor(Color.BLACK);
+            else
+                textPaint.setColor(textColor);
             textPaint.setAntiAlias(true);
         }
     }
@@ -306,7 +315,8 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
                     }else {
                         readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), progress);
                 }
-                    contentPager.skipToChild();
+//                    contentPager.skipToChild();
+                    contentPager.getCurrentView().postInvalidate();
                 }
 
 //                statusText.setText(progress / totalWords * 100 + "%");
@@ -368,6 +378,11 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         rootView=findViewById(R.id.rootView);
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         contentPager = (PageGroup) findViewById(R.id.contentPager);
+//        int pagerBackground=getSettingFromSharedPreferences("PagerBackGround");
+//        if (pagerBackground!=-1){
+//            contentPager.setBackground(pagerBackground);
+//        }
+
         contentPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -527,6 +542,8 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
 //        SQLiteDatabase recordDB= recordDatabaseHelper.getWritableDatabase();
 //        recordDB.update(ReadRecordAdapter.TABLE_NAME,values,"filepath=?",new String[]{textPath});
 //        recordDB.close();
+        saveSettingInSharedPreferences("TextColor",textPaint.getColor());
+        saveSettingInSharedPreferences("TextSize",textSize);
         super.onDestroy();
     }
 
@@ -572,7 +589,6 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
         if (settingWindow != null && settingWindow.isShowing()) {
             settingWindow.dismiss();
-
         }
     }
 
@@ -604,7 +620,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     @Override
     public void upDate(int progress) {
         readerSeekBar.setProgress(progress);
-        statusText.setText(progress / totalWords * 100 + "%");
+//        statusText.setText(progress / totalWords * 100 + "%");
     }
 
     class ShowFinishedReceiver extends BroadcastReceiver {
@@ -620,7 +636,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             contentPager.setBackground(v.getBackground());
             textPaint.setColor(((TextView) v).getPaint().getColor());
             contentPager.invalidate();
-            ReaderActivity.this.hide();
+//            ReaderActivity.this.hide();
         }
     }
     private class TextSizeAdjustListener implements View.OnClickListener{
@@ -641,8 +657,20 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             textPaint.setTextSize(textSize);
             readerPagerAdapter.getContentController().setMarked(oldMark);
             readerPagerAdapter.getContentController().reMeasure();
-            contentPager.getCurrentView().invalidate();
+            contentPager.getCurrentView().postInvalidate();
+//            contentPager.invalidate();
             ((TextView)(settingWindow.getContentView().findViewById(R.id.textSizeShow))).setText(String.valueOf(textSize));
         }
+    }
+    private boolean saveSettingInSharedPreferences(String type,int value){
+        SharedPreferences preferences=getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putInt(type,value);
+        return  editor.commit();
+    }
+    private int getSettingFromSharedPreferences(String type){
+        SharedPreferences preferences=getPreferences(Context.MODE_PRIVATE);
+        return preferences.getInt(type,-100);
+
     }
 }

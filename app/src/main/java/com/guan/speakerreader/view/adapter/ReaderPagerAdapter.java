@@ -69,6 +69,7 @@ public class ReaderPagerAdapter implements View.OnClickListener{
         textReaderView.setContentController(contentController);
         textReaderView.setPaint(mPaint);
         instantiatedViews.add(view);
+        view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         container.addView(view,0);
         container.getViewHashMap().put(position,view);
         view.setOnClickListener(this);
@@ -89,6 +90,7 @@ public class ReaderPagerAdapter implements View.OnClickListener{
         textReaderView.setContentController(contentController);
         textReaderView.setPaint(mPaint);
         instantiatedViews.add(view);
+        view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         container.addView(view,-1);
         container.getViewHashMap().put(position,view);
         Log.e("add Right","add Right");
@@ -106,6 +108,7 @@ public class ReaderPagerAdapter implements View.OnClickListener{
     }
     public void invalidateViews(){
         if(instantiatedViews.size()!=0){
+            Log.e("invalidateViews",String.valueOf(instantiatedViews.size()));
             for(View childView:instantiatedViews){
                 childView.invalidate();
             }

@@ -87,6 +87,8 @@ public class PageGroup extends ViewGroup {
                 //此处应该添加一个变量来记录上次滑动后的初始位置和结束位置
 //                child.layout(i*child.getMeasuredWidth()+leftBorder,0,(i+1)*child.getMeasuredWidth()+leftBorder,child.getMeasuredHeight());
                 child.layout(i*getMeasuredWidth()+leftBorder,0,(i+1)*getMeasuredWidth()+leftBorder,getMeasuredHeight());
+                Log.e("left", String.valueOf(i*getMeasuredWidth()+leftBorder));
+                Log.e("right", String.valueOf((i+1)*getMeasuredWidth()+leftBorder));
 
             }
             if(getChildCount()!=0){
@@ -94,8 +96,10 @@ public class PageGroup extends ViewGroup {
                 if(childWidth==0&&childWidth!=getChildAt(0).getMeasuredWidth())
                     childWidth=getChildAt(0).getMeasuredWidth();
                     Log.e("childWidth", String.valueOf(childWidth)+"  "+getMeasuredWidth());
-                    leftBorder=getChildAt(0).getLeft();
-                    rightBorder=getChildAt(getChildCount()-1).getRight();
+                    leftBorder=getChildAt(0).getRight()-getMeasuredWidth();
+                    rightBorder=getChildAt(getChildCount()-1).getLeft()+getMeasuredWidth();
+                Log.e("leftBorder", String.valueOf(leftBorder));
+                Log.e("rightBorder", String.valueOf(rightBorder));
             }
             myChanged=false;
         }
@@ -108,7 +112,6 @@ public class PageGroup extends ViewGroup {
                 mXLastMove=mXDown;
                 hasScrolledX= getScrollX();
                 break;
-
             case MotionEvent.ACTION_MOVE:
                 mXMove=ev.getRawX();
                 float diff=Math.abs(mXMove-mXDown);

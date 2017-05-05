@@ -24,7 +24,9 @@
             </intent-filter>
         </activity>
         <activity
+
             android:name=".view.view.ReaderActivity">
+            <!--android:hardwareAccelerated="false"-->
         </activity>
     </application>
 
