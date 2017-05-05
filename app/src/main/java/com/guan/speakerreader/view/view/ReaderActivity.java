@@ -637,10 +637,9 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
                     textSize-=5;
                     break;
             }
+            int oldMark=readerPagerAdapter.getContentController().getMarked();
             textPaint.setTextSize(textSize);
-            int marked=readerSeekBar.getProgress();
-            Log.e("markedchange",String.valueOf(marked));
-            readerPagerAdapter.getContentController().setMarked(marked);
+            readerPagerAdapter.getContentController().setMarked(oldMark);
             readerPagerAdapter.getContentController().reMeasure();
             contentPager.getCurrentView().invalidate();
             ((TextView)(settingWindow.getContentView().findViewById(R.id.textSizeShow))).setText(String.valueOf(textSize));

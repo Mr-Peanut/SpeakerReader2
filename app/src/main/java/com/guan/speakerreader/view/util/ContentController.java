@@ -100,6 +100,11 @@ public class ContentController {
         //当尺寸没有具体变化时不要清理
        reMeasure();
     }
+
+    public int getMarked() {
+        return marked;
+    }
+
     private void fillContentList(int position){
         try {
             //marked 的位置，当position为0时，marked=0，当position为其他数时默认为进度条拖动的位置
@@ -129,7 +134,7 @@ public class ContentController {
     }
     //交给view调用
     public String getContent(int position) {
-        onShowPage=position;
+//        onShowPage=position;
         if (pageContent.indexOfKey(position)< 0) {
             fillContentList(position);
         }
