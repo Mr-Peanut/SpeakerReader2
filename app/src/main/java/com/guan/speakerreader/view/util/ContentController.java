@@ -149,7 +149,7 @@ public class ContentController {
                     e.printStackTrace();
                 }
             } else {
-                //对content start和end进行赋值修改
+                //对content start和end进行赋值修
                 try {
                     String content = TxtReader.readerFromText(filePath, onShowEnd + 1, takenWords);
                     Log.e("contentBeforeMeasure", String.valueOf(content.length()));
