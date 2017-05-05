@@ -4,7 +4,7 @@ import android.graphics.Paint;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
-import com.guan.speakerreader.view.adapter.ReaderPagerAdapter2;
+import com.guan.speakerreader.view.adapter.ReaderPagerAdapter;
 import com.guan.speakerreader.view.view.PageGroup;
 
 /**
@@ -27,7 +27,7 @@ public class ContentController {
     private Paint mPaint;
     private float showHeight;
     private float showWidth;
-    private ReaderPagerAdapter2 mAdapter2;
+    private ReaderPagerAdapter mAdapter2;
     //每次预加载的最大字数暂时设定为3000，后续可以根据情况调整
     private int takenWords=3000;
     public SparseIntArray getPageStart() {
@@ -39,11 +39,11 @@ public class ContentController {
     public int getTotalWords() {
         return totalWords;
     }
-    public ContentController(String filePath, int totalWords, ReaderPagerAdapter2 readerPagerAdapter2, Paint mPaint) {
+    public ContentController(String filePath, int totalWords, ReaderPagerAdapter readerPagerAdapter, Paint mPaint) {
         this.filePath = filePath;
         this.totalWords = totalWords;
         Log.e("totalWordscons", String.valueOf(totalWords));
-        this.mAdapter2 = readerPagerAdapter2;
+        this.mAdapter2 = readerPagerAdapter;
         this.mPaint=mPaint;
         pageContent = new SparseArray<>();
         pageStart = new SparseIntArray();

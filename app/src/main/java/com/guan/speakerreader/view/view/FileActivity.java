@@ -107,7 +107,7 @@ public class FileActivity extends AppCompatActivity implements ScanFileAdapter.P
     @Override
     public void onItemClicked(File file) {
         if (file.getName().contains(".txt") || file.getName().contains(".TXT")) {
-            Intent intent = new Intent(this, Reader2Activity.class);
+            Intent intent = new Intent(this, ReaderActivity.class);
             intent.putExtra("StartFlag",WelcomeActivity.START_FROM_FILE);
             intent.putExtra("FILEPATH", file.getAbsolutePath());
             startActivity(intent);

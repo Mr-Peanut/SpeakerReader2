@@ -135,7 +135,7 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
             readRecordAdapter.deleteDataItem(position);
             return;
         }
-        Intent intent = new Intent(WelcomeActivity.this, Reader2Activity.class);
+        Intent intent = new Intent(WelcomeActivity.this, ReaderActivity.class);
         intent.putExtra("FILEPATH", filePath);
         intent.putExtra("totalWords",cursor.getInt(cursor.getColumnIndex("totalWords")));
         intent.putExtra("formatPath",cursor.getString(cursor.getColumnIndex("formatPath")));

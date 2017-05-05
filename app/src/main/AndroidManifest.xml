@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.view.Reader2Activity">
+            android:name=".view.view.ReaderActivity">
         </activity>
     </application>
 

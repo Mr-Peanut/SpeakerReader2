@@ -20,4 +20,6 @@
     <string name="sizeChosen">字号</string>
     <string name="backgroundSelector">背景选择</string>
     <string name="fitSystemLightness">跟随系统</string>
+    <string name="textSizePlus">A+</string>
+    <string name="textSizeMinus">A-</string>
 </resources>

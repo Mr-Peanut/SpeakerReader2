@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -19,7 +18,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -41,20 +39,20 @@ import android.widget.TextView;
 
 import com.guan.speakerreader.R;
 import com.guan.speakerreader.view.adapter.ReadRecordAdapter;
-import com.guan.speakerreader.view.adapter.ReaderPagerAdapter2;
+import com.guan.speakerreader.view.adapter.ReaderPagerAdapter;
 import com.guan.speakerreader.view.database.RecordDatabaseHelper;
 import com.guan.speakerreader.view.util.TxtReader;
 
 import java.io.File;
 import java.io.IOException;
 
-public class Reader2Activity extends AppCompatActivity implements ReaderPagerAdapter2.InnerViewOnClickedListener, ReaderPagerAdapter2.UpdateSeekBarController {
+public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdapter.InnerViewOnClickedListener, ReaderPagerAdapter.UpdateSeekBarController {
     private PageGroup contentPager;
     private String textPath;
     private ShowFinishedReceiver showFinishedReceiver;
     private int totalWords;
     private ProgressDialog getTotalWordsDialog;
-    private ReaderPagerAdapter2 readerPagerAdapter;
+    private ReaderPagerAdapter readerPagerAdapter;
     private SeekBar readerSeekBar;
     private TextView statusText;
     private PopupWindow settingWindow;
@@ -141,7 +139,7 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mVisible = true;
-        setContentView(R.layout.activity_reader2);
+        setContentView(R.layout.activity_reader);
         initDataBase();
         // Set up the user interaction to manually show or hide the system UI.
         // Upon interacting with UI controls, delay any scheduled hide()
@@ -200,7 +198,7 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
                 public void handleMessage(Message msg) {
                   //对话框询问
                     if(chooseDialog==null){
-                        chooseDialog=new AlertDialog.Builder(Reader2Activity.this);
+                        chooseDialog=new AlertDialog.Builder(ReaderActivity.this);
                         chooseDialog.setMessage("已经有该文件的阅读记录，是否从上次阅读的位置开始");
                         chooseDialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
@@ -285,7 +283,7 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
 
                 @Override
                 protected void onPreExecute() {
-                    getTotalWordsDialog = new ProgressDialog(Reader2Activity.this);
+                    getTotalWordsDialog = new ProgressDialog(ReaderActivity.this);
                     getTotalWordsDialog.setMessage("正在读取文件，请稍后");
                     getTotalWordsDialog.show();
                     super.onPreExecute();
@@ -297,7 +295,7 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
 
     private void initAdapter() {
         readerSeekBar.setMax(totalWords);
-        readerPagerAdapter = new ReaderPagerAdapter2(this, targetPath, totalWords, textPaint);
+        readerPagerAdapter = new ReaderPagerAdapter(this, targetPath, totalWords, textPaint);
         readerSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -390,10 +388,10 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
 
     private void initMenuView() {
         if (settingWindow == null) {
-            settingWindow = new PopupWindow(Reader2Activity.this);
+            settingWindow = new PopupWindow(ReaderActivity.this);
             settingWindow.setHeight(contentPager.getHeight() / 2);
             settingWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-            final View popuWindowsView = LayoutInflater.from(Reader2Activity.this).inflate(R.layout.readersetting_layout, null);
+            final View popuWindowsView = LayoutInflater.from(ReaderActivity.this).inflate(R.layout.readersetting_layout, null);
             //此处设计画笔菜单
             SeekBar lightAdjuster = (SeekBar) popuWindowsView.findViewById(R.id.lightAdjuster);
             CheckBox checkBox = (CheckBox) popuWindowsView.findViewById(R.id.fitSystemLightness);
@@ -612,7 +610,7 @@ public class Reader2Activity extends AppCompatActivity implements ReaderPagerAda
             contentPager.setBackground(v.getBackground());
             textPaint.setColor(((TextView) v).getPaint().getColor());
             contentPager.invalidate();
-            Reader2Activity.this.hide();
+            ReaderActivity.this.hide();
         }
     }
 }

@@ -20,7 +20,7 @@ import java.util.List;
  * Created by guans on 2017/4/4.
  */
 
-public class ReaderPagerAdapter2 implements View.OnClickListener{
+public class ReaderPagerAdapter implements View.OnClickListener{
     private ArrayList<WeakReference<View>> viewList;
     private ContentController contentController;
     private Context mContext;
@@ -46,7 +46,7 @@ public class ReaderPagerAdapter2 implements View.OnClickListener{
     public void setContentController(ContentController contentController) {
         this.contentController = contentController;
     }
-    public ReaderPagerAdapter2(Context mContext, String filePath, int totalWords, Paint paint) {
+    public ReaderPagerAdapter(Context mContext, String filePath, int totalWords, Paint paint) {
         this.mContext = mContext;
         this.filePath=filePath;
         this.mPaint = paint;

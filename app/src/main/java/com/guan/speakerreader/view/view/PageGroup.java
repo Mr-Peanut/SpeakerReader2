@@ -10,7 +10,7 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.Scroller;
 
-import com.guan.speakerreader.view.adapter.ReaderPagerAdapter2;
+import com.guan.speakerreader.view.adapter.ReaderPagerAdapter;
 import com.guan.speakerreader.view.util.ContentController;
 
 /**
@@ -35,7 +35,7 @@ public class PageGroup extends ViewGroup {
     private boolean myChanged=false;
     private ContentController mContentController;
     private int onShowPosition=0;
-    private ReaderPagerAdapter2 pagerAdapter;
+    private ReaderPagerAdapter pagerAdapter;
     private int hasScrolledX;
     private OnPageChangeListener mPageChangeListener;
     private boolean isFirstLayout=true;
@@ -214,11 +214,11 @@ public class PageGroup extends ViewGroup {
 //        }
         pagerAdapter.invalidateViews();
     }
-    public ReaderPagerAdapter2 getAdapter() {
+    public ReaderPagerAdapter getAdapter() {
         return pagerAdapter;
     }
 
-    public void setAdapter(final ReaderPagerAdapter2 pagerAdapter) {
+    public void setAdapter(final ReaderPagerAdapter pagerAdapter) {
         this.pagerAdapter = pagerAdapter;
         mContentController=pagerAdapter.getContentController();
         pagerAdapter.instantiateRightItem(this,0);
