@@ -35,6 +35,7 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
     private RecordDBUpdateReceiver recordDBUpdateReceiver;
     public static final int START_FROM_RECORD=1;
     public static final int START_FROM_FILE=0;
+    public static final int START_FROM_SCREEN_CHANGE=2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

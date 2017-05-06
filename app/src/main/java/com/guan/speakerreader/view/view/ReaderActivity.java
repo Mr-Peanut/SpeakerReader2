@@ -148,54 +148,86 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         initPath();
         initBroadCast();
         initView();
-        initPaint();
+        initPaint(savedInstanceState);
+        chooseStartType(savedInstanceState);
+    }
+
+    private void chooseStartType(Bundle savedInstanceState) {
         Intent startIntent=getIntent();
         int startIntentFlag=startIntent.getIntExtra("StartFlag",0);
-       if(startIntentFlag==WelcomeActivity.START_FROM_FILE){
-//           Log.e("startFlag","Start from file");
-           getTotalWords();
-       }else{
-//           Log.e("startFlag","Start from record");
-           totalWords=startIntent.getIntExtra("totalWords",0);
+        switch (startIntentFlag){
+            case WelcomeActivity.START_FROM_FILE:
+                getTotalWords();
+                break;
+            case WelcomeActivity.START_FROM_RECORD:
+                totalWords=startIntent.getIntExtra("totalWords",0);
 //           Log.e("totalWords",String.valueOf(totalWords));
-           targetPath=startIntent.getStringExtra("formatPath");
+                targetPath=startIntent.getStringExtra("formatPath");
 //           Log.e("targetPath",targetPath);
-           textPath=startIntent.getStringExtra("FILEPATH");
+                textPath=startIntent.getStringExtra("FILEPATH");
 //           Log.e("textPath",textPath);
-           marked=startIntent.getIntExtra("position",0);
+                marked=startIntent.getIntExtra("position",0);
 //           Log.e("marked",String.valueOf(marked));
-           if(totalWords==0||targetPath==null||!new File(targetPath).exists()){
-               //删除该条记录
-               marked=0;
-               totalWords=0;
-               getTotalWords();
-           }else {
-               initAdapter();
-           }
-       }
+                if(totalWords==0||targetPath==null||!new File(targetPath).exists()){
+                    //删除该条记录
+                    marked=0;
+                    totalWords=0;
+                    getTotalWords();
+                }else {
+                    initAdapter();
+                }
+                break;
+            case WelcomeActivity.START_FROM_SCREEN_CHANGE:
+                totalWords=savedInstanceState.getInt("TotalWords",0);
+                targetPath=savedInstanceState.getString("TargetPath");
+                marked=savedInstanceState.getInt("ReadMarked",-1);
+                if(totalWords==0||targetPath==null||marked==-1){
+                    getTotalWords();
+                }else {
+                    initAdapter();
+                }
+                break;
+
+
+        }
+
     }
+
     private void initDataBase() {
         if (recordDatabaseHelper == null) {
             recordDatabaseHelper = new RecordDatabaseHelper(this, "recordDatabase", null, 1);
         }
     }
 
-    private void initPaint() {
+    private void initPaint(Bundle savedInstanceState) {
         if (textPaint == null) {
             textPaint = new Paint();
+        }
             //默认值
-            int textSize=getSettingFromSharedPreferences("TextSize");
-            if(textSize==-100)
+            int textSize=0;
+            if(savedInstanceState!=null)
+            textSize=savedInstanceState.getInt("TextSize",0);
+            if (textSize==0)
+            textSize=getSettingFromSharedPreferences("TextSize");
+            if(textSize==0)
                textPaint.setTextSize(55.0f);
             else
                 textPaint.setTextSize(textSize);
-            int textColor=getSettingFromSharedPreferences("TextColor");
-            if(textSize==-100)
+            int textColor=0;
+            if(savedInstanceState!=null)
+            textColor=savedInstanceState.getInt("TextColor",0);
+            if(textColor==0)
+            textColor=getSettingFromSharedPreferences("TextColor");
+            if(textSize==0)
                textPaint.setColor(Color.BLACK);
             else
+//                Log.e("textColor",String.valueOf(textColor));
+//                Log.e("Color.BLACK",String.valueOf(Color.BLACK));
+//                Log.e("White",String.valueOf(Color.WHITE));
                 textPaint.setColor(textColor);
+//            textPaint.setColor(Color.BLACK);
+
             textPaint.setAntiAlias(true);
-        }
     }
 
     private void getTotalWords() {
@@ -543,8 +575,19 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
 //        recordDB.update(ReadRecordAdapter.TABLE_NAME,values,"filepath=?",new String[]{textPath});
 //        recordDB.close();
         saveSettingInSharedPreferences("TextColor",textPaint.getColor());
+        Log.e("textcolortosave",String.valueOf(textPaint.getColor()));
         saveSettingInSharedPreferences("TextSize",textSize);
         super.onDestroy();
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("TextColor",textPaint.getColor());
+        outState.putInt("TextSize",textSize);
+        outState.putInt("ReadMarked",readerPagerAdapter.getContentController().getMarked());
+        outState.putInt("TotalWords",totalWords);
+        outState.putString("TargetPath",targetPath);
+        getIntent().putExtra("StartFlag",WelcomeActivity.START_FROM_SCREEN_CHANGE);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -662,7 +705,10 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             ((TextView)(settingWindow.getContentView().findViewById(R.id.textSizeShow))).setText(String.valueOf(textSize));
         }
     }
-    private boolean saveSettingInSharedPreferences(String type,int value){
+
+
+
+    private boolean saveSettingInSharedPreferences(String type, int value){
         SharedPreferences preferences=getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor=preferences.edit();
         editor.putInt(type,value);
@@ -670,7 +716,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     }
     private int getSettingFromSharedPreferences(String type){
         SharedPreferences preferences=getPreferences(Context.MODE_PRIVATE);
-        return preferences.getInt(type,-100);
-
+        return preferences.getInt(type,0);
     }
+
 }
