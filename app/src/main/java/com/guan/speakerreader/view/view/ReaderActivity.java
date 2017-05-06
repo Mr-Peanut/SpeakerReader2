@@ -705,9 +705,6 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             ((TextView)(settingWindow.getContentView().findViewById(R.id.textSizeShow))).setText(String.valueOf(textSize));
         }
     }
-
-
-
     private boolean saveSettingInSharedPreferences(String type, int value){
         SharedPreferences preferences=getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor=preferences.edit();
