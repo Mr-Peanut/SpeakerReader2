@@ -1,11 +1,12 @@
-package com.guan.speakerreader.view.util;
+package com.guan.speakerreader.util;
 
 import android.graphics.Paint;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
-import com.guan.speakerreader.view.adapter.ReaderPagerAdapter;
-import com.guan.speakerreader.view.view.PageGroup;
+
+import com.guan.speakerreader.adapter.ReaderPagerAdapter;
+import com.guan.speakerreader.view.PageGroup;
 
 /**
  * Created by guans on 2017/4/3.
@@ -29,34 +30,39 @@ public class ContentController {
     private float showWidth;
     private ReaderPagerAdapter mAdapter2;
     //每次预加载的最大字数暂时设定为3000，后续可以根据情况调整
-    private int takenWords=3000;
-    public SparseIntArray getPageStart() {
-        return pageStart;
-    }
-    public SparseIntArray getPageEnd() {
-        return pageEnd;
-    }
-    public int getTotalWords() {
-        return totalWords;
-    }
+    private int takenWords = 3000;
+
     public ContentController(String filePath, int totalWords, ReaderPagerAdapter readerPagerAdapter, Paint mPaint) {
         this.filePath = filePath;
         this.totalWords = totalWords;
         Log.e("totalWordscons", String.valueOf(totalWords));
         this.mAdapter2 = readerPagerAdapter;
-        this.mPaint=mPaint;
+        this.mPaint = mPaint;
         pageContent = new SparseArray<>();
         pageStart = new SparseIntArray();
         pageEnd = new SparseIntArray();
         measurePreUtil = new MeasurePreUtil(mPaint, showHeight, showWidth);
         pagesArrangeUtil = new PagesArrangeUtil(filePath, mPaint, showWidth, showHeight);
     }
-    public void setOnShowStart(int onShowStart) {
-        this.onShowStart = onShowStart;
+
+    public SparseIntArray getPageStart() {
+        return pageStart;
+    }
+
+    public SparseIntArray getPageEnd() {
+        return pageEnd;
+    }
+
+    public int getTotalWords() {
+        return totalWords;
     }
 
     public int getOnShowStart() {
         return onShowStart;
+    }
+
+    public void setOnShowStart(int onShowStart) {
+        this.onShowStart = onShowStart;
     }
 
     public Paint getPaint() {
@@ -98,17 +104,21 @@ public class ContentController {
             pagesArrangeUtil.setShowWidth(showWidth);
         }
         //当尺寸没有具体变化时不要清理
-       reMeasure();
+        reMeasure();
     }
 
     public int getMarked() {
         return marked;
     }
 
-    private void fillContentList(int position){
+    public void setMarked(int marked) {
+        this.marked = marked;
+    }
+
+    private void fillContentList(int position) {
         try {
             //marked 的位置，当position为0时，marked=0，当position为其他数时默认为进度条拖动的位置
-            String content = TxtReader.readerFromText(filePath, marked, takenWords);
+            String content = TxtTaker.readerFromText(filePath, marked, takenWords);
             onShowStart = marked;
             content = measureContent(content);
 //            Log.e("contentList",content);
@@ -123,7 +133,7 @@ public class ContentController {
 //                    //标记右边还有
 //                    Log.e("getContent position: ", String.valueOf(position + 1));
 //                }
-            if (onShowEnd!=-1&&onShowEnd < totalWords-1) {
+            if (onShowEnd != -1 && onShowEnd < totalWords - 1) {
                 getContentNextShow(position);
             }
             if (onShowStart > 0)
@@ -132,26 +142,28 @@ public class ContentController {
             e.printStackTrace();
         }
     }
+
     //交给view调用
     public String getContent(int position) {
 //        onShowPage=position;
-        if (pageContent.indexOfKey(position)< 0) {
+        if (pageContent.indexOfKey(position) < 0) {
             fillContentList(position);
         }
-            return pageContent.get(position);
+        return pageContent.get(position);
     }
+
     private void getContentNextShow(int position) {
         if (pageContent.indexOfKey(position + 1) < 0) {
             if (pageStart.indexOfKey(position + 1) >= 0 && pageEnd.indexOfKey(position + 1) >= 0) {
                 try {
-                    pageContent.put(position + 1, TxtReader.readerFromText(filePath, pageStart.get(position + 1), pageEnd.get(position + 1) - pageStart.get(position + 1) + 1));
+                    pageContent.put(position + 1, TxtTaker.readerFromText(filePath, pageStart.get(position + 1), pageEnd.get(position + 1) - pageStart.get(position + 1) + 1));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else {
                 //对content start和end进行赋值修
                 try {
-                    String content = TxtReader.readerFromText(filePath, onShowEnd + 1, takenWords);
+                    String content = TxtTaker.readerFromText(filePath, onShowEnd + 1, takenWords);
                     Log.e("contentBeforeMeasure", String.valueOf(content.length()));
                     content = measureContent(content);
                     Log.e("contentAfterMeasure", String.valueOf(content.length()));
@@ -166,15 +178,16 @@ public class ContentController {
                     e.printStackTrace();
                 }
             }
-                pageContent.delete(position - 2);
+            pageContent.delete(position - 2);
         }
     }
+
     private void getContentPreShow(int position) {
-        if (pageContent.indexOfKey(position - 1) < 0 ) {
+        if (pageContent.indexOfKey(position - 1) < 0) {
             //这一段也有可以优化当已经测量过直接取用测量的
             if (pageStart.indexOfKey(position - 1) >= 0 && pageEnd.indexOfKey(position - 1) >= 0) {
                 try {
-                    pageContent.put(position - 1, TxtReader.readerFromText(filePath, pageStart.get(position - 1), pageEnd.get(position - 1) - pageStart.get(position - 1) + 1));
+                    pageContent.put(position - 1, TxtTaker.readerFromText(filePath, pageStart.get(position - 1), pageEnd.get(position - 1) - pageStart.get(position - 1) + 1));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -182,15 +195,15 @@ public class ContentController {
                 try {
                     String content;
                     if (pageStart.indexOfKey(position) >= 0) {
-                        content = TxtReader.readerFromTextPre(filePath, pageStart.get(position) - takenWords, takenWords);
+                        content = TxtTaker.readerFromTextPre(filePath, pageStart.get(position) - takenWords, takenWords);
                     } else {
-                        content = TxtReader.readerFromTextPre(filePath, onShowStart - takenWords, takenWords);
+                        content = TxtTaker.readerFromTextPre(filePath, onShowStart - takenWords, takenWords);
                     }
                     content = measurePreContent(content);
                     pageContent.put(position - 1, content);
                     pageStart.put(position - 1, onShowStart - content.length());
                     pageEnd.put(position - 1, onShowStart - 1);
-                    Log.e("endpre"+String.valueOf(position-1)+"page",String.valueOf(onShowStart - 1));
+                    Log.e("endpre" + String.valueOf(position - 1) + "page", String.valueOf(onShowStart - 1));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -198,6 +211,7 @@ public class ContentController {
         }
         pageContent.delete(position + 2);
     }
+
     private String measureContent(String content) {
         //通过功能类measure util进行测量计算
 //        Log.e("pagesArrangeUtil",String.valueOf(pagesArrangeUtil==null));
@@ -208,14 +222,15 @@ public class ContentController {
         //通过功能类measure util进行测量
         return measurePreUtil.prePageContentLength(content);
     }
+
     public void notifyPageChanged(int position) {
-        onShowPage=position;
+        onShowPage = position;
         if (pageStart.indexOfKey(position) >= 0 && pageEnd.indexOfKey(position) >= 0) {
             onShowStart = pageStart.get(position);
             onShowEnd = pageEnd.get(position);
-            if(onShowEnd<totalWords-1&&onShowEnd!=-1)
-            getContentNextShow(position);
-            if(onShowStart>0)
+            if (onShowEnd < totalWords - 1 && onShowEnd != -1)
+                getContentNextShow(position);
+            if (onShowStart > 0)
                 getContentPreShow(position);
         } else {
             fillContentList(position);
@@ -225,37 +240,35 @@ public class ContentController {
         //把更新后的位置通知给seekbar可以通过handler实现或者广播，或者一个接口
     }
 
-    public void setMarked(int marked) {
-        this.marked = marked;
-    }
-
     //下面方法设置为从当中某一页打开
     public void setContentFromPage(int pageNumberOnShow, int marked) {
         setMarked(marked);
-        if(getShowWidth()==0)
+        if (getShowWidth() == 0)
             return;
-        onShowPage=pageNumberOnShow;
+        onShowPage = pageNumberOnShow;
         reMeasure();
 //        notifyPageChanged(pageNumberOnShow);
     }
+
     public void reMeasure() {
         pageContent.clear();
         pageStart.clear();
         pageEnd.clear();
-        Log.e("remeasure","remeasure");
+        Log.e("remeasure", "remeasure");
         fillContentList(onShowPage);
-        Log.e("onShowEndRemeasur",String.valueOf(onShowEnd));
-        Log.e("totalwords",String.valueOf(totalWords));
-        if(onShowEnd>=totalWords-1&&mPageGroup!=null){
+        Log.e("onShowEndRemeasur", String.valueOf(onShowEnd));
+        Log.e("totalwords", String.valueOf(totalWords));
+        if (onShowEnd >= totalWords - 1 && mPageGroup != null) {
             //删除最后一个view
-            Log.e("detory","detoryRight");
+            Log.e("detory", "detoryRight");
             mPageGroup.destroyRight();
         }
-        if(onShowStart==0&&mPageGroup!=null){
-            Log.e("detory","detoryLeft");
+        if (onShowStart == 0 && mPageGroup != null) {
+            Log.e("detory", "detoryLeft");
             mPageGroup.destroyLeft();
         }
     }
+
     public void setPageGroup(PageGroup mPageGroup) {
         this.mPageGroup = mPageGroup;
     }

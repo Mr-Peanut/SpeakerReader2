@@ -1,4 +1,4 @@
-package com.guan.speakerreader.view.adapter;
+package com.guan.speakerreader.adapter;
 
 import android.content.Context;
 import android.os.Build;
@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.guan.speakerreader.R;
-import com.guan.speakerreader.view.util.PathUtil;
+import com.guan.speakerreader.util.PathUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class ChooseFileAdapter extends RecyclerView.Adapter<ChooseFileAdapter.Fi
 
     @Override
     public FileHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View fileItemView = LayoutInflater.from(mContext).inflate(R.layout.filelist_item, parent, false);
+        View fileItemView = LayoutInflater.from(mContext).inflate(R.layout.filelist_item_layout, parent, false);
         return new FileHolder(fileItemView);
     }
 
@@ -137,9 +137,9 @@ public class ChooseFileAdapter extends RecyclerView.Adapter<ChooseFileAdapter.Fi
 
         public FileHolder(View itemView) {
             super(itemView);
-            fileItem = (LinearLayout) itemView.findViewById(R.id.fileItem);
-            fileName = (TextView) itemView.findViewById(R.id.fileItemName);
-            fileIcon = (ImageView) itemView.findViewById(R.id.fileItemIcon);
+            fileItem = (LinearLayout) itemView.findViewById(R.id.file_item);
+            fileName = (TextView) itemView.findViewById(R.id.file_item_name);
+            fileIcon = (ImageView) itemView.findViewById(R.id.file_item_icon);
         }
     }
 }

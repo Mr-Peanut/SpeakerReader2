@@ -1,4 +1,4 @@
-package com.guan.speakerreader.view.adapter;
+package com.guan.speakerreader.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -77,7 +77,7 @@ public class ReadRecordAdapter extends RecyclerView.Adapter<ReadRecordAdapter.MH
 
     @Override
     public MHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new MHolder(LayoutInflater.from(context).inflate(R.layout.readrecorditem, parent, false));
+        return new MHolder(LayoutInflater.from(context).inflate(R.layout.readrecorditem_view_layout, parent, false));
     }
 
     @Override

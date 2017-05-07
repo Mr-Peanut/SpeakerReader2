@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fileItem"
+    android:id="@+id/file_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
     <ImageView
-        android:id="@+id/fileItemIcon"
+        android:id="@+id/file_item_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <TextView
-        android:id="@+id/fileItemName"
+        android:id="@+id/file_item_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

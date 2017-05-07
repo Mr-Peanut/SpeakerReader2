@@ -1,4 +1,4 @@
-package com.guan.speakerreader.view.util;
+package com.guan.speakerreader.util;
 
 import android.graphics.Paint;
 import android.util.Log;
@@ -46,16 +46,16 @@ public class MeasurePreUtil {
         float lineHeight = mPaint.descent() - mPaint.ascent();
         if (lineHeight > showHeight)
             return null;
-        int pageLineContain = (int)(Math.floor(showHeight / lineHeight));
+        int pageLineContain = (int) (Math.floor(showHeight / lineHeight));
         int wordCount = 0;
         String[] paragraphs = original.split("\n");
         //从后往前一段一段的遍历
         MeasureInfo measureInfo;
-        isLastEnter=original.charAt(original.length()-1)=='\n';
-        if(isLastEnter){
-            measureInfo = findRightLine(paragraphs, paragraphs.length - 1, pageLineContain,true,true);
-        }else {
-            measureInfo = findRightLine(paragraphs, paragraphs.length - 1, pageLineContain,true,false);
+        isLastEnter = original.charAt(original.length() - 1) == '\n';
+        if (isLastEnter) {
+            measureInfo = findRightLine(paragraphs, paragraphs.length - 1, pageLineContain, true, true);
+        } else {
+            measureInfo = findRightLine(paragraphs, paragraphs.length - 1, pageLineContain, true, false);
         }
 
         //从最后一段开始往前一直到记录的那段
@@ -63,9 +63,9 @@ public class MeasurePreUtil {
             //判断是不是选定的段，是的话要加到指定行，不是的话加全段
             if (measureInfo.paragraphNumber == paragraphs.length - i) {
                 ArrayList<Integer> measureLines;
-                if(i==1&&isLastEnter){
-                    measureLines=measureLastParagraph(paragraphs[measureInfo.paragraphNumber]);
-                }else {
+                if (i == 1 && isLastEnter) {
+                    measureLines = measureLastParagraph(paragraphs[measureInfo.paragraphNumber]);
+                } else {
                     measureLines = measureParagraph(paragraphs[measureInfo.paragraphNumber]);
                 }
                 int size = measureLines.size();
@@ -75,16 +75,17 @@ public class MeasurePreUtil {
                 }
             } else {
                 //回车键,但是如果最后一个字符刚好是回车键呢
-                if(i==1&&!isLastEnter){
-                    wordCount+=paragraphs[paragraphs.length-i].length();
-                }else {
-                    wordCount += paragraphs[paragraphs.length - i].length()+1;
+                if (i == 1 && !isLastEnter) {
+                    wordCount += paragraphs[paragraphs.length - i].length();
+                } else {
+                    wordCount += paragraphs[paragraphs.length - i].length() + 1;
                     //
                 }
             }
         }
         return original.substring(original.length() - wordCount);
     }
+
     //对一段文字进行排版测量，记录每行的文字数
     //'对于一段当中只有一个回车键此处还要完善判断
     private ArrayList<Integer> measureParagraph(String paragraph) {
@@ -98,7 +99,7 @@ public class MeasurePreUtil {
 //            Log.e("空段", "空段");
 //            return lineRecord;
 //        }
-        paragraph=paragraph+"\n";
+        paragraph = paragraph + "\n";
         int lineWordCount = 0;
         float totalWidth = 0;
         int wordCount = 0;
@@ -110,8 +111,8 @@ public class MeasurePreUtil {
             while (totalWidth < showWidth && wordCount < paragraph.length()) {
                 buffer[0] = paragraph.charAt(wordCount);
                 wordSpace = mPaint.measureText(buffer, 0, 1);
-                if (totalWidth + wordSpace > showWidth){
-                    if(buffer[0]=='\n'){
+                if (totalWidth + wordSpace > showWidth) {
+                    if (buffer[0] == '\n') {
                         wordCount++;
                         lineWordCount++;
                         break;
@@ -132,6 +133,7 @@ public class MeasurePreUtil {
         }
         return lineRecord;
     }
+
     private ArrayList<Integer> measureLastParagraph(String paragraph) {
         if (paragraph == null) {
             throw new IllegalArgumentException("Paragraph cannot be null");
@@ -154,8 +156,8 @@ public class MeasurePreUtil {
             while (totalWidth < showWidth && wordCount < paragraph.length()) {
                 buffer[0] = paragraph.charAt(wordCount);
                 wordSpace = mPaint.measureText(buffer, 0, 1);
-                if (totalWidth + wordSpace > showWidth){
-                    if(buffer[0]=='\n'){
+                if (totalWidth + wordSpace > showWidth) {
+                    if (buffer[0] == '\n') {
                         wordCount++;
                         lineWordCount++;
                         break;
@@ -176,29 +178,32 @@ public class MeasurePreUtil {
         }
         return lineRecord;
     }
+
     /*
       缺少总字数不足判断
       缺少本行为空或者只有一个回车键的判断
       这个方法可以进一步优化，把最后一段和前面的拆开
      */
-    private MeasureInfo findRightLine(String[] paragraphs, int paragraphNumber, int containLines,boolean isLastPara,boolean isLastEnter) {
-        ArrayList<Integer> measureLines ;
-        if(isLastPara&&isLastEnter){
-                measureLines= measureParagraph(paragraphs[paragraphNumber]);
-        }else {
-            measureLines= measureLastParagraph(paragraphs[paragraphNumber]);
+    private MeasureInfo findRightLine(String[] paragraphs, int paragraphNumber, int containLines, boolean isLastPara, boolean isLastEnter) {
+        ArrayList<Integer> measureLines;
+        if (isLastPara && isLastEnter) {
+            measureLines = measureParagraph(paragraphs[paragraphNumber]);
+        } else {
+            measureLines = measureLastParagraph(paragraphs[paragraphNumber]);
         }
         int leftLines = containLines - measureLines.size();
         //字数不够
         if (leftLines <= 0 || paragraphNumber == 0) {
-            return new MeasureInfo(paragraphNumber, measureLines.size() - containLines>=0?measureLines.size() - containLines:0);
+            return new MeasureInfo(paragraphNumber, measureLines.size() - containLines >= 0 ? measureLines.size() - containLines : 0);
         } else {
-            return findRightLine(paragraphs, paragraphNumber - 1, leftLines,false,false);
+            return findRightLine(paragraphs, paragraphNumber - 1, leftLines, false, false);
         }
     }
+
     private class MeasureInfo {
         int paragraphNumber;
         int lineMarked;
+
         MeasureInfo(int paragraphNumber, int lineMarked) {
             this.paragraphNumber = paragraphNumber;
             this.lineMarked = lineMarked;

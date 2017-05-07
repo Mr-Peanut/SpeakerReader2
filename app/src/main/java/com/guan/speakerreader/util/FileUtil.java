@@ -1,4 +1,4 @@
-package com.guan.speakerreader.view.util;
+package com.guan.speakerreader.util;
 
 import android.content.Context;
 import android.os.Build;

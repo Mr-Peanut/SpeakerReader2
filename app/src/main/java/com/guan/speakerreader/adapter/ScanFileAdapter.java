@@ -1,4 +1,4 @@
-package com.guan.speakerreader.view.adapter;
+package com.guan.speakerreader.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,11 +14,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.guan.speakerreader.R;
-import com.guan.speakerreader.view.util.FileUtil;
+import com.guan.speakerreader.util.FileUtil;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by guans on 2017/3/11.
@@ -31,12 +30,14 @@ public class ScanFileAdapter extends RecyclerView.Adapter<ScanFileAdapter.FileHo
     private ProcessBarController mProcessController;
     private boolean taskOn = false;
     private FileItemOnClickedListener mFileItemOnClickedListener;
+
     public ScanFileAdapter(Context mContext, ProcessBarController processBarController) {
         this.mContext = mContext;
         setMProcessController(processBarController);
         files = new ArrayList<>();
         getFiles();
     }
+
     public void setFiles(ArrayList<File> files) {
         this.files = files;
     }
@@ -61,7 +62,8 @@ public class ScanFileAdapter extends RecyclerView.Adapter<ScanFileAdapter.FileHo
     public void setFileItemOnClickedListener(FileItemOnClickedListener mFileItemOnClickedListener) {
         this.mFileItemOnClickedListener = mFileItemOnClickedListener;
     }
-    public ArrayList<File> getFlies(){
+
+    public ArrayList<File> getFlies() {
         return files;
     }
 
@@ -83,12 +85,13 @@ public class ScanFileAdapter extends RecyclerView.Adapter<ScanFileAdapter.FileHo
                 protected void onPostExecute(Void aVoid) {
                     super.onPostExecute(aVoid);
                     setTaskOn(false);
-                    mProcessController.dissProcessBar();
+                    mProcessController.disMissProcessBar();
                     ScanFileAdapter.this.notifyDataSetChanged();
                     if (files.isEmpty()) {
                         mContext.sendBroadcast(new Intent("NO TXT FILE"));
                     }
                 }
+
                 @Override
                 protected void onProgressUpdate(File... values) {
                     super.onProgressUpdate(values);
@@ -125,7 +128,7 @@ public class ScanFileAdapter extends RecyclerView.Adapter<ScanFileAdapter.FileHo
                     super.onCancelled();
                     setTaskOn(false);
                     ScanFileAdapter.this.notifyDataSetChanged();
-                    mProcessController.dissProcessBar();
+                    mProcessController.disMissProcessBar();
                 }
 
             };
@@ -135,7 +138,7 @@ public class ScanFileAdapter extends RecyclerView.Adapter<ScanFileAdapter.FileHo
 
     @Override
     public FileHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View fileItemView = LayoutInflater.from(mContext).inflate(R.layout.filelist_item, parent, false);
+        View fileItemView = LayoutInflater.from(mContext).inflate(R.layout.filelist_item_layout, parent, false);
         return new FileHolder(fileItemView);
     }
 
@@ -146,7 +149,7 @@ public class ScanFileAdapter extends RecyclerView.Adapter<ScanFileAdapter.FileHo
         holder.fileItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               cancelScanTask();
+                cancelScanTask();
                 mFileItemOnClickedListener.onItemClicked(files.get(position));
             }
         });
@@ -157,15 +160,17 @@ public class ScanFileAdapter extends RecyclerView.Adapter<ScanFileAdapter.FileHo
         return files.size();
     }
 
+    public void cancelScanTask() {
+        if (scanFileTask != null && isTaskOn()) {
+            scanFileTask.cancel(true);
+            taskOn = false;
+        }
+    }
+
     public interface ProcessBarController {
         void showProcessBar();
-        void dissProcessBar();
-    }
-    public void cancelScanTask(){
-        if(scanFileTask!=null&&isTaskOn()){
-            scanFileTask.cancel(true);
-            taskOn=false;
-        }
+
+        void disMissProcessBar();
     }
 
     public interface FileItemOnClickedListener {
@@ -177,11 +182,11 @@ public class ScanFileAdapter extends RecyclerView.Adapter<ScanFileAdapter.FileHo
         TextView fileName;
         ImageView fileIcon;
 
-        public FileHolder(View itemView) {
+        FileHolder(View itemView) {
             super(itemView);
-            fileItem = (LinearLayout) itemView.findViewById(R.id.fileItem);
-            fileName = (TextView) itemView.findViewById(R.id.fileItemName);
-            fileIcon = (ImageView) itemView.findViewById(R.id.fileItemIcon);
+            fileItem = (LinearLayout) itemView.findViewById(R.id.file_item);
+            fileName = (TextView) itemView.findViewById(R.id.file_item_name);
+            fileIcon = (ImageView) itemView.findViewById(R.id.file_item_icon);
         }
     }
 }

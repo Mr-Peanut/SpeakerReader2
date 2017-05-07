@@ -1,4 +1,4 @@
-package com.guan.speakerreader.view.util;
+package com.guan.speakerreader.util;
 
 import java.io.Serializable;
 import java.util.List;

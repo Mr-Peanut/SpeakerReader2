@@ -1,4 +1,4 @@
-package com.guan.speakerreader.view.view;
+package com.guan.speakerreader.view;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +10,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.guan.speakerreader.view.util.ContentController;
+import com.guan.speakerreader.util.ContentController;
+
 /**
  * Created by guans on 2017/3/18.
  */
@@ -24,6 +25,7 @@ public class TextReaderView extends View {
     private StringBuffer stringBuffer;
     private int showCount;
     private ContentController mContentController;
+
     public TextReaderView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
@@ -45,14 +47,14 @@ public class TextReaderView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.e("onDraw:","第"+position+"页更新了");
-        if( mContentController.getShowHeight()!=getMeasuredHeight() - getPaddingTop() - getPaddingBottom()){
+        Log.e("onDraw:", "第" + position + "页更新了");
+        if (mContentController.getShowHeight() != getMeasuredHeight() - getPaddingTop() - getPaddingBottom()) {
             mContentController.setShowHeight(getMeasuredHeight() - getPaddingTop() - getPaddingBottom());
-            mContentController.setShowWidth( getMeasuredWidth() - Math.max(getPaddingLeft(), getPaddingStart()) - Math.max(getPaddingEnd(), getPaddingRight()));
+            mContentController.setShowWidth(getMeasuredWidth() - Math.max(getPaddingLeft(), getPaddingStart()) - Math.max(getPaddingEnd(), getPaddingRight()));
             mContentController.initUtils();
         }
-      mContent=mContentController.getContent(position);
-        Log.e("ContentLength",mContent);
+        mContent = mContentController.getContent(position);
+        Log.e("ContentLength", mContent);
 //        if(position==0){
 //            mContentController.notifyPageChanged(position);
 //        }
@@ -62,11 +64,12 @@ public class TextReaderView extends View {
             drawFinishedIntent.putExtra("position", position);
             mContext.sendBroadcast(drawFinishedIntent);
         }
-        if(mContent==null){
-            canvas.drawText("出错啦",0,getMeasuredHeight()/2,mPaint);
+        if (mContent == null) {
+            canvas.drawText("出错啦", 0, getMeasuredHeight() / 2, mPaint);
         }
         super.onDraw(canvas);
     }
+
     private void setContent(final String content, Canvas canvas) {
         char[] buffer = new char[1];
         float totalLineWidth = 0;
@@ -82,7 +85,7 @@ public class TextReaderView extends View {
         while (totalRowHeight + lineHeight <= viewHeight && wordCount <= content.length() - 1) {
             while (totalLineWidth < viewWidth && wordCount <= content.length() - 1) {
                 buffer[0] = content.charAt(wordCount);
-                 wordWith = paint.measureText(buffer, 0, 1);
+                wordWith = paint.measureText(buffer, 0, 1);
                 //此处可以优化，当最后一个字符是回车键的时候不管空间够不够，都加上，但是不打印回车键，即wordcount++，但是builder不添加
                 if (totalLineWidth + wordWith > viewWidth) {
                     if (buffer[0] == '\n') {
@@ -133,7 +136,7 @@ public class TextReaderView extends View {
     @Override
     protected void onDetachedFromWindow() {
         mContent = null;
-        position=0;
+        position = 0;
         super.onDetachedFromWindow();
     }
 

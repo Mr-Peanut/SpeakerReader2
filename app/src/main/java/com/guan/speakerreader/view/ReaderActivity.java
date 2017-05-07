@@ -1,4 +1,4 @@
-package com.guan.speakerreader.view.view;
+package com.guan.speakerreader.view;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -38,38 +38,15 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.guan.speakerreader.R;
-import com.guan.speakerreader.view.adapter.ReadRecordAdapter;
-import com.guan.speakerreader.view.adapter.ReaderPagerAdapter;
-import com.guan.speakerreader.view.database.RecordDatabaseHelper;
-import com.guan.speakerreader.view.util.TxtReader;
+import com.guan.speakerreader.adapter.ReadRecordAdapter;
+import com.guan.speakerreader.adapter.ReaderPagerAdapter;
+import com.guan.speakerreader.database.RecordDatabaseHelper;
+import com.guan.speakerreader.util.TxtTaker;
 
 import java.io.File;
 import java.io.IOException;
 
 public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdapter.InnerViewOnClickedListener, ReaderPagerAdapter.UpdateSeekBarController {
-    private PageGroup contentPager;
-    private String textPath;
-    private ShowFinishedReceiver showFinishedReceiver;
-    private int totalWords;
-    private ProgressDialog getTotalWordsDialog;
-    private ReaderPagerAdapter readerPagerAdapter;
-    private SeekBar readerSeekBar;
-    private TextView statusText;
-    private PopupWindow settingWindow;
-    private Paint textPaint;
-    private String targetPath;
-    private String storageCachePath;
-    private View rootView;
-    private int textSize;
-    private int marked;
-    private RecordDatabaseHelper recordDatabaseHelper;
-    //
-    private boolean notChosen =true;
-    private boolean fromRecord=true;
-    private Handler chooseHandler;
-    private Toolbar toolbar;
-    private AlertDialog.Builder chooseDialog;
-    //    private  PopupWindow settingWindow;
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -86,6 +63,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
      */
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
+    private PageGroup contentPager;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -103,6 +81,28 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             );
         }
     };
+    private String textPath;
+    private ShowFinishedReceiver showFinishedReceiver;
+    private int totalWords;
+    private ProgressDialog getTotalWordsDialog;
+    private ReaderPagerAdapter readerPagerAdapter;
+    private SeekBar readerSeekBar;
+    private TextView statusText;
+    private PopupWindow settingWindow;
+    private Paint textPaint;
+    private String targetPath;
+    private String storageCachePath;
+    private View rootView;
+    private int textSize;
+    private int marked;
+    //    private  PopupWindow settingWindow;
+    private RecordDatabaseHelper recordDatabaseHelper;
+    //
+    private boolean notChosen = true;
+    private boolean fromRecord = true;
+    private Handler chooseHandler;
+    private Toolbar toolbar;
+    private AlertDialog.Builder chooseDialog;
     private View mControlsView;
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
@@ -142,7 +142,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mVisible = true;
-        setContentView(R.layout.activity_reader);
+        setContentView(R.layout.reader_activity_layout);
         initDataBase();
         // Set up the user interaction to manually show or hide the system UI.
         // Upon interacting with UI controls, delay any scheduled hide()
@@ -156,37 +156,37 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     }
 
     private void chooseStartType(Bundle savedInstanceState) {
-        Intent startIntent=getIntent();
-        int startIntentFlag=startIntent.getIntExtra("StartFlag",0);
-        switch (startIntentFlag){
+        Intent startIntent = getIntent();
+        int startIntentFlag = startIntent.getIntExtra("StartFlag", 0);
+        switch (startIntentFlag) {
             case WelcomeActivity.START_FROM_FILE:
                 getTotalWords();
                 break;
             case WelcomeActivity.START_FROM_RECORD:
-                totalWords=startIntent.getIntExtra("totalWords",0);
+                totalWords = startIntent.getIntExtra("totalWords", 0);
 //           Log.e("totalWords",String.valueOf(totalWords));
-                targetPath=startIntent.getStringExtra("formatPath");
+                targetPath = startIntent.getStringExtra("formatPath");
 //           Log.e("targetPath",targetPath);
-                textPath=startIntent.getStringExtra("FILEPATH");
+                textPath = startIntent.getStringExtra("FILEPATH");
 //           Log.e("textPath",textPath);
-                marked=startIntent.getIntExtra("position",0);
+                marked = startIntent.getIntExtra("position", 0);
 //           Log.e("marked",String.valueOf(marked));
-                if(totalWords==0||targetPath==null||!new File(targetPath).exists()){
+                if (totalWords == 0 || targetPath == null || !new File(targetPath).exists()) {
                     //删除该条记录
-                    marked=0;
-                    totalWords=0;
+                    marked = 0;
+                    totalWords = 0;
                     getTotalWords();
-                }else {
+                } else {
                     initAdapter();
                 }
                 break;
             case WelcomeActivity.START_FROM_SCREEN_CHANGE:
-                totalWords=savedInstanceState.getInt("TotalWords",0);
-                targetPath=savedInstanceState.getString("TargetPath");
-                marked=savedInstanceState.getInt("ReadMarked",-1);
-                if(totalWords==0||targetPath==null||marked==-1){
+                totalWords = savedInstanceState.getInt("TotalWords", 0);
+                targetPath = savedInstanceState.getString("TargetPath");
+                marked = savedInstanceState.getInt("ReadMarked", -1);
+                if (totalWords == 0 || targetPath == null || marked == -1) {
                     getTotalWords();
-                }else {
+                } else {
                     initAdapter();
                 }
                 break;
@@ -206,55 +206,55 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         if (textPaint == null) {
             textPaint = new Paint();
         }
-            //默认值
-            int textSize=0;
-            if(savedInstanceState!=null)
-            textSize=savedInstanceState.getInt("TextSize",0);
-            if (textSize==0)
-            textSize=getSettingFromSharedPreferences("TextSize");
-            if(textSize==0)
-               textPaint.setTextSize(55.0f);
-            else
-                textPaint.setTextSize(textSize);
-            int textColor=0;
-            if(savedInstanceState!=null)
-            textColor=savedInstanceState.getInt("TextColor",0);
-            if(textColor==0)
-            textColor=getSettingFromSharedPreferences("TextColor");
-            if(textSize==0)
-               textPaint.setColor(Color.BLACK);
-            else
+        //默认值
+        int textSize = 0;
+        if (savedInstanceState != null)
+            textSize = savedInstanceState.getInt("TextSize", 0);
+        if (textSize == 0)
+            textSize = getSettingFromSharedPreferences("TextSize");
+        if (textSize == 0)
+            textPaint.setTextSize(55.0f);
+        else
+            textPaint.setTextSize(textSize);
+        int textColor = 0;
+        if (savedInstanceState != null)
+            textColor = savedInstanceState.getInt("TextColor", 0);
+        if (textColor == 0)
+            textColor = getSettingFromSharedPreferences("TextColor");
+        if (textSize == 0)
+            textPaint.setColor(Color.BLACK);
+        else
 //                Log.e("textColor",String.valueOf(textColor));
 //                Log.e("Color.BLACK",String.valueOf(Color.BLACK));
 //                Log.e("White",String.valueOf(Color.WHITE));
-                textPaint.setColor(textColor);
+            textPaint.setColor(textColor);
 //            textPaint.setColor(Color.BLACK);
 
-            textPaint.setAntiAlias(true);
+        textPaint.setAntiAlias(true);
     }
 
     private void getTotalWords() {
         //第一次阅读时执行，记录中要是有的话从记录中读取数据，不走这条逻辑
         if (totalWords == 0) {
-            chooseHandler=new Handler(){
+            chooseHandler = new Handler() {
                 @Override
                 public void handleMessage(Message msg) {
-                  //对话框询问
-                    if(chooseDialog==null){
-                        chooseDialog=new AlertDialog.Builder(ReaderActivity.this);
+                    //对话框询问
+                    if (chooseDialog == null) {
+                        chooseDialog = new AlertDialog.Builder(ReaderActivity.this);
                         chooseDialog.setMessage("已经有该文件的阅读记录，是否从上次阅读的位置开始");
                         chooseDialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                fromRecord=true;
-                                notChosen=false;
+                                fromRecord = true;
+                                notChosen = false;
                             }
                         });
                         chooseDialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                fromRecord=false;
-                                notChosen=false;
+                                fromRecord = false;
+                                notChosen = false;
                             }
                         });
                         chooseDialog.setCancelable(false);
@@ -274,19 +274,19 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
                     if (resultFile.exists()) {
                         //进一步优化，当系统中有记录时弹出对话框，提示“系统中已经有记录是否要从记录中读取
                         targetPath = resultFile.getAbsolutePath();
-                        Message chooseMSG=chooseHandler.obtainMessage();
+                        Message chooseMSG = chooseHandler.obtainMessage();
                         chooseHandler.sendMessage(chooseMSG);
-                        while (notChosen){
+                        while (notChosen) {
                         }
                         SQLiteDatabase recordDB = recordDatabaseHelper.getReadableDatabase();
                         Cursor recordCursor = recordDB.query(ReadRecordAdapter.TABLE_NAME, null, "formatPath=?", new String[]{targetPath}, null, null, null);
                         //注意int和long
                         recordCursor.moveToFirst();
                         totalWords = recordCursor.getInt(recordCursor.getColumnIndex("totalWords"));
-                        if(fromRecord){
+                        if (fromRecord) {
                             marked = recordCursor.getInt(recordCursor.getColumnIndex("position"));
-                        }else {
-                            marked=0;
+                        } else {
+                            marked = 0;
                         }
                         recordCursor.close();
 
@@ -296,13 +296,13 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
                         try {
                             resultFile.createNewFile();
                             targetPath = resultFile.getAbsolutePath();
-                            totalWords = TxtReader.formatTxtFile(originalFile, resultFile);
+                            totalWords = TxtTaker.formatTxtFile(originalFile, resultFile);
                             marked = 0;
                             //下面的代码可以优化到一个方法中
-                            Log.e("insertName",originalFile.getName());
-                            Log.e("insert textPath",textPath);
-                            Log.e("insert totalWords",String.valueOf(totalWords));
-                            Log.e("insert targetPath",targetPath);
+                            Log.e("insertName", originalFile.getName());
+                            Log.e("insert textPath", textPath);
+                            Log.e("insert totalWords", String.valueOf(totalWords));
+                            Log.e("insert targetPath", targetPath);
                             recordDatabaseHelper.insert(ReadRecordAdapter.TABLE_NAME, originalFile.getName(), textPath, null, totalWords, 0, targetPath);
                             return totalWords;
                         } catch (IOException e) {
@@ -312,7 +312,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
                     }
                     //当无法建立格式化文件时，读取原始文件；
                     targetPath = textPath;
-                    totalWords = TxtReader.getTotalWords(textPath);
+                    totalWords = TxtTaker.getTotalWords(textPath);
                     recordDatabaseHelper.insert(ReadRecordAdapter.TABLE_NAME, originalFile.getName(), textPath, null, totalWords, 0, null);
                     return totalWords;
                 }
@@ -343,13 +343,13 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    if(progress>=totalWords-100)
-                        readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), totalWords-100);
-                    else if(progress<100){
+                    if (progress >= totalWords - 100)
+                        readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), totalWords - 100);
+                    else if (progress < 100) {
                         readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), 0);
-                    }else {
+                    } else {
                         readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), progress);
-                }
+                    }
 //                    contentPager.skipToChild();
                     contentPager.getCurrentView().postInvalidate();
                 }
@@ -377,7 +377,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
 
             @Override
             public void onPageSelected(int position) {
-                Log.e("pageChange",String.valueOf(position));
+                Log.e("pageChange", String.valueOf(position));
                 readerPagerAdapter.getContentController().notifyPageChanged(position);
             }
 
@@ -411,23 +411,23 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
 
     private void initView() {
         initToolbar();
-        rootView=findViewById(R.id.rootView);
+        rootView = findViewById(R.id.reader_root_view);
         mControlsView = findViewById(R.id.fullscreen_content_controls);
-        contentPager = (PageGroup) findViewById(R.id.contentPager);
+        contentPager = (PageGroup) findViewById(R.id.content_pager);
 //        int pagerBackground=getSettingFromSharedPreferences("PagerBackGround");
 //        if (pagerBackground!=-1){
 //            contentPager.setBackground(pagerBackground);
 //        }
 
         contentPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        readerSeekBar = (SeekBar) findViewById(R.id.readerSeekBar);
-        statusText = (TextView) findViewById(R.id.statusText);
-        Button settingMenu = (Button) findViewById(R.id.settingMenu);
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        readerSeekBar = (SeekBar) findViewById(R.id.reader_seek_bar);
+        statusText = (TextView) findViewById(R.id.status_text);
+        Button settingMenu = (Button) findViewById(R.id.setting_menu);
         settingMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -437,7 +437,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     }
 
     private void initToolbar() {
-        toolbar= (Toolbar) findViewById(R.id.readToolbar);
+        toolbar = (Toolbar) findViewById(R.id.read_toolbar);
         setSupportActionBar(toolbar);
     }
 
@@ -446,10 +446,10 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             settingWindow = new PopupWindow(ReaderActivity.this);
             settingWindow.setHeight(contentPager.getHeight() / 2);
             settingWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-            final View popuWindowsView = LayoutInflater.from(ReaderActivity.this).inflate(R.layout.readersetting_layout, null);
+            final View popuWindowsView = LayoutInflater.from(ReaderActivity.this).inflate(R.layout.readersetting_view_layout, null);
             //此处设计画笔菜单
-            SeekBar lightAdjuster = (SeekBar) popuWindowsView.findViewById(R.id.lightAdjuster);
-            CheckBox checkBox = (CheckBox) popuWindowsView.findViewById(R.id.fitSystemLightness);
+            SeekBar lightAdjuster = (SeekBar) popuWindowsView.findViewById(R.id.light_adjuster);
+            CheckBox checkBox = (CheckBox) popuWindowsView.findViewById(R.id.fit_system_lightness);
             setScreenLightness(checkBox, lightAdjuster);
             initTextSizeChosenView(popuWindowsView);
 //            Spinner textSizeSelector = (Spinner) popuWindowsView.findViewById(R.id.textSizeSpinner);
@@ -482,12 +482,12 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     }
 
     private void initTextSizeChosenView(View view) {
-        TextView textSizeShow= (TextView) view.findViewById(R.id.textSizeShow);
-        textSize= (int) textPaint.getTextSize();
+        TextView textSizeShow = (TextView) view.findViewById(R.id.text_size_show);
+        textSize = (int) textPaint.getTextSize();
         textSizeShow.setText(String.valueOf(textSize));
-        Button textSizePlus= (Button) view.findViewById(R.id.textSizePlus);
-        Button textSizeMinus= (Button) view.findViewById(R.id.textSizeMinus);
-        TextSizeAdjustListener textSizeAdjustListener=new TextSizeAdjustListener();
+        Button textSizePlus = (Button) view.findViewById(R.id.text_size_plus);
+        Button textSizeMinus = (Button) view.findViewById(R.id.text_size_minus);
+        TextSizeAdjustListener textSizeAdjustListener = new TextSizeAdjustListener();
         textSizePlus.setOnClickListener(textSizeAdjustListener);
         textSizeMinus.setOnClickListener(textSizeAdjustListener);
     }
@@ -583,19 +583,20 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
 //        SQLiteDatabase recordDB= recordDatabaseHelper.getWritableDatabase();
 //        recordDB.update(ReadRecordAdapter.TABLE_NAME,values,"filepath=?",new String[]{textPath});
 //        recordDB.close();
-        saveSettingInSharedPreferences("TextColor",textPaint.getColor());
-        Log.e("textcolortosave",String.valueOf(textPaint.getColor()));
-        saveSettingInSharedPreferences("TextSize",textSize);
+        saveSettingInSharedPreferences("TextColor", textPaint.getColor());
+        Log.e("textcolortosave", String.valueOf(textPaint.getColor()));
+        saveSettingInSharedPreferences("TextSize", textSize);
         super.onDestroy();
     }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt("TextColor",textPaint.getColor());
-        outState.putInt("TextSize",textSize);
-        outState.putInt("ReadMarked",readerPagerAdapter.getContentController().getMarked());
-        outState.putInt("TotalWords",totalWords);
-        outState.putString("TargetPath",targetPath);
-        getIntent().putExtra("StartFlag",WelcomeActivity.START_FROM_SCREEN_CHANGE);
+        outState.putInt("TextColor", textPaint.getColor());
+        outState.putInt("TextSize", textSize);
+        outState.putInt("ReadMarked", readerPagerAdapter.getContentController().getMarked());
+        outState.putInt("TotalWords", totalWords);
+        outState.putString("TargetPath", targetPath);
+        getIntent().putExtra("StartFlag", WelcomeActivity.START_FROM_SCREEN_CHANGE);
         super.onSaveInstanceState(outState);
     }
 
@@ -613,7 +614,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        Log.e("postCreate","postCreate");
+        Log.e("postCreate", "postCreate");
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
@@ -676,6 +677,18 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
 //        statusText.setText(progress / totalWords * 100 + "%");
     }
 
+    private boolean saveSettingInSharedPreferences(String type, int value) {
+        SharedPreferences preferences = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(type, value);
+        return editor.commit();
+    }
+
+    private int getSettingFromSharedPreferences(String type) {
+        SharedPreferences preferences = getPreferences(Context.MODE_PRIVATE);
+        return preferences.getInt(type, 0);
+    }
+
     class ShowFinishedReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -692,38 +705,29 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
 //            ReaderActivity.this.hide();
         }
     }
-    private class TextSizeAdjustListener implements View.OnClickListener{
+
+    private class TextSizeAdjustListener implements View.OnClickListener {
 
         @Override
         public void onClick(View v) {
-            switch (v.getId()){
-                case R.id.textSizePlus:
-                    if(textSize<=75)
-                    textSize+=5;
+            switch (v.getId()) {
+                case R.id.text_size_plus:
+                    if (textSize <= 75)
+                        textSize += 5;
                     break;
-                case R.id.textSizeMinus:
-                    if(textSize>=25)
-                    textSize-=5;
+                case R.id.text_size_minus:
+                    if (textSize >= 25)
+                        textSize -= 5;
                     break;
             }
-            int oldMark=readerPagerAdapter.getContentController().getMarked();
+            int oldMark = readerPagerAdapter.getContentController().getMarked();
             textPaint.setTextSize(textSize);
             readerPagerAdapter.getContentController().setMarked(oldMark);
             readerPagerAdapter.getContentController().reMeasure();
             contentPager.getCurrentView().postInvalidate();
 //            contentPager.invalidate();
-            ((TextView)(settingWindow.getContentView().findViewById(R.id.textSizeShow))).setText(String.valueOf(textSize));
+            ((TextView) (settingWindow.getContentView().findViewById(R.id.text_size_show))).setText(String.valueOf(textSize));
         }
-    }
-    private boolean saveSettingInSharedPreferences(String type, int value){
-        SharedPreferences preferences=getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor=preferences.edit();
-        editor.putInt(type,value);
-        return  editor.commit();
-    }
-    private int getSettingFromSharedPreferences(String type){
-        SharedPreferences preferences=getPreferences(Context.MODE_PRIVATE);
-        return preferences.getInt(type,0);
     }
 
 }

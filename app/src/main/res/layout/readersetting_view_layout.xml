@@ -1,148 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#ffffffff"
         android:orientation="vertical">
+
         <TextView
-            android:id="@+id/lightAdjusterName"
+            android:id="@+id/light_adjuster_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/setting_margin"
-            android:text="@string/lightAdjust"/>
+            android:text="@string/lightAdjust" />
+
         <CheckBox
-            android:text="@string/fitSystemLightness"
-            android:id="@+id/fitSystemLightness"
+            android:id="@+id/fit_system_lightness"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_below="@+id/lightAdjusterName"
+            android:layout_below="@+id/light_adjuster_name"
             android:checked="true"
-            />
+            android:text="@string/fitSystemLightness" />
 
         <SeekBar
-            android:layout_below="@+id/lightAdjusterName"
-            android:id="@+id/lightAdjuster"
-            android:layout_alignParentStart="true"
+            android:id="@+id/light_adjuster"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/fitSystemLightness"
-            android:layout_alignStart="@+id/fitSystemLightness"
+            android:layout_alignBottom="@+id/fit_system_lightness"
+            android:layout_alignParentStart="true"
+            android:layout_alignStart="@+id/fit_system_lightness"
+            android:layout_below="@+id/light_adjuster_name"
+            android:layout_marginBottom="@dimen/setting_margin"
             android:layout_marginLeft="@dimen/setting_margin"
             android:layout_marginRight="@dimen/setting_margin"
-            android:layout_marginTop="@dimen/setting_margin"
-            android:layout_marginBottom="@dimen/setting_margin" />
+            android:layout_marginTop="@dimen/setting_margin" />
 
         <View
             android:id="@+id/separator1"
-            android:layout_margin="@dimen/setting_margin"
-            android:layout_below="@+id/fitSystemLightness"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#D3D3D3"/>
+            android:layout_below="@+id/fit_system_lightness"
+            android:layout_margin="@dimen/setting_margin"
+            android:background="#D3D3D3" />
+
         <TextView
-            android:id="@+id/sizeAdjusterName"
+            android:id="@+id/size_adjuster_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/separator1"
             android:layout_margin="@dimen/setting_margin"
-            android:text="@string/sizeChosen"/>
+            android:text="@string/sizeChosen" />
         <!--<Spinner-->
-            <!--android:dropDownWidth="10dp"-->
-            <!--android:id="@+id/textSizeSpinner"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_margin="@dimen/setting_margin"-->
-            <!--android:layout_below="@+id/sizeAdjusterName"-->
-            <!--android:spinnerMode="dialog"-->
-            <!--android:entries="@array/textSize"-->
-            <!--/>-->
+        <!--android:dropDownWidth="10dp"-->
+        <!--android:id="@+id/textSizeSpinner"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_margin="@dimen/setting_margin"-->
+        <!--android:layout_below="@+id/sizeAdjusterName"-->
+        <!--android:spinnerMode="dialog"-->
+        <!--android:entries="@array/textSize"-->
+        <!--/>-->
         <LinearLayout
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
+            android:id="@+id/text_size_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textSizeSpinner"
-            android:layout_below="@+id/sizeAdjusterName"
-            android:orientation="horizontal">
+            android:layout_below="@+id/size_adjuster_name"
+            android:orientation="horizontal"
+            android:paddingEnd="20dp"
+            android:paddingStart="20dp">
+
             <Button
-                android:layout_weight="1"
-                android:id="@+id/textSizePlus"
-                android:textSize="22sp"
+                android:id="@+id/text_size_plus"
                 android:layout_width="60dp"
                 android:layout_height="50dp"
-                android:gravity="center"
-                android:text="@string/textSizePlus"/>
-            <TextView
                 android:layout_weight="1"
-                android:id="@+id/textSizeShow"
+                android:gravity="center"
+                android:text="@string/textSizePlus"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/text_size_show"
                 android:layout_width="40dp"
                 android:layout_height="50dp"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:textSize="20sp"
-                tools:text="35"
-               />
+                tools:text="35" />
+
             <Button
-                android:layout_weight="1"
-                android:textSize="18sp"
-                android:id="@+id/textSizeMinus"
+                android:id="@+id/text_size_minus"
                 android:layout_width="60dp"
                 android:layout_height="50dp"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/textSizeMinus"/>
+                android:text="@string/textSizeMinus"
+                android:textSize="18sp" />
 
         </LinearLayout>
+
         <View
             android:id="@+id/separator2"
-            android:layout_margin="@dimen/setting_margin"
-            android:layout_below="@+id/textSizeSpinner"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#D3D3D3"/>
-        <TextView
+            android:layout_below="@+id/text_size_spinner"
             android:layout_margin="@dimen/setting_margin"
+            android:background="#D3D3D3" />
+
+        <TextView
             android:id="@+id/backgroundSelectorName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/separator2"
-            android:text="@string/backgroundSelector"/>
+            android:layout_margin="@dimen/setting_margin"
+            android:text="@string/backgroundSelector" />
+
         <LinearLayout
             android:id="@+id/backGroundSelector"
-            android:layout_margin="@dimen/setting_margin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_below="@+id/backgroundSelectorName">
+            android:layout_below="@+id/backgroundSelectorName"
+            android:layout_margin="@dimen/setting_margin"
+            android:orientation="horizontal">
+
             <TextView
-                android:text="白色"
-                android:gravity="center"
                 android:id="@+id/white"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_margin="20dp"
-                android:background="#ffffff"/>
-            <TextView
-                android:text="黄色"
+                android:background="#ffffff"
                 android:gravity="center"
+                android:text="白色" />
+
+            <TextView
                 android:id="@+id/yellow"
-                android:layout_margin="20dp"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:background="#ffcc00"/>
-            <TextView
-                android:text="黑色"
-                android:textColor="#6699ff"
-                android:gravity="center"
                 android:layout_margin="20dp"
+                android:background="#ffcc00"
+                android:gravity="center"
+                android:text="黄色" />
+
+            <TextView
                 android:id="@+id/black"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:background="#000000"/>
+                android:layout_margin="20dp"
+                android:background="#000000"
+                android:gravity="center"
+                android:text="黑色"
+                android:textColor="#6699ff" />
         </LinearLayout>
 
 

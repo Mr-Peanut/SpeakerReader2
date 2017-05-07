@@ -1,4 +1,4 @@
-package com.guan.speakerreader.view.view;
+package com.guan.speakerreader.view;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -31,16 +30,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.guan.speakerreader.R;
-import com.guan.speakerreader.view.adapter.ReadRecordAdapter;
-import com.guan.speakerreader.view.database.RecordDatabaseHelper;
+import com.guan.speakerreader.adapter.ReadRecordAdapter;
+import com.guan.speakerreader.database.RecordDatabaseHelper;
 
 import java.io.File;
-import java.security.Permission;
 
 public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdapter.ItemOnClickedListener, ReadRecordAdapter.ItemOnLongClickedListener {
     public final static String CHOOSE_FILE_ACTION = "FILE_CHOOSE";
     public final static String SCAN_FILES_ACTION = "FILE_SCAN";
+    public static final int START_FROM_RECORD = 1;
+    public static final int START_FROM_FILE = 0;
+    public static final int START_FROM_SCREEN_CHANGE = 2;
     private final static String TABLE_NAME = "ReadRecord";
+    private static final int REQUEST_CODE = 1;
+    private static final String PACKAGE_URL_SCHEME = "package:";
     private Button fileChoose;
     private Button scanFiles;
     private RecyclerView recordList;
@@ -48,20 +51,15 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
     private ReadRecordAdapter readRecordAdapter;
     private RecordDBUpdateReceiver recordDBUpdateReceiver;
     private LinearLayout rootContainer;
-    public static final int START_FROM_RECORD=1;
-    public static final int START_FROM_FILE=0;
-    public static final int START_FROM_SCREEN_CHANGE=2;
-    private  static final int REQUEST_CODE=1;
-    private static final String PACKAGE_URL_SCHEME = "package:";
     private TextView permissionStatue;
     private Button settingButton;
-    private boolean getPermission=false;
+    private boolean getPermission = false;
     private Toast permissionToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.welcome_layout);
+        setContentView(R.layout.welcome_view_layout);
         initView();
         initData();
         initReceiver();
@@ -72,31 +70,33 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
         permissionCheck();
 //        }
     }
+
     private void permissionCheck() {
-        Log.e("permissionCheck","permissionCheck");
-        if((ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.WRITE_EXTERNAL_STORAGE))!= PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE},REQUEST_CODE);
-            Log.e("permissionCheck","permissionCheck");
-        }else {
-            getPermission=true;
-            if(settingButton!=null){
+        Log.e("permissionCheck", "permissionCheck");
+        if ((ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
+            Log.e("permissionCheck", "permissionCheck");
+        } else {
+            getPermission = true;
+            if (settingButton != null) {
                 rootContainer.removeView(settingButton);
-                settingButton=null;
+                settingButton = null;
             }
-            if(permissionStatue!=null){
+            if (permissionStatue != null) {
                 rootContainer.removeView(permissionStatue);
-                permissionStatue=null;
+                permissionStatue = null;
             }
         }
     }
 
     private void initReceiver() {
-        if(recordDBUpdateReceiver==null){
-            recordDBUpdateReceiver=new RecordDBUpdateReceiver();
+        if (recordDBUpdateReceiver == null) {
+            recordDBUpdateReceiver = new RecordDBUpdateReceiver();
         }
         IntentFilter receiverIntentFilter = new IntentFilter("READ_RECORD_DB_UPDATE");
-        registerReceiver(recordDBUpdateReceiver,receiverIntentFilter);
+        registerReceiver(recordDBUpdateReceiver, receiverIntentFilter);
     }
+
     /*
     初始化数据
      */
@@ -113,22 +113,23 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
             recordList.setAdapter(readRecordAdapter);
         }
     }
+
     /*
     初始化控件
      */
     private void initView() {
-        permissionToast=Toast.makeText(this,"权限检查",Toast.LENGTH_SHORT);
-        rootContainer= (LinearLayout) findViewById(R.id.rootContainer);
+        permissionToast = Toast.makeText(this, "权限检查", Toast.LENGTH_SHORT);
+        rootContainer = (LinearLayout) findViewById(R.id.rootContainer);
         fileChoose = (Button) findViewById(R.id.fileChoose);
         scanFiles = (Button) findViewById(R.id.scanFiles);
         recordList = (RecyclerView) findViewById(R.id.recoredList);
         fileChoose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!getPermission){
+                if (!getPermission) {
                     permissionToast.setText("请在设置中打开储存权限后再使用该功能");
                     permissionToast.show();
-                    return ;
+                    return;
                 }
                 Intent intent = new Intent(WelcomeActivity.this, FileActivity.class);
                 intent.setAction(CHOOSE_FILE_ACTION);
@@ -138,10 +139,10 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
         scanFiles.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!getPermission){
+                if (!getPermission) {
                     permissionToast.setText("请在设置中打开储存权限后再使用该功能");
                     permissionToast.show();
-                    return ;
+                    return;
                 }
                 Intent intent = new Intent(WelcomeActivity.this, FileActivity.class);
                 intent.setAction(SCAN_FILES_ACTION);
@@ -153,61 +154,62 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
     @Override
     protected void onResume() {
         super.onResume();
-        Log.e("onResume","onResume");
+        Log.e("onResume", "onResume");
     }
+
     @Override
     protected void onRestart() {
         permissionCheck();
         super.onRestart();
-        Log.e("onRestart","onRestart");
+        Log.e("onRestart", "onRestart");
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_CODE:
-                if(grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                    getPermission=true;
-                    Log.e("getPerssion","getPerssion");
-                    if(settingButton!=null){
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getPermission = true;
+                    Log.e("getPerssion", "getPerssion");
+                    if (settingButton != null) {
                         rootContainer.removeView(settingButton);
-                        settingButton=null;
+                        settingButton = null;
                     }
-                    if(permissionStatue!=null){
+                    if (permissionStatue != null) {
                         rootContainer.removeView(permissionStatue);
-                        permissionStatue=null;
+                        permissionStatue = null;
                     }
                     break;
-                }else {
-                    getPermission=false;
+                } else {
+                    getPermission = false;
 //                    Toast.makeText(this,"没有同意储存权限无法使用该APP",Toast.LENGTH_SHORT).show();
                     permissionToast.setText("没有同意储存权限无法使用该APP");
                     permissionToast.show();
-                    LinearLayoutCompat.LayoutParams layoutParams=new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    layoutParams.gravity= Gravity.CENTER;
-                    if(permissionStatue==null){
-                        permissionStatue=new TextView(this);
+                    LinearLayoutCompat.LayoutParams layoutParams = new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    layoutParams.gravity = Gravity.CENTER;
+                    if (permissionStatue == null) {
+                        permissionStatue = new TextView(this);
                         permissionStatue.setLayoutParams(layoutParams);
-                        permissionStatue.setText("储存权限被禁止，请在设置—应用—"+String.valueOf(getApplicationContext().getPackageManager().getApplicationLabel(getApplicationInfo()))
-                                +"—权限—储存，打开储存权限后重新打开APP");
-                        if(rootContainer!=null){
+                        permissionStatue.setText("储存权限被禁止，请在设置—应用—" + String.valueOf(getApplicationContext().getPackageManager().getApplicationLabel(getApplicationInfo()))
+                                + "—权限—储存，打开储存权限后重新打开APP");
+                        if (rootContainer != null) {
                             rootContainer.addView(permissionStatue);
                         }
                     }
-                    if(settingButton==null){
-                        settingButton=new Button(this);
+                    if (settingButton == null) {
+                        settingButton = new Button(this);
                         settingButton.setText("打开设置");
                         settingButton.setLayoutParams(layoutParams);
                         settingButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent settingIntent=new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                Intent settingIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                                 settingIntent.setData(Uri.parse(PACKAGE_URL_SCHEME + getPackageName()));
                                 startActivity(settingIntent);
                             }
                         });
-                        if(rootContainer!=null){
+                        if (rootContainer != null) {
                             rootContainer.addView(settingButton);
                         }
                     }
@@ -218,14 +220,14 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
 
     @Override
     protected void onDestroy() {
-        if(recordDBUpdateReceiver!=null)
-        unregisterReceiver(recordDBUpdateReceiver);
+        if (recordDBUpdateReceiver != null)
+            unregisterReceiver(recordDBUpdateReceiver);
         super.onDestroy();
     }
 
     @Override
     public boolean onItemLongClicked(final int position, View view) {
-        if(!getPermission){
+        if (!getPermission) {
             permissionToast.setText("请在设置中打开储存权限后再使用该功能");
             permissionToast.show();
             return true;
@@ -257,36 +259,38 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
         Cursor cursor = readRecordAdapter.getRecordCursor();
         cursor.moveToPosition(cursor.getCount() - position - 1);
         String filePath = cursor.getString(cursor.getColumnIndex("filepath"));
-        File targetFile=new File(filePath);
-        if(!targetFile.exists()){
-            Toast.makeText(this,"原始文件不存在，记录被删除",Toast.LENGTH_SHORT).show();
+        File targetFile = new File(filePath);
+        if (!targetFile.exists()) {
+            Toast.makeText(this, "原始文件不存在，记录被删除", Toast.LENGTH_SHORT).show();
             readRecordAdapter.deleteDataItem(position);
             return;
         }
         Intent intent = new Intent(WelcomeActivity.this, ReaderActivity.class);
         intent.putExtra("FILEPATH", filePath);
-        intent.putExtra("totalWords",cursor.getInt(cursor.getColumnIndex("totalWords")));
-        intent.putExtra("formatPath",cursor.getString(cursor.getColumnIndex("formatPath")));
-        intent.putExtra("position",cursor.getInt(cursor.getColumnIndex("position")));
-        intent.putExtra("StartFlag",START_FROM_RECORD);
+        intent.putExtra("totalWords", cursor.getInt(cursor.getColumnIndex("totalWords")));
+        intent.putExtra("formatPath", cursor.getString(cursor.getColumnIndex("formatPath")));
+        intent.putExtra("position", cursor.getInt(cursor.getColumnIndex("position")));
+        intent.putExtra("StartFlag", START_FROM_RECORD);
         startActivity(intent);
     }
+
     @Override
     public void onRecordItemClick(int position) {
         //打开readerActivity
         //先检查原始文件是否存在，不存在删除该条记录
-        if(!getPermission){
+        if (!getPermission) {
             permissionToast.setText("请在设置中打开储存权限后再使用该功能");
             permissionToast.show();
-            return ;
+            return;
         }
         openReaderActivity(position);
     }
-    class RecordDBUpdateReceiver extends BroadcastReceiver{
+
+    class RecordDBUpdateReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.e("WelcomeActivity:","Receive BroadCast");
-           readRecordAdapter.notifyDataChanged();
+            Log.e("WelcomeActivity:", "Receive BroadCast");
+            readRecordAdapter.notifyDataChanged();
         }
     }
 }

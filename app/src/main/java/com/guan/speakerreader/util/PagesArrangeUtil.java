@@ -1,4 +1,4 @@
-package com.guan.speakerreader.view.util;
+package com.guan.speakerreader.util;
 
 import android.graphics.Paint;
 
@@ -57,7 +57,7 @@ public class PagesArrangeUtil {
 
     public BookArrangeInfo arrangePages() {
         File file = new File(filePath);
-        long totalWords = TxtReader.getTotalWords(filePath);
+        long totalWords = TxtTaker.getTotalWords(filePath);
         char[] test = new char[]{'\n'};
 
         FileInputStream inputStream = null;
@@ -73,7 +73,7 @@ public class PagesArrangeUtil {
         try {
             inputStream = new FileInputStream(file);
             float wordSpace = 0;
-            reader = new InputStreamReader(inputStream, TxtReader.getCodeType(file));
+            reader = new InputStreamReader(inputStream, TxtTaker.getCodeType(file));
             //当显示高度不够一行时直接不要测量了，需添加判断
             while (run) {
                 while (run && totalRowHeight + lineHeight <= showHeight) {
@@ -173,7 +173,8 @@ public class PagesArrangeUtil {
             setRun(false);
         }
     }
-    public String measurePage(String content){
+
+    public String measurePage(String content) {
         char[] buffer = new char[1];
         float totalLineWidth = 0;
         float totalRowHeight = 0;
@@ -185,7 +186,7 @@ public class PagesArrangeUtil {
             while (totalLineWidth < showWidth && wordCount <= content.length() - 1) {
                 buffer[0] = content.charAt(wordCount);
                 float wordWith = paint.measureText(buffer, 0, 1);
-                if (totalLineWidth + wordWith >showWidth) {
+                if (totalLineWidth + wordWith > showWidth) {
                     if (buffer[0] == '\n') {
                         wordCount++;
                     }
@@ -199,7 +200,7 @@ public class PagesArrangeUtil {
             totalRowHeight = totalRowHeight + lineHeight;
             totalLineWidth = 0;
         }
-     return content.substring(0,wordCount);
+        return content.substring(0, wordCount);
     }
 
 }
