@@ -22,4 +22,6 @@
     <string name="fitSystemLightness">跟随系统</string>
     <string name="textSizePlus">A+</string>
     <string name="textSizeMinus">A-</string>
+    <string name="searchViewName">结果中搜索</string>
+    <string name="searchTip">输入文件名</string>
 </resources>

@@ -11,26 +11,43 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.guan.speakerreader.R;
 import com.guan.speakerreader.view.adapter.ChooseFileAdapter;
+import com.guan.speakerreader.view.adapter.FileSearchResultAdapter;
 import com.guan.speakerreader.view.adapter.ScanFileAdapter;
+import com.guan.speakerreader.view.util.SearchAsyncTask;
 
 import java.io.File;
+import java.util.ArrayList;
 
-public class FileActivity extends AppCompatActivity implements ScanFileAdapter.ProcessBarController, ScanFileAdapter.FileItemOnClickedListener, ChooseFileAdapter.FileItemOnClickedListener {
+public class FileActivity extends AppCompatActivity implements ScanFileAdapter.ProcessBarController, ScanFileAdapter.FileItemOnClickedListener, ChooseFileAdapter.FileItemOnClickedListener,SearchAsyncTask.ResultToShowTeller {
     private RecyclerView fileList;
     private ImageButton backButton;
     private ProgressBar scanProgress;
     private ScanFileAdapter scanFileAdapter;
     private ScanResultBroadcastReceiver scanResultReceiver;
-
+    private ArrayList<File> results;
+    private TextView fileSearch;
+    private LinearLayout fileExplorerRootView;
+    private PopupWindow searchPopupWindow;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -48,20 +65,86 @@ public class FileActivity extends AppCompatActivity implements ScanFileAdapter.P
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void initView() {
+        fileExplorerRootView= (LinearLayout) findViewById(R.id.fileExplorerRootView);
         fileList = (RecyclerView) findViewById(R.id.fileList);
         backButton = (ImageButton) findViewById(R.id.backButton);
         scanProgress = (ProgressBar) findViewById(R.id.scanProgress);
+        fileSearch= (TextView) findViewById(R.id.fileSearch);
         fileList.setLayoutManager(new LinearLayoutManager(FileActivity.this, LinearLayout.VERTICAL, false));
         switch (getIntent().getAction()) {
             case WelcomeActivity.CHOOSE_FILE_ACTION:
+                fileSearch.setVisibility(View.GONE);
                 initChooseAdapter();
                 break;
             case WelcomeActivity.SCAN_FILES_ACTION:
                 initScanAdapter();
+                fileSearch.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        initFileSearchPopupWindow();
+                    }
+                });
+
                 break;
         }
     }
 
+    private void initFileSearchPopupWindow() {
+        searchPopupWindow=new PopupWindow(this);
+        searchPopupWindow.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
+//        searchPopupWindow.setHeight(fileExplorerRootView.getHeight());
+        searchPopupWindow.setHeight(WindowManager.LayoutParams.MATCH_PARENT);
+        searchPopupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+        searchPopupWindow.setInputMethodMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        searchPopupWindow.setFocusable(true);
+        final SearchAsyncTask[] searchAsyncTask = new SearchAsyncTask[1];
+        View searchPopupView = LayoutInflater.from(this).inflate(R.layout.searchpopupwindow_layout,null);
+        EditText searchNameInput= (EditText) searchPopupView.findViewById(R.id.searchNameInput);
+        ListView resultList= (ListView) searchPopupView.findViewById(R.id.resultList);
+        final ArrayList<File> searchResult=new ArrayList<>();
+        final FileSearchResultAdapter fileSearchResultAdapter=new FileSearchResultAdapter(searchResult,this);
+        resultList.setAdapter(fileSearchResultAdapter);
+        resultList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //取消异步操作
+                if(searchAsyncTask[0]!=null&&!searchAsyncTask[0].isCancelled()){
+                    searchAsyncTask[0].cancel(true);
+                }
+                scanFileAdapter.cancelScanTask();
+                FileActivity.this.onItemClicked(searchResult.get(position));
+                searchPopupWindow.dismiss();
+            }
+        });
+        results=scanFileAdapter.getFlies();
+        searchNameInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(searchAsyncTask[0]!=null&&!searchAsyncTask[0].isCancelled()){
+                    searchAsyncTask[0].cancel(true);
+                }
+                searchAsyncTask[0] =new SearchAsyncTask(searchResult,results,fileSearchResultAdapter,scanFileAdapter);
+                searchAsyncTask[0].setResultTeller(FileActivity.this);
+                if(s!=null){
+                    String target=String.valueOf(s);
+                    if(!target.equals("")&&!target.equals(" ")&&s.length()!=0)
+                        searchAsyncTask[0].execute(String.valueOf(s));
+                }
+
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        searchPopupWindow.setContentView(searchPopupView);
+        searchPopupWindow.showAtLocation(fileExplorerRootView, Gravity.TOP,0,0);
+    }
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void initChooseAdapter() {
         final ChooseFileAdapter chooseAdapter = new ChooseFileAdapter(this);
@@ -77,13 +160,17 @@ public class FileActivity extends AppCompatActivity implements ScanFileAdapter.P
 
     private void initScanAdapter() {
         scanFileAdapter = new ScanFileAdapter(this, this);
-        scanFileAdapter.setmFileItemOnClickedListener(this);
+        scanFileAdapter.setFileItemOnClickedListener(this);
         initScanResultBroadcastReceiver();
         fileList.setAdapter(scanFileAdapter);
     }
 
     @Override
     public void onBackPressed() {
+        if(searchPopupWindow.isShowing()){
+            searchPopupWindow.dismiss();
+            return;
+        }
         if (scanFileAdapter != null) {
             AsyncTask<Void, File, Void> asyncTask = scanFileAdapter.getScanFileTask();
             if (scanFileAdapter.isTaskOn() && asyncTask != null && !asyncTask.isCancelled()) {
@@ -121,6 +208,28 @@ public class FileActivity extends AppCompatActivity implements ScanFileAdapter.P
         if (scanResultReceiver != null)
             unregisterReceiver(scanResultReceiver);
         super.onDestroy();
+    }
+
+    @Override
+    public void noResult() {
+        //当没有内容显示时增加无文件显示的状态
+        LinearLayout searchPopupWindowView=(LinearLayout)(searchPopupWindow.getContentView().findViewById(R.id.searchPopupWindow));
+        if(!(searchPopupWindowView.getChildAt(searchPopupWindowView.getChildCount()-1)instanceof TextView)){
+            TextView textView=new TextView(this);
+            LinearLayout.LayoutParams layoutParams=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.gravity=Gravity.CENTER;
+            textView.setLayoutParams(layoutParams);
+            textView.setText("没有结果显示");
+            searchPopupWindowView.addView(textView);
+        }
+    }
+
+    @Override
+    public void hasResult() {
+        LinearLayout searchPopupWindowView=(LinearLayout)(searchPopupWindow.getContentView().findViewById(R.id.searchPopupWindow));
+        if((searchPopupWindowView.getChildAt(searchPopupWindowView.getChildCount()-1)instanceof TextView)){
+            searchPopupWindowView.removeViewAt(searchPopupWindowView.getChildCount()-1);
+        }
     }
 
     public class ScanResultBroadcastReceiver extends BroadcastReceiver {

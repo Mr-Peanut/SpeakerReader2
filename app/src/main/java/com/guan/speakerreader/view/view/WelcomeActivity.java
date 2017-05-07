@@ -55,6 +55,8 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
     private static final String PACKAGE_URL_SCHEME = "package:";
     private TextView permissionStatue;
     private Button settingButton;
+    private boolean getPermission=false;
+    private Toast permissionToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,11 +78,14 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE},REQUEST_CODE);
             Log.e("permissionCheck","permissionCheck");
         }else {
+            getPermission=true;
             if(settingButton!=null){
                 rootContainer.removeView(settingButton);
+                settingButton=null;
             }
             if(permissionStatue!=null){
                 rootContainer.removeView(permissionStatue);
+                permissionStatue=null;
             }
         }
     }
@@ -92,7 +97,6 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
         IntentFilter receiverIntentFilter = new IntentFilter("READ_RECORD_DB_UPDATE");
         registerReceiver(recordDBUpdateReceiver,receiverIntentFilter);
     }
-
     /*
     初始化数据
      */
@@ -113,6 +117,7 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
     初始化控件
      */
     private void initView() {
+        permissionToast=Toast.makeText(this,"权限检查",Toast.LENGTH_SHORT);
         rootContainer= (LinearLayout) findViewById(R.id.rootContainer);
         fileChoose = (Button) findViewById(R.id.fileChoose);
         scanFiles = (Button) findViewById(R.id.scanFiles);
@@ -120,6 +125,11 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
         fileChoose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!getPermission){
+                    permissionToast.setText("请在设置中打开储存权限后再使用该功能");
+                    permissionToast.show();
+                    return ;
+                }
                 Intent intent = new Intent(WelcomeActivity.this, FileActivity.class);
                 intent.setAction(CHOOSE_FILE_ACTION);
                 startActivity(intent);
@@ -128,6 +138,11 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
         scanFiles.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!getPermission){
+                    permissionToast.setText("请在设置中打开储存权限后再使用该功能");
+                    permissionToast.show();
+                    return ;
+                }
                 Intent intent = new Intent(WelcomeActivity.this, FileActivity.class);
                 intent.setAction(SCAN_FILES_ACTION);
                 startActivity(intent);
@@ -140,13 +155,11 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
         super.onResume();
         Log.e("onResume","onResume");
     }
-
     @Override
     protected void onRestart() {
         permissionCheck();
         super.onRestart();
         Log.e("onRestart","onRestart");
-
     }
 
     @Override
@@ -155,16 +168,22 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
         switch (requestCode){
             case REQUEST_CODE:
                 if(grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                    getPermission=true;
                     Log.e("getPerssion","getPerssion");
                     if(settingButton!=null){
                         rootContainer.removeView(settingButton);
+                        settingButton=null;
                     }
                     if(permissionStatue!=null){
                         rootContainer.removeView(permissionStatue);
+                        permissionStatue=null;
                     }
                     break;
                 }else {
-                    Toast.makeText(this,"没有同意储存权限无法使用该APP",Toast.LENGTH_SHORT).show();
+                    getPermission=false;
+//                    Toast.makeText(this,"没有同意储存权限无法使用该APP",Toast.LENGTH_SHORT).show();
+                    permissionToast.setText("没有同意储存权限无法使用该APP");
+                    permissionToast.show();
                     LinearLayoutCompat.LayoutParams layoutParams=new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                     layoutParams.gravity= Gravity.CENTER;
                     if(permissionStatue==null){
@@ -206,6 +225,11 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
 
     @Override
     public boolean onItemLongClicked(final int position, View view) {
+        if(!getPermission){
+            permissionToast.setText("请在设置中打开储存权限后再使用该功能");
+            permissionToast.show();
+            return true;
+        }
         PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
         popupMenu.inflate(R.menu.recordmenu);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -251,6 +275,11 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
     public void onRecordItemClick(int position) {
         //打开readerActivity
         //先检查原始文件是否存在，不存在删除该条记录
+        if(!getPermission){
+            permissionToast.setText("请在设置中打开储存权限后再使用该功能");
+            permissionToast.show();
+            return ;
+        }
         openReaderActivity(position);
     }
     class RecordDBUpdateReceiver extends BroadcastReceiver{

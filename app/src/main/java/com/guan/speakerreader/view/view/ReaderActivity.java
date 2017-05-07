@@ -22,6 +22,7 @@ import android.provider.Settings;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -66,6 +67,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     private boolean notChosen =true;
     private boolean fromRecord=true;
     private Handler chooseHandler;
+    private Toolbar toolbar;
     private AlertDialog.Builder chooseDialog;
     //    private  PopupWindow settingWindow;
     /**
@@ -110,6 +112,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             if (actionBar != null) {
                 actionBar.show();
             }
+//            toolbar.setVisibility(View.VISIBLE);
             mControlsView.setVisibility(View.VISIBLE);
         }
     };
@@ -407,6 +410,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     }
 
     private void initView() {
+        initToolbar();
         rootView=findViewById(R.id.rootView);
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         contentPager = (PageGroup) findViewById(R.id.contentPager);
@@ -430,6 +434,11 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
                 initMenuView();
             }
         });
+    }
+
+    private void initToolbar() {
+        toolbar= (Toolbar) findViewById(R.id.readToolbar);
+        setSupportActionBar(toolbar);
     }
 
     private void initMenuView() {
@@ -626,6 +635,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             actionBar.hide();
         }
         mControlsView.setVisibility(View.GONE);
+//        toolbar.setVisibility(View.GONE);
         mVisible = false;
         // Schedule a runnable to remove the status and navigation bar after a delay
         mHideHandler.removeCallbacks(mShowPart2Runnable);

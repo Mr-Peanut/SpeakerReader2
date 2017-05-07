@@ -24,8 +24,8 @@
             </intent-filter>
         </activity>
         <activity
-
-            android:name=".view.view.ReaderActivity">
+            android:name=".view.view.ReaderActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <!--android:hardwareAccelerated="false"-->
         </activity>
     </application>

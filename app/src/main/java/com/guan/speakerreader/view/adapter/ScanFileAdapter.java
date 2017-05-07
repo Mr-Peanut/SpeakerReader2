@@ -26,18 +26,21 @@ import java.util.List;
 
 public class ScanFileAdapter extends RecyclerView.Adapter<ScanFileAdapter.FileHolder> {
     private Context mContext;
-    private List<File> files;
+    private ArrayList<File> files;
     private AsyncTask<Void, File, Void> scanFileTask;
     private ProcessBarController mProcessController;
     private boolean taskOn = false;
     private FileItemOnClickedListener mFileItemOnClickedListener;
-
     public ScanFileAdapter(Context mContext, ProcessBarController processBarController) {
         this.mContext = mContext;
         setMProcessController(processBarController);
         files = new ArrayList<>();
         getFiles();
     }
+    public void setFiles(ArrayList<File> files) {
+        this.files = files;
+    }
+
 
     public AsyncTask<Void, File, Void> getScanFileTask() {
         return scanFileTask;
@@ -55,8 +58,11 @@ public class ScanFileAdapter extends RecyclerView.Adapter<ScanFileAdapter.FileHo
         this.mProcessController = mProcessController;
     }
 
-    public void setmFileItemOnClickedListener(FileItemOnClickedListener mFileItemOnClickedListener) {
+    public void setFileItemOnClickedListener(FileItemOnClickedListener mFileItemOnClickedListener) {
         this.mFileItemOnClickedListener = mFileItemOnClickedListener;
+    }
+    public ArrayList<File> getFlies(){
+        return files;
     }
 
     private void getFiles() {
@@ -83,7 +89,6 @@ public class ScanFileAdapter extends RecyclerView.Adapter<ScanFileAdapter.FileHo
                         mContext.sendBroadcast(new Intent("NO TXT FILE"));
                     }
                 }
-
                 @Override
                 protected void onProgressUpdate(File... values) {
                     super.onProgressUpdate(values);
@@ -141,10 +146,7 @@ public class ScanFileAdapter extends RecyclerView.Adapter<ScanFileAdapter.FileHo
         holder.fileItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(scanFileTask!=null&&isTaskOn()){
-                    scanFileTask.cancel(true);
-                    taskOn=false;
-                }
+               cancelScanTask();
                 mFileItemOnClickedListener.onItemClicked(files.get(position));
             }
         });
@@ -157,8 +159,13 @@ public class ScanFileAdapter extends RecyclerView.Adapter<ScanFileAdapter.FileHo
 
     public interface ProcessBarController {
         void showProcessBar();
-
         void dissProcessBar();
+    }
+    public void cancelScanTask(){
+        if(scanFileTask!=null&&isTaskOn()){
+            scanFileTask.cancel(true);
+            taskOn=false;
+        }
     }
 
     public interface FileItemOnClickedListener {
