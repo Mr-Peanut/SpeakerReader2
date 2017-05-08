@@ -14,6 +14,10 @@ public class StringSearcher {
     private int checkLength;
     private int resultListLengthLimit;
 
+    public StringSearcher() {
+        resultListLengthLimit = 20;
+        checkLength = 10000;
+    }
     public ArrayList<Integer> getResultList() {
         return resultList;
     }
@@ -59,6 +63,8 @@ public class StringSearcher {
                     startPosition = position + targetLength;
                     if (resultList.size() >= resultListLengthLimit)
                         return;
+                } else {
+                    break;
                 }
             }
             totalChecked += checkLength;
