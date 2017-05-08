@@ -98,7 +98,7 @@ public class FileActivity extends AppCompatActivity implements ScanFileAdapter.P
         searchPopupWindow.setInputMethodMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         searchPopupWindow.setFocusable(true);
         final SearchAsyncTask[] searchAsyncTask = new SearchAsyncTask[1];
-        View searchPopupView = LayoutInflater.from(this).inflate(R.layout.searchpopupwindow_view_layout, null);
+        View searchPopupView = LayoutInflater.from(this).inflate(R.layout.searchfilepopupwindow_view_layout, null);
         EditText searchNameInput = (EditText) searchPopupView.findViewById(R.id.searchNameInput);
         ListView resultList = (ListView) searchPopupView.findViewById(R.id.resultList);
         final ArrayList<File> searchResult = new ArrayList<>();

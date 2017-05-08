@@ -13,6 +13,11 @@ public class StringSearcher {
     private int totalWords;
     private int checkLength;
     private int resultListLengthLimit;
+    private OnContentFindListener mOnContentFindListener;
+
+    public void setOnContentFindListener(OnContentFindListener mOnContentFindListener) {
+        this.mOnContentFindListener = mOnContentFindListener;
+    }
 
     public StringSearcher() {
         resultListLengthLimit = 20;
@@ -60,6 +65,8 @@ public class StringSearcher {
                 if (position != -1) {
                     resultList.add(totalChecked + position);
                     resultMap.put(totalChecked + position, toCheck.substring(Math.max(position - 10, 0), Math.min(position + targetLength + 10, toCheck.length())));
+                    if(mOnContentFindListener!=null)
+                        mOnContentFindListener.onContentFind();
                     startPosition = position + targetLength;
                     if (resultList.size() >= resultListLengthLimit)
                         return;
@@ -69,5 +76,8 @@ public class StringSearcher {
             }
             totalChecked += checkLength;
         }
+    }
+    interface OnContentFindListener{
+        void onContentFind();
     }
 }

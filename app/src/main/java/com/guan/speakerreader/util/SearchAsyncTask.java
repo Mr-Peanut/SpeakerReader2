@@ -42,13 +42,13 @@ public class SearchAsyncTask extends AsyncTask<String, File, Void> {
                 publishProgress(file);
             }
             count++;
-            Log.e("searchTast1", "taskOn");
+//            Log.e("searchTast1", "taskOn");
         }
         while (mScanFileAdapter.isTaskOn() || count != results.size()) {
-            Log.e("count", String.valueOf(count));
-            Log.e("resultSize", String.valueOf(results.size()));
-            Log.e("isTaskOn", String.valueOf(mScanFileAdapter.isTaskOn()));
-            Log.e("searchTast2", "taskOn");
+//            Log.e("count", String.valueOf(count));
+//            Log.e("resultSize", String.valueOf(results.size()));
+//            Log.e("isTaskOn", String.valueOf(mScanFileAdapter.isTaskOn()));
+//            Log.e("searchTast2", "taskOn");
             for (int i = count; i < results.size(); i++) {
                 File file = results.get(i);
                 String fileName = file.getName();
@@ -56,16 +56,15 @@ public class SearchAsyncTask extends AsyncTask<String, File, Void> {
                     publishProgress(file);
                 }
                 count++;
-                Log.e("count", String.valueOf(count));
-                Log.e("resultSize", String.valueOf(results.size()));
-                Log.e("isTaskOn", String.valueOf(mScanFileAdapter.isTaskOn()));
-
+//                Log.e("count", String.valueOf(count));
+//                Log.e("resultSize", String.valueOf(results.size()));
+//                Log.e("isTaskOn", String.valueOf(mScanFileAdapter.isTaskOn()));
             }
             if ((!mScanFileAdapter.isTaskOn()) && count == results.size()) {
                 break;
             }
         }
-        Log.e("searchTast2", "taskOnfinish");
+//        Log.e("searchTast2", "taskOnfinish");
         return null;
     }
 
@@ -74,7 +73,6 @@ public class SearchAsyncTask extends AsyncTask<String, File, Void> {
         searchResults.add(values[0]);
         searchAdapter.notifyDataSetChanged();
     }
-
     @Override
     protected void onPostExecute(Void aVoid) {
         searchAdapter.notifyDataSetChanged();
@@ -87,7 +85,6 @@ public class SearchAsyncTask extends AsyncTask<String, File, Void> {
             resultToShowTeller.taskFinish();
         }
     }
-
     @Override
     protected void onCancelled(Void aVoid) {
         searchAdapter.notifyDataSetChanged();
@@ -99,8 +96,6 @@ public class SearchAsyncTask extends AsyncTask<String, File, Void> {
             }
             resultToShowTeller.taskFinish();
         }
-
-
     }
 
     @Override
@@ -111,11 +106,8 @@ public class SearchAsyncTask extends AsyncTask<String, File, Void> {
 
     public interface ResultToShowTeller {
         void noResult();
-
         void hasResult();
-
         void taskStart();
-
         void taskFinish();
     }
 }

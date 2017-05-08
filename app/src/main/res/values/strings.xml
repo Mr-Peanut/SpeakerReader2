@@ -20,4 +20,6 @@
     <string name="searchViewName">结果中搜索</string>
     <string name="searchTip">输入文件名</string>
     <string name="other_setting">其他</string>
+    <string name="content_input_tip">请输入要搜索的内容</string>
+    <string name="search_button">搜索</string>
 </resources>

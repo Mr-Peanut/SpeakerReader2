@@ -33,6 +33,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -41,6 +42,8 @@ import com.guan.speakerreader.R;
 import com.guan.speakerreader.adapter.ReadRecordAdapter;
 import com.guan.speakerreader.adapter.ReaderPagerAdapter;
 import com.guan.speakerreader.database.RecordDatabaseHelper;
+import com.guan.speakerreader.util.SearchAsyncTask;
+import com.guan.speakerreader.util.SearchContentAsyncTask;
 import com.guan.speakerreader.util.TxtTaker;
 
 import java.io.File;
@@ -95,13 +98,14 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     private View rootView;
     private int textSize;
     private int marked;
+    private SearchAsyncTask mSearchTask;
+    private PopupWindow contentSearchPopupWindow;
     //    private  PopupWindow settingWindow;
     private RecordDatabaseHelper recordDatabaseHelper;
     //
     private boolean notChosen = true;
     private boolean fromRecord = true;
     private Handler chooseHandler;
-    private Toolbar toolbar;
     private AlertDialog.Builder chooseDialog;
     private View mControlsView;
     private final Runnable mShowPart2Runnable = new Runnable() {
@@ -437,14 +441,41 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     }
 
     private void initToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.read_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.read_toolbar);
         setSupportActionBar(toolbar);
+        TextView searchTextView= (TextView) toolbar.findViewById(R.id.search_textView);
+        searchTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initSearchContentPopupWindow();
+            }
+        });
+    }
+    private void initSearchContentPopupWindow() {
+        if(contentSearchPopupWindow==null){
+            contentSearchPopupWindow=new PopupWindow(this);
+            contentSearchPopupWindow.setHeight(WindowManager.LayoutParams.MATCH_PARENT);
+            contentSearchPopupWindow.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
+            contentSearchPopupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+            contentSearchPopupWindow.setInputMethodMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+            contentSearchPopupWindow.setFocusable(true);
+            View contentSearchPopupView=LayoutInflater.from(this).inflate(R.layout.searchcontentpopupwindow_view_layout,null);
+            EditText searchNameInput= (EditText) contentSearchPopupView.findViewById(R.id.searchNameInput);
+            Button content_search_button= (Button) contentSearchPopupView.findViewById(R.id.content_search_button);
+            content_search_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+        }
+        contentSearchPopupWindow.showAtLocation(rootView,Gravity.TOP,0,0);
     }
 
     private void initMenuView() {
         if (settingWindow == null) {
             settingWindow = new PopupWindow(ReaderActivity.this);
-            settingWindow.setHeight(contentPager.getHeight() / 2);
+            settingWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
             settingWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
             final View popuWindowsView = LayoutInflater.from(ReaderActivity.this).inflate(R.layout.readersetting_view_layout, null);
             //此处设计画笔菜单
