@@ -55,7 +55,6 @@ public class RecordDatabaseHelper extends SQLiteOpenHelper {
         values.put("formatPath", formatPath);
         values.put("totalWords", totalWords);
         values.put("updateTime", System.currentTimeMillis());
-
         SQLiteDatabase recordDB = getWritableDatabase();
         recordDB.insert(tableName, null, values);
         recordDB.close();

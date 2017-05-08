@@ -46,7 +46,7 @@ public class FileSearchResultAdapter extends BaseAdapter {
         ViewHolder fileHolder;
         if (convertView == null) {
             fileHolder = new ViewHolder();
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.filelist_item_layout, null);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.fileitem_view_layout, null);
             fileHolder.fileItemIcon = (ImageView) convertView.findViewById(R.id.file_item_icon);
             fileHolder.fileItemName = (TextView) convertView.findViewById(R.id.file_item_name);
             convertView.setTag(fileHolder);

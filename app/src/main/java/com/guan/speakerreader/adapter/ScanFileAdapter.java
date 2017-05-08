@@ -138,7 +138,7 @@ public class ScanFileAdapter extends RecyclerView.Adapter<ScanFileAdapter.FileHo
 
     @Override
     public FileHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View fileItemView = LayoutInflater.from(mContext).inflate(R.layout.filelist_item_layout, parent, false);
+        View fileItemView = LayoutInflater.from(mContext).inflate(R.layout.fileitem_view_layout, parent, false);
         return new FileHolder(fileItemView);
     }
 

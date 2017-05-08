@@ -28,7 +28,6 @@ public class SearchAsyncTask extends AsyncTask<String, File, Void> {
         searchResults.clear();
         searchAdapter.notifyDataSetChanged();
     }
-
     public void setResultTeller(ResultToShowTeller resultToShowTeller) {
         this.resultToShowTeller = resultToShowTeller;
     }
@@ -85,8 +84,8 @@ public class SearchAsyncTask extends AsyncTask<String, File, Void> {
             } else {
                 resultToShowTeller.hasResult();
             }
+            resultToShowTeller.taskFinish();
         }
-        resultToShowTeller.taskFinish();
     }
 
     @Override
@@ -98,8 +97,9 @@ public class SearchAsyncTask extends AsyncTask<String, File, Void> {
             } else {
                 resultToShowTeller.hasResult();
             }
+            resultToShowTeller.taskFinish();
         }
-        resultToShowTeller.taskFinish();
+
 
     }
 

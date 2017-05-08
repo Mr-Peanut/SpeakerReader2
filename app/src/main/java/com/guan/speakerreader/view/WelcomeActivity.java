@@ -59,7 +59,7 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.welcome_view_layout);
+        setContentView(R.layout.welcome_activity_layout);
         initView();
         initData();
         initReceiver();
@@ -233,7 +233,7 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
             return true;
         }
         PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
-        popupMenu.inflate(R.menu.recordmenu);
+        popupMenu.inflate(R.menu.record_menu);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
