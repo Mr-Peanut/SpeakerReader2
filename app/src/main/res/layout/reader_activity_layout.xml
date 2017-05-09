@@ -10,11 +10,11 @@
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
-    <com.guan.speakerreader.view.PageGroup
+    <com.guan.speakerreader.view.ReaderPageGroup
         android:id="@+id/content_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#ffffffff"></com.guan.speakerreader.view.PageGroup>
+        android:background="#ffffffff"></com.guan.speakerreader.view.ReaderPageGroup>
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->

@@ -6,14 +6,14 @@ import android.util.SparseArray;
 import android.util.SparseIntArray;
 
 import com.guan.speakerreader.adapter.ReaderPagerAdapter;
-import com.guan.speakerreader.view.PageGroup;
+import com.guan.speakerreader.view.ReaderPageGroup;
 
 /**
  * Created by guans on 2017/4/3.
  */
 
 public class ContentController {
-    private PageGroup mPageGroup;
+    private ReaderPageGroup mPageGroup;
     private int onShowPage;
     private String filePath;
     private SparseArray<String> pageContent;
@@ -269,7 +269,7 @@ public class ContentController {
         }
     }
 
-    public void setPageGroup(PageGroup mPageGroup) {
+    public void setPageGroup(ReaderPageGroup mPageGroup) {
         this.mPageGroup = mPageGroup;
     }
     /*

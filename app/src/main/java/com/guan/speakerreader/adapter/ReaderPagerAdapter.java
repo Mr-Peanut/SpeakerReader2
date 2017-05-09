@@ -8,7 +8,7 @@ import android.view.View;
 
 import com.guan.speakerreader.R;
 import com.guan.speakerreader.util.ContentController;
-import com.guan.speakerreader.view.PageGroup;
+import com.guan.speakerreader.view.ReaderPageGroup;
 import com.guan.speakerreader.view.TextReaderView;
 
 import java.lang.ref.WeakReference;
@@ -54,7 +54,7 @@ public class ReaderPagerAdapter implements View.OnClickListener {
         this.contentController = contentController;
     }
 
-    public Object instantiateLeftItem(PageGroup container, int position) {
+    public Object instantiateLeftItem(ReaderPageGroup container, int position) {
         final TextReaderView textReaderView;
         View view = null;
         if (viewList.size() > 0) {
@@ -76,7 +76,7 @@ public class ReaderPagerAdapter implements View.OnClickListener {
         return view;
     }
 
-    public Object instantiateRightItem(PageGroup container, int position) {
+    public Object instantiateRightItem(ReaderPageGroup container, int position) {
         TextReaderView textReaderView;
         View view = null;
         if (viewList.size() > 0) {
@@ -99,7 +99,7 @@ public class ReaderPagerAdapter implements View.OnClickListener {
         return view;
     }
 
-    public void destroyItem(PageGroup container, int position, Object object) {
+    public void destroyItem(ReaderPageGroup container, int position, Object object) {
         View view = (View) object;
         container.removeView(view);
         view.setOnClickListener(null);

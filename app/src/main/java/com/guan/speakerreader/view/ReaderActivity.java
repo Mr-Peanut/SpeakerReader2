@@ -75,7 +75,21 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
      */
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
-    private PageGroup contentPager;
+    /**
+     * Touch listener to use for in-layout UI controls to delay hiding the
+     * system UI. This is to prevent the jarring behavior of controls going away
+     * while interacting with activity UI.
+     */
+    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (AUTO_HIDE) {
+                delayedHide(AUTO_HIDE_DELAY_MILLIS);
+            }
+            return false;
+        }
+    };
+    private ReaderPageGroup contentPager;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -134,20 +148,6 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         @Override
         public void run() {
             hide();
-        }
-    };
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
         }
     };
     private SearchContentAsyncTask searchContentAsyncTask;
@@ -383,7 +383,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         readerPagerAdapter.setUpdateSeekBarController(this);
         readerPagerAdapter.setInnerViewOnClickedListener(this);
 
-        contentPager.addOnPageChangeListener(new PageGroup.OnPageChangeListener() {
+        contentPager.addOnPageChangeListener(new ReaderPageGroup.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -427,7 +427,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         initToolbar();
         rootView = findViewById(R.id.reader_root_view);
         mControlsView = findViewById(R.id.fullscreen_content_controls);
-        contentPager = (PageGroup) findViewById(R.id.content_pager);
+        contentPager = (ReaderPageGroup) findViewById(R.id.content_pager);
 //        int pagerBackground=getSettingFromSharedPreferences("PagerBackGround");
 //        if (pagerBackground!=-1){
 //            contentPager.setBackground(pagerBackground);

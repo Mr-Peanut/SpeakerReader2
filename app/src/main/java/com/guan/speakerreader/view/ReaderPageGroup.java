@@ -25,7 +25,7 @@ import java.util.HashMap;
 难点：怎么在0的位置添加view
 注意view的回收，一直保证最多有三个view，多余的view remove掉
  */
-public class PageGroup extends ViewGroup {
+public class ReaderPageGroup extends ViewGroup {
     private int mTouchSlop;
     private float mXDown;
     private float mXMove;
@@ -43,11 +43,11 @@ public class PageGroup extends ViewGroup {
     private boolean isFirstLayout = true;
     private HashMap<Integer, View> viewHashMap;
 
-    public PageGroup(Context context) {
+    public ReaderPageGroup(Context context) {
         super(context);
     }
 
-    public PageGroup(Context context, AttributeSet attrs) {
+    public ReaderPageGroup(Context context, AttributeSet attrs) {
         super(context, attrs);
         ViewConfiguration configuration = ViewConfiguration.get(context);
         mTouchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
@@ -256,7 +256,7 @@ public class PageGroup extends ViewGroup {
 //                }
                 if (mContentController.getPageStart().get(onShowPosition) > 0) {
                     Log.e("runnable", "add left");
-                    pagerAdapter.instantiateLeftItem(PageGroup.this, -1);
+                    pagerAdapter.instantiateLeftItem(ReaderPageGroup.this, -1);
 //                    leftBorder-=childWidth;
                     leftBorder -= getMeasuredWidth();
                 }
@@ -296,10 +296,10 @@ public class PageGroup extends ViewGroup {
     }
 
     interface OnPageChangeListener {
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
+        void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
 
-        public void onPageSelected(int position);
+        void onPageSelected(int position);
 
-        public void onPageScrollStateChanged(int state);
+        void onPageScrollStateChanged(int state);
     }
 }
