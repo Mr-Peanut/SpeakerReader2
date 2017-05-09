@@ -54,9 +54,7 @@ public class FileSearchResultAdapter extends BaseAdapter {
             fileHolder = (ViewHolder) convertView.getTag();
             fileHolder.fileItemIcon.setImageResource(R.mipmap.ic_launcher_round);
             fileHolder.fileItemName.setText(resultFiles.get(position).getName());
-
         }
-
         return convertView;
     }
 

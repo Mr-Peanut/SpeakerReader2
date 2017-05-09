@@ -30,26 +30,32 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.guan.speakerreader.R;
+import com.guan.speakerreader.adapter.ContentSearchResultAdapter;
 import com.guan.speakerreader.adapter.ReadRecordAdapter;
 import com.guan.speakerreader.adapter.ReaderPagerAdapter;
+import com.guan.speakerreader.bean.ContentSearchBean;
+import com.guan.speakerreader.bean.ContentSearchResultValuePairs;
 import com.guan.speakerreader.database.RecordDatabaseHelper;
 import com.guan.speakerreader.util.SearchAsyncTask;
 import com.guan.speakerreader.util.SearchContentAsyncTask;
+import com.guan.speakerreader.util.StringSearcher;
 import com.guan.speakerreader.util.TxtTaker;
 
 import java.io.File;
 import java.io.IOException;
 
-public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdapter.InnerViewOnClickedListener, ReaderPagerAdapter.UpdateSeekBarController {
+public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdapter.InnerViewOnClickedListener, ReaderPagerAdapter.UpdateSeekBarController, SearchContentAsyncTask.ResultToShowTeller {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -66,6 +72,20 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
      */
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
+    /**
+     * Touch listener to use for in-layout UI controls to delay hiding the
+     * system UI. This is to prevent the jarring behavior of controls going away
+     * while interacting with activity UI.
+     */
+    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (AUTO_HIDE) {
+                delayedHide(AUTO_HIDE_DELAY_MILLIS);
+            }
+            return false;
+        }
+    };
     private PageGroup contentPager;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -127,20 +147,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             hide();
         }
     };
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
-        }
-    };
+    private SearchContentAsyncTask searchContentAsyncTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -459,13 +466,28 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             contentSearchPopupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
             contentSearchPopupWindow.setInputMethodMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
             contentSearchPopupWindow.setFocusable(true);
+            final StringSearcher stringSearcher = new StringSearcher();
+            stringSearcher.setCheckLength(10000);
+            stringSearcher.setResultListLengthLimit(20);
             View contentSearchPopupView=LayoutInflater.from(this).inflate(R.layout.searchcontentpopupwindow_view_layout,null);
             EditText searchNameInput= (EditText) contentSearchPopupView.findViewById(R.id.searchNameInput);
+            ListView resultView = (ListView) contentSearchPopupView.findViewById(R.id.resultList);
+            final EditText searchContnetInput = (EditText) contentSearchPopupView.findViewById(R.id.search_content_input);
+            final ContentSearchResultAdapter resultAdapter = new ContentSearchResultAdapter(stringSearcher.getResultParsList(), this);
+            resultView.setAdapter(resultAdapter);
+            resultView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), ((ContentSearchResultValuePairs) parent.getItemAtPosition(position)).getPosition());
+                }
+            });
             Button content_search_button= (Button) contentSearchPopupView.findViewById(R.id.content_search_button);
             content_search_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    searchContentAsyncTask = new SearchContentAsyncTask(stringSearcher);
+                    if (searchContnetInput.getText().length() != 0)
+                        searchContentAsyncTask.execute(new ContentSearchBean(targetPath, searchContnetInput.getText().toString(), totalWords));
                 }
             });
         }
@@ -539,10 +561,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         lightAdjuster.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (checkBox.isChecked())
-                    return true;
-                else
-                    return false;
+                return checkBox.isChecked();
             }
         });
         lightAdjuster.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -718,6 +737,26 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     private int getSettingFromSharedPreferences(String type) {
         SharedPreferences preferences = getPreferences(Context.MODE_PRIVATE);
         return preferences.getInt(type, 0);
+    }
+
+    @Override
+    public void taskStart() {
+
+    }
+
+    @Override
+    public void taskFinish() {
+
+    }
+
+    @Override
+    public void taskUpdate() {
+
+    }
+
+    @Override
+    public void taskCanceled() {
+
     }
 
     class ShowFinishedReceiver extends BroadcastReceiver {

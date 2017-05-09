@@ -2,6 +2,8 @@ package com.guan.speakerreader.util;
 
 import android.graphics.Paint;
 
+import com.guan.speakerreader.bean.BookArrangeInfo;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

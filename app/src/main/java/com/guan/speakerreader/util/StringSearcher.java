@@ -1,46 +1,30 @@
 package com.guan.speakerreader.util;
 
+import com.guan.speakerreader.bean.ContentSearchResultValuePairs;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by shiqian.guan on 2017/5/8.
  */
 
 public class StringSearcher {
-    private ArrayList<Integer> resultList;
-    private HashMap<Integer, String> resultMap;
-    private int totalWords;
+    private ArrayList<ContentSearchResultValuePairs> resultParsList;
     private int checkLength;
     private int resultListLengthLimit;
     private OnContentFindListener mOnContentFindListener;
+    public StringSearcher() {
+        resultParsList = new ArrayList<>();
+        resultListLengthLimit = 20;
+        checkLength = 10000;
+    }
 
     public void setOnContentFindListener(OnContentFindListener mOnContentFindListener) {
         this.mOnContentFindListener = mOnContentFindListener;
     }
 
-    public StringSearcher() {
-        resultListLengthLimit = 20;
-        checkLength = 10000;
-    }
-    public ArrayList<Integer> getResultList() {
-        return resultList;
-    }
-
-    public void setResultList(ArrayList<Integer> resultList) {
-        this.resultList = resultList;
-    }
-
-    public HashMap<Integer, String> getResultMap() {
-        return resultMap;
-    }
-
-    public void setResultMap(HashMap<Integer, String> resultMap) {
-        this.resultMap = resultMap;
-    }
-
-    public void setTotalWords(int totalWords) {
-        this.totalWords = totalWords;
+    public ArrayList<ContentSearchResultValuePairs> getResultParsList() {
+        return resultParsList;
     }
 
     public void setCheckLength(int checkLength) {
@@ -51,7 +35,7 @@ public class StringSearcher {
         this.resultListLengthLimit = resultListLengthLimit;
     }
 
-    public void searchTarget(String filePath, String targetString) throws Exception {
+    public void searchTarget(String filePath, String targetString, int totalWords) throws Exception {
         int position;
         int totalChecked = 0;
         int targetLength = targetString.length();
@@ -63,12 +47,11 @@ public class StringSearcher {
             while (startPosition < checkLength + targetLength - 1) {
                 position = toCheck.indexOf(targetString, startPosition);
                 if (position != -1) {
-                    resultList.add(totalChecked + position);
-                    resultMap.put(totalChecked + position, toCheck.substring(Math.max(position - 10, 0), Math.min(position + targetLength + 10, toCheck.length())));
+                    resultParsList.add(new ContentSearchResultValuePairs(totalChecked + position, toCheck.substring(Math.max(position - 10, 0), Math.min(position + targetLength + 10, toCheck.length()))));
                     if(mOnContentFindListener!=null)
                         mOnContentFindListener.onContentFind();
                     startPosition = position + targetLength;
-                    if (resultList.size() >= resultListLengthLimit)
+                    if (resultParsList.size() >= resultListLengthLimit)
                         return;
                 } else {
                     break;
