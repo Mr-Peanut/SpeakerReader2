@@ -84,7 +84,6 @@ public class FileActivity extends AppCompatActivity implements ScanFileAdapter.P
                         initFileSearchPopupWindow();
                     }
                 });
-
                 break;
         }
     }
@@ -169,7 +168,7 @@ public class FileActivity extends AppCompatActivity implements ScanFileAdapter.P
 
     @Override
     public void onBackPressed() {
-        if (searchPopupWindow.isShowing()) {
+        if (searchPopupWindow != null && searchPopupWindow.isShowing()) {
             searchPopupWindow.dismiss();
             return;
         }

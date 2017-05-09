@@ -66,9 +66,7 @@ public class SearchContentAsyncTask extends AsyncTask<ContentSearchBean, Void, V
     public interface ResultToShowTeller {
         void taskStart();
         void taskFinish();
-
         void taskUpdate();
-
         void taskCanceled();
     }
 }

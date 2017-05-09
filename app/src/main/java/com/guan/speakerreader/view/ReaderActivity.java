@@ -35,10 +35,13 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.guan.speakerreader.R;
 import com.guan.speakerreader.adapter.ContentSearchResultAdapter;
@@ -72,20 +75,6 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
      */
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
-        }
-    };
     private PageGroup contentPager;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -145,6 +134,20 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         @Override
         public void run() {
             hide();
+        }
+    };
+    /**
+     * Touch listener to use for in-layout UI controls to delay hiding the
+     * system UI. This is to prevent the jarring behavior of controls going away
+     * while interacting with activity UI.
+     */
+    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (AUTO_HIDE) {
+                delayedHide(AUTO_HIDE_DELAY_MILLIS);
+            }
+            return false;
         }
     };
     private SearchContentAsyncTask searchContentAsyncTask;
@@ -472,13 +475,14 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             View contentSearchPopupView=LayoutInflater.from(this).inflate(R.layout.searchcontentpopupwindow_view_layout,null);
             EditText searchNameInput= (EditText) contentSearchPopupView.findViewById(R.id.searchNameInput);
             ListView resultView = (ListView) contentSearchPopupView.findViewById(R.id.resultList);
-            final EditText searchContnetInput = (EditText) contentSearchPopupView.findViewById(R.id.search_content_input);
+            final EditText searchContentInput = (EditText) contentSearchPopupView.findViewById(R.id.search_content_input);
             final ContentSearchResultAdapter resultAdapter = new ContentSearchResultAdapter(stringSearcher.getResultParsList(), this);
             resultView.setAdapter(resultAdapter);
             resultView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), ((ContentSearchResultValuePairs) parent.getItemAtPosition(position)).getPosition());
+                    contentPager.getCurrentView().postInvalidate();
                 }
             });
             Button content_search_button= (Button) contentSearchPopupView.findViewById(R.id.content_search_button);
@@ -486,10 +490,13 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
                 @Override
                 public void onClick(View v) {
                     searchContentAsyncTask = new SearchContentAsyncTask(stringSearcher);
-                    if (searchContnetInput.getText().length() != 0)
-                        searchContentAsyncTask.execute(new ContentSearchBean(targetPath, searchContnetInput.getText().toString(), totalWords));
+                    searchContentAsyncTask.setResultToShowTeller(ReaderActivity.this);
+                    if (searchContentInput.getText() != null && searchContentInput.getText().toString().trim().length() != 0)
+                        searchContentAsyncTask.execute(new ContentSearchBean(targetPath, searchContentInput.getText().toString(), totalWords));
+                    else Toast.makeText(ReaderActivity.this, "搜索内容不能为空", Toast.LENGTH_SHORT).show();
                 }
             });
+            contentSearchPopupWindow.setContentView(contentSearchPopupView);
         }
         contentSearchPopupWindow.showAtLocation(rootView,Gravity.TOP,0,0);
     }
@@ -741,22 +748,40 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
 
     @Override
     public void taskStart() {
-
+        View contentSearchWindowView = contentSearchPopupWindow.getContentView();
+        LinearLayout taskStatueGroup = (LinearLayout) contentSearchWindowView.findViewById(R.id.taskStatueGroup);
+        TextView taskStatue = (TextView) taskStatueGroup.findViewById(R.id.taskStatue);
+        taskStatueGroup.setVisibility(View.VISIBLE);
+        taskStatue.setText("文件搜索中，请稍后……");
     }
 
     @Override
     public void taskFinish() {
-
+        View contentSearchWindowView = contentSearchPopupWindow.getContentView();
+        LinearLayout taskStatueGroup = (LinearLayout) contentSearchWindowView.findViewById(R.id.taskStatueGroup);
+        TextView taskStatue = (TextView) taskStatueGroup.findViewById(R.id.taskStatue);
+        ProgressBar taskProgressBar = (ProgressBar) taskStatueGroup.findViewById(R.id.taskProgressBar);
+        taskProgressBar.setVisibility(View.INVISIBLE);
+        taskStatueGroup.setVisibility(View.VISIBLE);
+        taskStatue.setText("文件检索结束");
     }
 
     @Override
     public void taskUpdate() {
-
+        ((ContentSearchResultAdapter) ((ListView) contentSearchPopupWindow.getContentView().findViewById(R.id.resultList)).getAdapter()).notifyDataSetChanged();
     }
 
     @Override
     public void taskCanceled() {
-
+        View contentSearchWindowView = contentSearchPopupWindow.getContentView();
+        LinearLayout taskStatueGroup = (LinearLayout) contentSearchWindowView.findViewById(R.id.taskStatueGroup);
+        TextView taskStatue = (TextView) taskStatueGroup.findViewById(R.id.taskStatue);
+        ProgressBar taskProgressBar = (ProgressBar) taskStatueGroup.findViewById(R.id.taskProgressBar);
+        taskProgressBar.setVisibility(View.INVISIBLE);
+        taskStatueGroup.setVisibility(View.VISIBLE);
+        taskStatue.setText("文件检索取消");
+        if (searchContentAsyncTask != null)
+            searchContentAsyncTask.setResultToShowTeller(null);
     }
 
     class ShowFinishedReceiver extends BroadcastReceiver {

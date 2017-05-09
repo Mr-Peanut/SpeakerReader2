@@ -17,7 +17,6 @@ import java.util.ArrayList;
 public class ContentSearchResultAdapter extends BaseAdapter {
     private ArrayList<ContentSearchResultValuePairs> resultValuePairsArrayList;
     private Context mContext;
-
     public ContentSearchResultAdapter(ArrayList<ContentSearchResultValuePairs> resultValuePairsArrayList, Context mContext) {
         this.resultValuePairsArrayList = resultValuePairsArrayList;
         this.mContext = mContext;
@@ -55,7 +54,7 @@ public class ContentSearchResultAdapter extends BaseAdapter {
         return convertView;
     }
 
-    static class ViewHolder {
+    private static class ViewHolder {
         TextView resultPreview;
     }
 }
