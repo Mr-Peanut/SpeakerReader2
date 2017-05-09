@@ -43,13 +43,13 @@ public class ContentSearchResultAdapter extends BaseAdapter {
         if (convertView == null) {
             fileHolder = new ViewHolder();
             convertView = new TextView(mContext);
-            convertView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            convertView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            convertView.setLayoutParams(layoutParams);
             fileHolder.resultPreview = (TextView) convertView;
             convertView.setTag(fileHolder);
         } else {
             fileHolder = (ViewHolder) convertView.getTag();
-            fileHolder.resultPreview.setText(resultValuePairsArrayList.get(position - 1).getPreview());
+            fileHolder.resultPreview.setText(resultValuePairsArrayList.get(position).getPreview());
         }
         return convertView;
     }
