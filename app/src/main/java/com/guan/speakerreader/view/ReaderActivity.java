@@ -54,9 +54,9 @@ import com.guan.speakerreader.util.SearchAsyncTask;
 import com.guan.speakerreader.util.SearchContentAsyncTask;
 import com.guan.speakerreader.util.StringSearcher;
 import com.guan.speakerreader.util.TxtTaker;
-
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdapter.InnerViewOnClickedListener, ReaderPagerAdapter.UpdateSeekBarController, SearchContentAsyncTask.ResultToShowTeller {
     /**
@@ -121,6 +121,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     private View rootView;
     private int textSize;
     private int marked;
+    private ArrayList<Integer> positionRecordList;
     private SearchAsyncTask mSearchTask;
     private PopupWindow contentSearchPopupWindow;
     //    private  PopupWindow settingWindow;
@@ -204,8 +205,6 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
                     initAdapter();
                 }
                 break;
-
-
         }
 
     }
@@ -214,6 +213,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         if (recordDatabaseHelper == null) {
             recordDatabaseHelper = new RecordDatabaseHelper(this, "recordDatabase", null, 1);
         }
+        positionRecordList=new ArrayList<>();
     }
 
     private void initPaint(Bundle savedInstanceState) {
@@ -357,23 +357,19 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
+
                     if (progress >= totalWords - 100)
-                        readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), totalWords - 100);
+                        skipToTarget( totalWords - 100);
                     else if (progress < 100) {
-                        readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), 0);
+                        skipToTarget(0);
                     } else {
-                        readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), progress);
+                        skipToTarget(progress);
                     }
-//                    contentPager.skipToChild();
-                    contentPager.getCurrentView().postInvalidate();
                 }
-
-//                statusText.setText(progress / totalWords * 100 + "%");
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                addPositionRecord();
             }
 
             @Override
@@ -406,6 +402,23 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         }
         contentPager.setAdapter(readerPagerAdapter);
         readerPagerAdapter.getContentController().setPageGroup(contentPager);
+
+    }
+
+    private void addPositionRecord() {
+        if(positionRecordList.size()>=5){
+            positionRecordList.remove(0);
+        }
+        positionRecordList.add(readerPagerAdapter.getContentController().getOnShowStart());
+    }
+    private void skipToLastPosition(){
+        if(positionRecordList.size()>=1){
+            skipToTarget(positionRecordList.remove(positionRecordList.size()-1));
+        }
+    }
+    private void skipToTarget(int position){
+        readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(),position);
+        contentPager.getCurrentView().postInvalidate();
 
     }
 
@@ -448,6 +461,13 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
                 initMenuView();
             }
         });
+        final Button backToLastPosition= (Button) findViewById(R.id.back_to_last_position);
+        backToLastPosition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                skipToLastPosition();
+            }
+        });
     }
 
     private void initToolbar() {
@@ -481,8 +501,9 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             resultView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(), ((ContentSearchResultValuePairs) parent.getItemAtPosition(position)).getPosition());
-                    contentPager.getCurrentView().postInvalidate();
+                    addPositionRecord();
+                    skipToTarget( ((ContentSearchResultValuePairs) parent.getItemAtPosition(position)).getPosition());
+                    contentSearchPopupWindow.dismiss();
                 }
             });
             Button content_search_button= (Button) contentSearchPopupView.findViewById(R.id.content_search_button);

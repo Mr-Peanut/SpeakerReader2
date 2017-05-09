@@ -114,6 +114,16 @@ public class ReaderPageGroup extends ViewGroup {
                 mXDown = ev.getRawX();
                 mXLastMove = mXDown;
                 hasScrolledX = getScrollX();
+                if(mXDown<=0.25*getMeasuredWidth()){
+                    mScroller.startScroll(getScrollX(),0,-getMeasuredWidth(),0);
+                    invalidate();
+                    return true;
+                }
+                if(mXDown>=0.75*getMeasuredWidth()){
+                    mScroller.startScroll(getScrollX(),0,getMeasuredWidth(),0);
+                    invalidate();
+                    return true;
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
                 mXMove = ev.getRawX();
@@ -147,12 +157,12 @@ public class ReaderPageGroup extends ViewGroup {
                 int hasScroll = (getScrollX() >= 0 ? getScrollX() : -getScrollX()) % getMeasuredWidth();
                 int dx;
                 if (getScrollX() <= 0) {
-                    if (hasScroll >= getMeasuredWidth() / 2)
+                    if (hasScroll >= getMeasuredWidth() *0.5)
                         dx = hasScroll - getMeasuredWidth();
                     else
                         dx = hasScroll;
                 } else {
-                    if (hasScroll >= getMeasuredWidth() / 2)
+                    if (hasScroll >= getMeasuredWidth() *0.5)
                         dx = getMeasuredWidth() - hasScroll;
                     else
                         dx = -hasScroll;
