@@ -158,48 +158,50 @@ public class ReaderPageGroup extends ViewGroup {
 //        return super.onInterceptTouchEvent(ev);
     }
 
-        @Override
-    public boolean onTouchEvent(MotionEvent event) {
-            if(event.getAction()==MotionEvent.ACTION_MOVE) {
-                mXMove = event.getRawX();
-                mXLastMove = mXMove;
-            }
-
-       return mGestureDetector.onTouchEvent(event);
-////        switch (event.getAction()) {
-////            case MotionEvent.ACTION_MOVE:
-////                mXMove = event.getRawX();
-////                int scrolledX = (int) ((mXDown - mXLastMove));
-////                if (hasScrolledX + scrolledX < leftBorder) {
-////                    scrollTo(leftBorder, 0);
-////                    return true;
-////                } else if (hasScrolledX + scrolledX + getMeasuredWidth() > rightBorder) {
-////                    scrollTo(rightBorder - getMeasuredWidth(), 0);
-////                    return true;
-////                }
-////                scrollTo(hasScrolledX + scrolledX, 0);
-////                mXLastMove = mXMove;
-////                break;
-////            case MotionEvent.ACTION_UP:
-////                int hasScroll = (getScrollX() >= 0 ? getScrollX() : -getScrollX()) % getMeasuredWidth();
-////                int dx;
-////                if (getScrollX() <= 0) {
-////                    if (hasScroll >= getMeasuredWidth() *0.5)
-////                        dx = hasScroll - getMeasuredWidth();
-////                    else
-////                        dx = hasScroll;
-////                } else {
-////                    if (hasScroll >= getMeasuredWidth() *0.5)
-////                        dx = getMeasuredWidth() - hasScroll;
-////                    else
-////                        dx = -hasScroll;
-////                }
-////                mScroller.startScroll(getScrollX(), 0, dx, 0);
-////                invalidate();
-////                break;
-////        }
-////        return super.onTouchEvent(event);
-    }
+//        @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//            Log.e("down","down");
+//            if(event.getAction()==MotionEvent.ACTION_MOVE) {
+//
+//                mXMove = event.getRawX();
+//                mXLastMove = mXMove;
+//            }
+//
+//       return mGestureDetector.onTouchEvent(event);
+//////        switch (event.getAction()) {
+//////            case MotionEvent.ACTION_MOVE:
+//////                mXMove = event.getRawX();
+//////                int scrolledX = (int) ((mXDown - mXLastMove));
+//////                if (hasScrolledX + scrolledX < leftBorder) {
+//////                    scrollTo(leftBorder, 0);
+//////                    return true;
+//////                } else if (hasScrolledX + scrolledX + getMeasuredWidth() > rightBorder) {
+//////                    scrollTo(rightBorder - getMeasuredWidth(), 0);
+//////                    return true;
+//////                }
+//////                scrollTo(hasScrolledX + scrolledX, 0);
+//////                mXLastMove = mXMove;
+//////                break;
+//////            case MotionEvent.ACTION_UP:
+//////                int hasScroll = (getScrollX() >= 0 ? getScrollX() : -getScrollX()) % getMeasuredWidth();
+//////                int dx;
+//////                if (getScrollX() <= 0) {
+//////                    if (hasScroll >= getMeasuredWidth() *0.5)
+//////                        dx = hasScroll - getMeasuredWidth();
+//////                    else
+//////                        dx = hasScroll;
+//////                } else {
+//////                    if (hasScroll >= getMeasuredWidth() *0.5)
+//////                        dx = getMeasuredWidth() - hasScroll;
+//////                    else
+//////                        dx = -hasScroll;
+//////                }
+//////                mScroller.startScroll(getScrollX(), 0, dx, 0);
+//////                invalidate();
+//////                break;
+//////        }
+//////        return super.onTouchEvent(event);
+//    }
 
     private void findPositionByScroll(int scrollX) {
         //通过滑动的位置判断当前页面
@@ -375,7 +377,7 @@ public class ReaderPageGroup extends ViewGroup {
             }
             mScroller.startScroll(getScrollX(), 0, dx, 0);
             invalidate();
-            return super.onScroll(e1, e2, distanceX, distanceY);
+            return true;
         }
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
@@ -391,7 +393,7 @@ public class ReaderPageGroup extends ViewGroup {
             }
             scrollTo(hasScrolledX + scrolledX, 0);
             mXLastMove = mXMove;
-            return super.onFling(e1, e2, velocityX, velocityY);
+            return true;
         }
 
         @Override
