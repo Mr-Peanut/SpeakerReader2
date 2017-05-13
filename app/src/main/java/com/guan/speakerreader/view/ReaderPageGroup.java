@@ -1,11 +1,9 @@
 package com.guan.speakerreader.view;
 
 import android.content.Context;
-import android.support.v4.view.ViewConfigurationCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
-import android.util.SparseIntArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,8 +13,6 @@ import android.widget.Scroller;
 
 import com.guan.speakerreader.adapter.ReaderPagerAdapter;
 import com.guan.speakerreader.util.ContentController;
-
-import java.util.HashMap;
 
 /**
  * Created by guans on 2017/4/20.
@@ -29,7 +25,7 @@ import java.util.HashMap;
 注意view的回收，一直保证最多有三个view，多余的view remove掉
  */
 public class ReaderPageGroup extends ViewGroup {
-    private int mTouchSlop;
+    //    private int mTouchSlop;
     private float mXDown;
     private float mXMove;
     private float mXLastMove;
@@ -57,7 +53,7 @@ public class ReaderPageGroup extends ViewGroup {
         super(context, attrs);
         mContext=context;
         ViewConfiguration configuration = ViewConfiguration.get(context);
-        mTouchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
+//        mTouchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
         mScroller = new Scroller(context);
         viewHashMap = new SparseArray<>();
         initGestureDetector();
@@ -160,9 +156,7 @@ public class ReaderPageGroup extends ViewGroup {
 
 //        @Override
 //    public boolean onTouchEvent(MotionEvent event) {
-//            Log.e("down","down");
 //            if(event.getAction()==MotionEvent.ACTION_MOVE) {
-//
 //                mXMove = event.getRawX();
 //                mXLastMove = mXMove;
 //            }
@@ -377,7 +371,7 @@ public class ReaderPageGroup extends ViewGroup {
             }
             mScroller.startScroll(getScrollX(), 0, dx, 0);
             invalidate();
-            return true;
+            return super.onScroll(e1, e2, distanceX, distanceY);
         }
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
@@ -393,7 +387,7 @@ public class ReaderPageGroup extends ViewGroup {
             }
             scrollTo(hasScrolledX + scrolledX, 0);
             mXLastMove = mXMove;
-            return true;
+            return super.onFling(e1, e2, velocityX, velocityY);
         }
 
         @Override
@@ -408,7 +402,7 @@ public class ReaderPageGroup extends ViewGroup {
 //            mXDown = e.getRawX();
 //            mXLastMove = mXDown;
 //            hasScrolledX = getScrollX();
-            return super.onDown(e);
+            return true;
         }
         @Override
         public boolean onDoubleTap(MotionEvent e) {
@@ -425,21 +419,22 @@ public class ReaderPageGroup extends ViewGroup {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             Log.e("onSingleTapConfirmed",String.valueOf(e.getRawX()));
-            return super.onSingleTapConfirmed(e);
+            if (e.getRawX() <= 0.33 * getMeasuredWidth()) {
+                mScroller.startScroll(getScrollX(), 0, -getMeasuredWidth(), 0);
+                invalidate();
+                return true;
+            }
+            if (e.getRawX() >= 0.66 * getMeasuredWidth()) {
+                mScroller.startScroll(getScrollX(), 0, getMeasuredWidth(), 0);
+                invalidate();
+                return true;
+            }
+            return false;
         }
         @Override
         public boolean onContextClick(MotionEvent e) {
             Log.e("onContextClick",String.valueOf(e.getRawX()));
-            if(e.getRawX()<=0.25*getMeasuredWidth()){
-                mScroller.startScroll(getScrollX(),0,-getMeasuredWidth(),0);
-                invalidate();
-                return true;
-            }
-            if(e.getRawX()>=0.75*getMeasuredWidth()){
-                mScroller.startScroll(getScrollX(),0,getMeasuredWidth(),0);
-                invalidate();
-                return true;
-            }
+
             return super.onContextClick(e);
         }
     }
