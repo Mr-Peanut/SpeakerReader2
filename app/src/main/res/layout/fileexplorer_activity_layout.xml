@@ -4,13 +4,13 @@
     android:id="@+id/file_explorer_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop="@dimen/toolbar_padding_top"
     android:orientation="vertical">
-
     <RelativeLayout
         android:id="@+id/file_explorer_tittle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="@color/bar_background"
         tools:ignore="UselessParent">
 
         <ImageButton

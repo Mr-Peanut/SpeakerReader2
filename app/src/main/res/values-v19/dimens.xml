@@ -1,4 +1,4 @@
 <resources>
     <dimen name="setting_margin">8dp</dimen>
-    <dimen name="toolbar_padding_top">0dp</dimen>
+    <dimen name="toolbar_padding_top">25dp</dimen>
 </resources>

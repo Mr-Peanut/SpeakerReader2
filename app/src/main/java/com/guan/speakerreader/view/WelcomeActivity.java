@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -19,11 +20,13 @@ import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -55,11 +58,13 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
     private Button settingButton;
     private boolean getPermission = false;
     private Toast permissionToast;
+    private Toolbar welcomeToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome_activity_layout);
+        initStatueTextColor();
         initView();
         initData();
         initReceiver();
@@ -69,6 +74,11 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
 //        if(Build.VERSION.PREVIEW_SDK_INT>=Build.VERSION_CODES.M){
         permissionCheck();
 //        }
+    }
+    private void initStatueTextColor() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
     }
 
     private void permissionCheck() {
@@ -118,11 +128,17 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
     初始化控件
      */
     private void initView() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WindowManager.LayoutParams localLayoutParams = getWindow().getAttributes();
+            localLayoutParams.flags = (WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | localLayoutParams.flags);
+        }
+        welcomeToolbar = (Toolbar) findViewById(R.id.welcome_toolbar);
+        setSupportActionBar(welcomeToolbar);
         permissionToast = Toast.makeText(this, "权限检查", Toast.LENGTH_SHORT);
-        rootContainer = (LinearLayout) findViewById(R.id.rootContainer);
-        fileChoose = (Button) findViewById(R.id.fileChoose);
-        scanFiles = (Button) findViewById(R.id.scanFiles);
-        recordList = (RecyclerView) findViewById(R.id.recoredList);
+        rootContainer = (LinearLayout) findViewById(R.id.root_container);
+        fileChoose = (Button) findViewById(R.id.file_choose);
+        scanFiles = (Button) findViewById(R.id.scan_files);
+        recordList = (RecyclerView) findViewById(R.id.record_list);
         fileChoose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

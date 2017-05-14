@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.guan.speakerreader.bean.ContentSearchResultValuePairs;
@@ -43,7 +44,7 @@ public class ContentSearchResultAdapter extends BaseAdapter {
         if (convertView == null) {
             fileHolder = new ViewHolder();
             convertView = new TextView(mContext);
-            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            ListView.LayoutParams layoutParams = new ListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             convertView.setLayoutParams(layoutParams);
             fileHolder.resultPreview = (TextView) convertView;
             convertView.setTag(fileHolder);

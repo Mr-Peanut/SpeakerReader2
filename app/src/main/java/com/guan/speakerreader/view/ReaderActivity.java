@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -158,6 +159,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         super.onCreate(savedInstanceState);
         mVisible = true;
         setContentView(R.layout.reader_activity_layout);
+//        initStatueTextColor();
         initDataBase();
         // Set up the user interaction to manually show or hide the system UI.
         // Upon interacting with UI controls, delay any scheduled hide()
@@ -169,6 +171,11 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         initPaint(savedInstanceState);
         chooseStartType(savedInstanceState);
     }
+//    private void initStatueTextColor() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+//        }
+//    }
 
     private void chooseStartType(Bundle savedInstanceState) {
         Intent startIntent = getIntent();
@@ -227,7 +234,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         if (textSize == 0)
             textSize = getSettingFromSharedPreferences("TextSize");
         if (textSize == 0)
-            textPaint.setTextSize(55.0f);
+            textPaint.setTextSize(30.0f);
         else
             textPaint.setTextSize(textSize);
         int textColor = 0;
@@ -288,47 +295,65 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
                     if (resultFile.exists()) {
                         //进一步优化，当系统中有记录时弹出对话框，提示“系统中已经有记录是否要从记录中读取
                         targetPath = resultFile.getAbsolutePath();
-                        Message chooseMSG = chooseHandler.obtainMessage();
-                        chooseHandler.sendMessage(chooseMSG);
-                        while (notChosen) {
-                        }
                         SQLiteDatabase recordDB = recordDatabaseHelper.getReadableDatabase();
                         Cursor recordCursor = recordDB.query(ReadRecordAdapter.TABLE_NAME, null, "formatPath=?", new String[]{targetPath}, null, null, null);
-                        //注意int和long
-                        recordCursor.moveToFirst();
-                        totalWords = recordCursor.getInt(recordCursor.getColumnIndex("totalWords"));
-                        if (fromRecord) {
-                            marked = recordCursor.getInt(recordCursor.getColumnIndex("position"));
-                        } else {
-                            marked = 0;
+                        Log.e("recordCount",String.valueOf(recordCursor.getCount()));
+                        if(recordCursor.getCount()!=0){
+
+                            Message chooseMSG = chooseHandler.obtainMessage();
+                            chooseHandler.sendMessage(chooseMSG);
+                            while (notChosen) {
+                            }
+                            //注意int和long
+                            recordCursor.moveToFirst();
+                            totalWords = recordCursor.getInt(recordCursor.getColumnIndex("totalWords"));
+                            if (fromRecord) {
+                                marked = recordCursor.getInt(recordCursor.getColumnIndex("position"));
+                            } else {
+                                marked = 0;
+                            }
+
+                            //设置对话框阻塞掉
+                            return totalWords;
+                        }else {
+                            resultFile.delete();
+                            totalWords=formatFile(originalFile,resultFile);
+                            if(totalWords!=0)
+                                return totalWords;
                         }
                         recordCursor.close();
-
-                        //设置对话框阻塞掉
-                        return totalWords;
                     } else {
-                        try {
-                            resultFile.createNewFile();
-                            targetPath = resultFile.getAbsolutePath();
-                            totalWords = TxtTaker.formatTxtFile(originalFile, resultFile);
-                            marked = 0;
-                            //下面的代码可以优化到一个方法中
-                            Log.e("insertName", originalFile.getName());
-                            Log.e("insert textPath", textPath);
-                            Log.e("insert totalWords", String.valueOf(totalWords));
-                            Log.e("insert targetPath", targetPath);
-                            recordDatabaseHelper.insert(ReadRecordAdapter.TABLE_NAME, originalFile.getName(), textPath, null, totalWords, 0, targetPath);
-                            return totalWords;
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            resultFile.deleteOnExit();
-                        }
+                        totalWords=formatFile(originalFile,resultFile);
+                        if(totalWords!=0)
+                        return totalWords;
                     }
                     //当无法建立格式化文件时，读取原始文件；
                     targetPath = textPath;
                     totalWords = TxtTaker.getTotalWords(textPath);
                     recordDatabaseHelper.insert(ReadRecordAdapter.TABLE_NAME, originalFile.getName(), textPath, null, totalWords, 0, null);
                     return totalWords;
+                }
+                private int formatFile(File originalFile,File resultFile){
+                    int totalWords;
+                    try {
+                        resultFile.createNewFile();
+                        targetPath = resultFile.getAbsolutePath();
+                        totalWords = TxtTaker.formatTxtFile(originalFile, resultFile);
+                        marked = 0;
+                        //下面的代码可以优化到一个方法中
+                        Log.e("insertName", originalFile.getName());
+                        Log.e("insert textPath", textPath);
+                        Log.e("insert totalWords", String.valueOf(totalWords));
+                        Log.e("insert targetPath", targetPath);
+                        recordDatabaseHelper.insert(ReadRecordAdapter.TABLE_NAME, originalFile.getName(), textPath, null, totalWords, 0, targetPath);
+                        return totalWords;
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        resultFile.deleteOnExit();
+                    }
+                    return 0;
+
                 }
 
                 @Override
@@ -419,6 +444,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     private void skipToTarget(int position){
         readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(),position);
         contentPager.getCurrentView().postInvalidate();
+        readerPagerAdapter.invalidateViews();
 
     }
 
@@ -818,6 +844,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             contentPager.setBackground(v.getBackground());
             textPaint.setColor(((TextView) v).getPaint().getColor());
             contentPager.invalidate();
+            readerPagerAdapter.invalidateViews();
 //            ReaderActivity.this.hide();
         }
     }
@@ -841,7 +868,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             readerPagerAdapter.getContentController().setMarked(oldMark);
             readerPagerAdapter.getContentController().reMeasure();
             contentPager.getCurrentView().postInvalidate();
-//            contentPager.invalidate();
+            readerPagerAdapter.invalidateViews();
             ((TextView) (settingWindow.getContentView().findViewById(R.id.text_size_show))).setText(String.valueOf(textSize));
         }
     }

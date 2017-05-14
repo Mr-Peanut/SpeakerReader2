@@ -22,16 +22,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
-
         <android.support.v7.widget.Toolbar
             android:id="@+id/read_toolbar"
             style="@style/AppTheme.AppBarOverlay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
-            android:background="@color/colorPrimary"
+            android:background="@color/bar_background"
             app:title="搜索">
-
             <TextView
                 android:id="@+id/search_textView"
                 android:layout_width="200dp"
