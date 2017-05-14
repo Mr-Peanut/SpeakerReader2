@@ -4,12 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.os.Build;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-
+import android.view.ViewParent;
 import com.guan.speakerreader.util.ContentController;
 
 /**
@@ -25,12 +28,25 @@ public class TextReaderView extends View {
     private StringBuffer stringBuffer;
     private int showCount;
     private ContentController mContentController;
+    private GestureDetector mGestureDetector;
 
     public TextReaderView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
         drawFinishedIntent = new Intent("DRAW_FINISHED");
         stringBuffer = new StringBuffer();
+        initGestureDetector();
+    }
+
+    private void initGestureDetector() {
+        mGestureDetector=new GestureDetector(mContext,new GestureListener(this));
+        setOnTouchListener(new OnTouchListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return mGestureDetector.onTouchEvent(event);
+            }
+        });
     }
 
     public void setPaint(Paint mPaint) {
@@ -148,4 +164,36 @@ public class TextReaderView extends View {
     public void setContentController(ContentController mContentController) {
         this.mContentController = mContentController;
     }
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener{
+        private TextReaderView textReaderView;
+        GestureListener(TextReaderView textReaderView) {
+            this.textReaderView = textReaderView;
+        }
+        @Override
+        public void onLongPress(MotionEvent e) {
+
+        }
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return !(e.getRawX()>0.33*textReaderView.getMeasuredWidth()&&e.getRawX()<0.66*textReaderView.getMeasuredWidth());
+        }
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            ViewParent parent=textReaderView.getParent();
+                if(e.getRawX()<=0.33*textReaderView.getMeasuredWidth()){
+                    //noinspection ConstantConditions
+                    ((ReaderPageGroup)parent.getParent()).scrollToLeft();
+                    return true;
+                }
+                if(e.getRawX()>=0.66*textReaderView.getMeasuredWidth()){
+                    //noinspection ConstantConditions
+                    ((ReaderPageGroup)parent.getParent()).scrollToRight();
+                    return true;
+                }
+            return false;
+        }
+    }
+
+
 }

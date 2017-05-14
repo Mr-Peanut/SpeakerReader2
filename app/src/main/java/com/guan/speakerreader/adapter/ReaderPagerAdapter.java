@@ -3,8 +3,11 @@ package com.guan.speakerreader.adapter;
 import android.content.Context;
 import android.graphics.Paint;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewParent;
 
 import com.guan.speakerreader.R;
 import com.guan.speakerreader.util.ContentController;
@@ -75,7 +78,6 @@ public class ReaderPagerAdapter implements View.OnClickListener {
         textReaderView.invalidate();
         return view;
     }
-
     public Object instantiateRightItem(ReaderPageGroup container, int position) {
         TextReaderView textReaderView;
         View view = null;
@@ -105,7 +107,9 @@ public class ReaderPagerAdapter implements View.OnClickListener {
         view.setOnClickListener(null);
         instantiatedViews.remove(view);
         container.getViewHashMap().remove(position);
+        if(viewList.size()<=3)
         viewList.add(new WeakReference<>(view));
+        else view.findViewById(R.id.content_view).setOnTouchListener(null);
     }
 
     public void invalidateViews() {
@@ -133,4 +137,5 @@ public class ReaderPagerAdapter implements View.OnClickListener {
     public interface UpdateSeekBarController {
         void upDate(int progress);
     }
+
 }

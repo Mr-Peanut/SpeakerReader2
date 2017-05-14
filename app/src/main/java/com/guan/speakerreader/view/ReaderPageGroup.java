@@ -1,6 +1,7 @@
 package com.guan.speakerreader.view;
 
 import android.content.Context;
+import android.support.v4.view.ViewConfigurationCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -25,7 +26,8 @@ import com.guan.speakerreader.util.ContentController;
 注意view的回收，一直保证最多有三个view，多余的view remove掉
  */
 public class ReaderPageGroup extends ViewGroup {
-    //    private int mTouchSlop;
+
+    private int mTouchSlop;
     private float mXDown;
     private float mXMove;
     private float mXLastMove;
@@ -40,8 +42,8 @@ public class ReaderPageGroup extends ViewGroup {
     private int hasScrolledX;
     private OnPageChangeListener mPageChangeListener;
     private boolean isFirstLayout = true;
-    private GestureDetector mGestureDetector;
-    private GestureDetector.SimpleOnGestureListener mSimpleOnGestureListener;
+//    private GestureDetector mGestureDetector;
+//    private GestureDetector.SimpleOnGestureListener mSimpleOnGestureListener;
     private SparseArray<View> viewHashMap;
     private Context mContext;
 
@@ -53,22 +55,22 @@ public class ReaderPageGroup extends ViewGroup {
         super(context, attrs);
         mContext=context;
         ViewConfiguration configuration = ViewConfiguration.get(context);
-//        mTouchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
+        mTouchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
         mScroller = new Scroller(context);
         viewHashMap = new SparseArray<>();
-        initGestureDetector();
+//        initGestureDetector();
     }
-    private void initGestureDetector(){
-        setLongClickable(true);
-        mSimpleOnGestureListener=new PageGroupOnGestureListener();
-        mGestureDetector=new GestureDetector(mContext,mSimpleOnGestureListener );
-//        setOnTouchListener(new OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                return mGestureDetector.onTouchEvent(event);
-//            }
-//        });
-    }
+//    private void initGestureDetector(){
+//        setLongClickable(true);
+//        mSimpleOnGestureListener=new PageGroupOnGestureListener();
+//        mGestureDetector=new GestureDetector(mContext,mSimpleOnGestureListener );
+////        setOnTouchListener(new OnTouchListener() {
+////            @Override
+////            public boolean onTouch(View v, MotionEvent event) {
+////                return mGestureDetector.onTouchEvent(event);
+////            }
+////        });
+//    }
 
     public SparseArray<View> getViewHashMap() {
         return viewHashMap;
@@ -124,78 +126,67 @@ public class ReaderPageGroup extends ViewGroup {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return mGestureDetector.onTouchEvent(ev);
-//        switch (ev.getAction()) {
-//            case MotionEvent.ACTION_DOWN:
-//                mXDown = ev.getRawX();
-//                mXLastMove = mXDown;
-////                return true;
-////                hasScrolledX = getScrollX();
-////                if(mXDown<=0.25*getMeasuredWidth()){
-////                    mScroller.startScroll(getScrollX(),0,-getMeasuredWidth(),0);
-////                    invalidate();
-////                    return true;
-////                }
-////                if(mXDown>=0.75*getMeasuredWidth()){
-////                    mScroller.startScroll(getScrollX(),0,getMeasuredWidth(),0);
-////                    invalidate();
-////                    return true;
-////                }
-//                break;
-//            case MotionEvent.ACTION_MOVE:
-//                mXMove = ev.getRawX();
-//                float diff = Math.abs(mXMove - mXDown);
-//                mXLastMove = mXMove;
-//                if (diff > mTouchSlop) {
-//                    return true;
-//                }
-//                break;
-//        }
-//        return super.onInterceptTouchEvent(ev);
+//        return mGestureDetector.onTouchEvent(ev);
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mXDown = ev.getRawX();
+                mXLastMove = mXDown;
+                hasScrolledX = getScrollX();
+                return false;
+            case MotionEvent.ACTION_MOVE:
+                mXMove = ev.getRawX();
+                float diff = Math.abs(mXMove - mXDown);
+                mXLastMove = mXMove;
+                if (diff > mTouchSlop) {
+                    return true;
+                }
+                break;
+        }
+        return super.onInterceptTouchEvent(ev);
     }
 
-//        @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//            if(event.getAction()==MotionEvent.ACTION_MOVE) {
-//                mXMove = event.getRawX();
-//                mXLastMove = mXMove;
-//            }
-//
-//       return mGestureDetector.onTouchEvent(event);
-//////        switch (event.getAction()) {
-//////            case MotionEvent.ACTION_MOVE:
-//////                mXMove = event.getRawX();
-//////                int scrolledX = (int) ((mXDown - mXLastMove));
-//////                if (hasScrolledX + scrolledX < leftBorder) {
-//////                    scrollTo(leftBorder, 0);
-//////                    return true;
-//////                } else if (hasScrolledX + scrolledX + getMeasuredWidth() > rightBorder) {
-//////                    scrollTo(rightBorder - getMeasuredWidth(), 0);
-//////                    return true;
-//////                }
-//////                scrollTo(hasScrolledX + scrolledX, 0);
-//////                mXLastMove = mXMove;
-//////                break;
-//////            case MotionEvent.ACTION_UP:
-//////                int hasScroll = (getScrollX() >= 0 ? getScrollX() : -getScrollX()) % getMeasuredWidth();
-//////                int dx;
-//////                if (getScrollX() <= 0) {
-//////                    if (hasScroll >= getMeasuredWidth() *0.5)
-//////                        dx = hasScroll - getMeasuredWidth();
-//////                    else
-//////                        dx = hasScroll;
-//////                } else {
-//////                    if (hasScroll >= getMeasuredWidth() *0.5)
-//////                        dx = getMeasuredWidth() - hasScroll;
-//////                    else
-//////                        dx = -hasScroll;
-//////                }
-//////                mScroller.startScroll(getScrollX(), 0, dx, 0);
-//////                invalidate();
-//////                break;
-//////        }
-//////        return super.onTouchEvent(event);
-//    }
+        @Override
+    public boolean onTouchEvent(MotionEvent event) {
+            if(event.getAction()==MotionEvent.ACTION_MOVE) {
+                mXMove = event.getRawX();
+                mXLastMove = mXMove;
+            }
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_MOVE:
+//                return mGestureDetector.onTouchEvent(event);
+                mXMove = event.getRawX();
+                int scrolledX = (int) ((mXDown - mXLastMove));
+                if (hasScrolledX + scrolledX < leftBorder) {
+                    scrollTo(leftBorder, 0);
+                    return true;
+                } else if (hasScrolledX + scrolledX + getMeasuredWidth() > rightBorder) {
+                    scrollTo(rightBorder - getMeasuredWidth(), 0);
+                    return true;
+                }
+                scrollTo(hasScrolledX + scrolledX, 0);
+                mXLastMove = mXMove;
+                break;
+            case MotionEvent.ACTION_UP:
+                int hasScroll = (getScrollX() >= 0 ? getScrollX() : -getScrollX()) % getMeasuredWidth();
+                int dx;
+                if (getScrollX() <= 0) {
+                    if (hasScroll >= getMeasuredWidth() *0.5)
+                        dx = hasScroll - getMeasuredWidth();
+                    else
+                        dx = hasScroll;
+                } else {
+                    if (hasScroll >= getMeasuredWidth() *0.5)
+                        dx = getMeasuredWidth() - hasScroll;
+                    else
+                        dx = -hasScroll;
+                }
+                mScroller.startScroll(getScrollX(), 0, dx, 0);
+                invalidate();
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
 
     private void findPositionByScroll(int scrollX) {
         //通过滑动的位置判断当前页面
@@ -259,6 +250,18 @@ public class ReaderPageGroup extends ViewGroup {
                 leftBorder += getMeasuredWidth();
             myChanged = true;
             Log.e("rightadd", "addright");
+        }
+    }
+    public void scrollToLeft(){
+        if (getScrollX()!=leftBorder) {
+            mScroller.startScroll(getScrollX(), 0, -getMeasuredWidth(), 0);
+            invalidate();
+        }
+    }
+    public void scrollToRight(){
+        if (getScrollX()!=rightBorder-getMeasuredWidth()) {
+            mScroller.startScroll(getScrollX(), 0, getMeasuredWidth(), 0);
+            invalidate();
         }
     }
 
@@ -335,107 +338,62 @@ public class ReaderPageGroup extends ViewGroup {
 
         void onPageScrollStateChanged(int state);
     }
-    private class PageGroupOnGestureListener extends GestureDetector.SimpleOnGestureListener{
-        PageGroupOnGestureListener() {
-            super();
-        }
-
-        @Override
-        public boolean onSingleTapUp(MotionEvent e) {
-            Log.e("onSingleTapUp",String.valueOf(e.getRawX()));
-
-            return super.onSingleTapUp(e);
-        }
-
-        @Override
-        public void onLongPress(MotionEvent e) {
-            Log.e("onLongPress",String.valueOf(e.getRawX()));
-            super.onLongPress(e);
-        }
-
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            Log.e("onScroll",String.valueOf(e2.getRawX()));
-            int hasScroll = (getScrollX() >= 0 ? getScrollX() : -getScrollX()) % getMeasuredWidth();
-            int dx;
-            if (getScrollX() <= 0) {
-                if (hasScroll >= getMeasuredWidth() *0.5)
-                    dx = hasScroll - getMeasuredWidth();
-                else
-                    dx = hasScroll;
-            } else {
-                if (hasScroll >= getMeasuredWidth() *0.5)
-                    dx = getMeasuredWidth() - hasScroll;
-                else
-                    dx = -hasScroll;
-            }
-            mScroller.startScroll(getScrollX(), 0, dx, 0);
-            invalidate();
-            return super.onScroll(e1, e2, distanceX, distanceY);
-        }
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            Log.e("onFling",String.valueOf(e2.getRawX()));
-            mXMove = e2.getRawX();
-            int scrolledX = (int) ((mXDown - mXLastMove));
-            if (hasScrolledX + scrolledX < leftBorder) {
-                scrollTo(leftBorder, 0);
-                return true;
-            } else if (hasScrolledX + scrolledX + getMeasuredWidth() > rightBorder) {
-                scrollTo(rightBorder - getMeasuredWidth(), 0);
-                return true;
-            }
-            scrollTo(hasScrolledX + scrolledX, 0);
-            mXLastMove = mXMove;
-            return super.onFling(e1, e2, velocityX, velocityY);
-        }
-
-        @Override
-        public void onShowPress(MotionEvent e) {
-            Log.e("onShowPress",String.valueOf(e.getRawX()));
-            super.onShowPress(e);
-        }
-
-        @Override
-        public boolean onDown(MotionEvent e) {
-            Log.e("onDown",String.valueOf(e.getRawX()));
+//    private class PageGroupOnGestureListener extends GestureDetector.SimpleOnGestureListener{
+//        PageGroupOnGestureListener() {
+//            super();
+//        }
+//        @Override
+//        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+//            Log.e("onScroll",String.valueOf(distanceX));
+//            if((distanceX<0&&getScrollX()!=leftBorder)||(distanceX>0&&getScrollX()!=rightBorder-getMeasuredWidth())){
+//                ReaderPageGroup.this.scrollBy((int) distanceX,0);
+//                ReaderPageGroup.this.invalidate();
+//            }
+//
+////            int hasScroll = (getScrollX() >= 0 ? getScrollX() : -getScrollX()) % getMeasuredWidth();
+////            int dx;
+////            if (getScrollX() <= 0) {
+////                if (hasScroll >= getMeasuredWidth() *0.5)
+////                    dx = hasScroll - getMeasuredWidth();
+////                else
+////                    dx = hasScroll;
+////            } else {
+////                if (hasScroll >= getMeasuredWidth() *0.5)
+////                    dx = getMeasuredWidth() - hasScroll;
+////                else
+////                    dx = -hasScroll;
+////            }
+////            mScroller.startScroll(getScrollX(), 0, dx, 0);
+////            invalidate();
+////            return super.onScroll(e1, e2, distanceX, distanceY);
+//            return true;
+//        }
+//        @Override
+//        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+//            Log.e("onFling",String.valueOf(velocityX));
+////            mXMove = e2.getRawX();
+////            int scrolledX = (int) ((mXDown - mXLastMove));
+////            if (hasScrolledX + scrolledX < leftBorder) {
+////                scrollTo(leftBorder, 0);
+////                return true;
+////            } else if (hasScrolledX + scrolledX + getMeasuredWidth() > rightBorder) {
+////                scrollTo(rightBorder - getMeasuredWidth(), 0);
+////                return true;
+////            }
+////            scrollTo(hasScrolledX + scrolledX, 0);
+////            mXLastMove = mXMove;
+////            return super.onFling(e1, e2, velocityX, velocityY);
+//            return true;
+//        }
+//
+//        @Override
+//        public boolean onDown(MotionEvent e) {
+//            Log.e("onDown",String.valueOf(e.getRawX()));
 //            mXDown = e.getRawX();
 //            mXLastMove = mXDown;
 //            hasScrolledX = getScrollX();
-            return true;
-        }
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            Log.e("onDoubleTap",String.valueOf(e.getRawX()));
-            return super.onDoubleTap(e);
-        }
-
-        @Override
-        public boolean onDoubleTapEvent(MotionEvent e) {
-            Log.e("onDoubleTapEvent",String.valueOf(e.getRawX()));
-            return super.onDoubleTapEvent(e);
-        }
-
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            Log.e("onSingleTapConfirmed",String.valueOf(e.getRawX()));
-            if (e.getRawX() <= 0.33 * getMeasuredWidth()) {
-                mScroller.startScroll(getScrollX(), 0, -getMeasuredWidth(), 0);
-                invalidate();
-                return true;
-            }
-            if (e.getRawX() >= 0.66 * getMeasuredWidth()) {
-                mScroller.startScroll(getScrollX(), 0, getMeasuredWidth(), 0);
-                invalidate();
-                return true;
-            }
-            return false;
-        }
-        @Override
-        public boolean onContextClick(MotionEvent e) {
-            Log.e("onContextClick",String.valueOf(e.getRawX()));
-
-            return super.onContextClick(e);
-        }
-    }
+//            return false;
+//        }
+//
+//    }
 }
