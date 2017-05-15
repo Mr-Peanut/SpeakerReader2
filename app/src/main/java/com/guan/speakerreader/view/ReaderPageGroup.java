@@ -147,10 +147,10 @@ public class ReaderPageGroup extends ViewGroup {
 
         @Override
     public boolean onTouchEvent(MotionEvent event) {
-            if(event.getAction()==MotionEvent.ACTION_MOVE) {
-                mXMove = event.getRawX();
-                mXLastMove = mXMove;
-            }
+//            if(event.getAction()==MotionEvent.ACTION_MOVE) {
+//                mXMove = event.getRawX();
+//                mXLastMove = mXMove;
+//            }
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
@@ -168,21 +168,56 @@ public class ReaderPageGroup extends ViewGroup {
                 mXLastMove = mXMove;
                 break;
             case MotionEvent.ACTION_UP:
-                int hasScroll = (getScrollX() >= 0 ? getScrollX() : -getScrollX()) % getMeasuredWidth();
+                float upX=event.getRawX();
+                int fingerMove= (int) (upX-mXDown);
+                Log.e("fingerMove",String.valueOf(fingerMove));
+                //别忘了左右边界的判断
+//                int overScroll = (getScrollX() >= 0 ? getScrollX() : -getScrollX()) % getMeasuredWidth();
+                int overScroll =getScrollX()% getMeasuredWidth();
+                int hasScroll;
                 int dx;
-                if (getScrollX() <= 0) {
-                    if (hasScroll >= getMeasuredWidth() *0.5)
-                        dx = hasScroll - getMeasuredWidth();
-                    else
-                        dx = hasScroll;
-                } else {
-                    if (hasScroll >= getMeasuredWidth() *0.5)
-                        dx = getMeasuredWidth() - hasScroll;
-                    else
-                        dx = -hasScroll;
-                }
-                mScroller.startScroll(getScrollX(), 0, dx, 0);
-                invalidate();
+//                if (getScrollX() <= 0) {
+                    if(fingerMove<0&&getScrollX()!=rightBorder-getMeasuredWidth()){
+                        hasScroll=getMeasuredWidth()-overScroll;
+                        if(hasScroll>=0.25*getMeasuredWidth()){
+                            dx=hasScroll-getMeasuredWidth();
+                        }else {
+                            dx=-hasScroll;
+                        }
+                        mScroller.startScroll(getScrollX(), 0, dx, 0);
+                        invalidate();
+                    }
+                    if(fingerMove>0&&getScrollX()!=leftBorder){
+                        hasScroll=overScroll;
+                        if(hasScroll>=0.25*getMeasuredWidth()){
+                            dx=getMeasuredWidth()-overScroll;
+                        }else {
+                            dx=-hasScroll;
+                        }
+                        mScroller.startScroll(getScrollX(), 0, dx, 0);
+                        invalidate();
+                    }
+//                } else {
+//                   if(fingerMove<0){
+//                       hasScroll=overScroll;
+//                       if(hasScroll>=0.25*getMeasuredWidth()){
+//                           dx=hasScroll-getMeasuredWidth();
+//                       }else {
+//                           dx=-hasScroll;
+//                       }
+//                   }else {
+//                           hasScroll=overScroll;
+//                           if(hasScroll>=0.25*getMeasuredWidth()){
+//                               dx=getMeasuredWidth()-overScroll;
+//                           }else {
+//                               dx=-hasScroll;
+//                           }
+//
+//
+//                   }
+//                }
+//                mScroller.startScroll(getScrollX(), 0, dx, 0);
+//                invalidate();
                 break;
         }
         return super.onTouchEvent(event);
