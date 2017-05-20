@@ -90,7 +90,6 @@ public class ReaderPageGroup extends ViewGroup {
         measureChildren(widthMeasureSpec, heightMeasureSpec);
         if (mContentController != null && getChildAt(0) != null && mContentController.getShowWidth() != getChildAt(0).getMeasuredWidth()) {
             mContentController.setShowHeight(getChildAt(0).getMeasuredHeight());
-            Log.e("0 measure", String.valueOf(getChildAt(0).getMeasuredWidth()));
             mContentController.setShowWidth(getChildAt(0).getMeasuredWidth());
             mContentController.initUtils();
         }
@@ -104,21 +103,14 @@ public class ReaderPageGroup extends ViewGroup {
             for (int i = 0; i < childCount; i++) {
                 View child = getChildAt(i);
                 //此处应该添加一个变量来记录上次滑动后的初始位置和结束位置
-//                child.layout(i*child.getMeasuredWidth()+leftBorder,0,(i+1)*child.getMeasuredWidth()+leftBorder,child.getMeasuredHeight());
                 child.layout(i * getMeasuredWidth() + leftBorder, 0, (i + 1) * getMeasuredWidth() + leftBorder, getMeasuredHeight());
-                Log.e("left", String.valueOf(i * getMeasuredWidth() + leftBorder));
-                Log.e("right", String.valueOf((i + 1) * getMeasuredWidth() + leftBorder));
 
             }
             if (getChildCount() != 0) {
-                Log.e("0 Layout", String.valueOf(getChildAt(0).getMeasuredWidth()));
                 if (childWidth == 0 && childWidth != getChildAt(0).getMeasuredWidth())
                     childWidth = getChildAt(0).getMeasuredWidth();
-                Log.e("childWidth", String.valueOf(childWidth) + "  " + getMeasuredWidth());
                 leftBorder = getChildAt(0).getRight() - getMeasuredWidth();
                 rightBorder = getChildAt(getChildCount() - 1).getLeft() + getMeasuredWidth();
-                Log.e("leftBorder", String.valueOf(leftBorder));
-                Log.e("rightBorder", String.valueOf(rightBorder));
             }
             myChanged = false;
         }
@@ -168,19 +160,40 @@ public class ReaderPageGroup extends ViewGroup {
                 mXLastMove = mXMove;
                 break;
             case MotionEvent.ACTION_UP:
+//                int hasScroll = (getScrollX() >= 0 ? getScrollX() : -getScrollX()) % getMeasuredWidth();
+//                int dx;
+//                if (getScrollX() <= 0) {
+//                    if (hasScroll >= getMeasuredWidth() *0.5)
+//                        dx = hasScroll - getMeasuredWidth();
+//                    else
+//                        dx = hasScroll;
+//                } else {
+//                    if (hasScroll >= getMeasuredWidth() *0.5)
+//                        dx = getMeasuredWidth() - hasScroll;
+//                    else
+//                        dx = -hasScroll;
+//                }
                 int hasScroll = (getScrollX() >= 0 ? getScrollX() : -getScrollX()) % getMeasuredWidth();
+                Log.e("hasScroll",String.valueOf(hasScroll));
                 int dx;
-                if (getScrollX() <= 0) {
-                    if (hasScroll >= getMeasuredWidth() *0.5)
-                        dx = hasScroll - getMeasuredWidth();
-                    else
-                        dx = hasScroll;
-                } else {
-                    if (hasScroll >= getMeasuredWidth() *0.5)
-                        dx = getMeasuredWidth() - hasScroll;
-                    else
-                        dx = -hasScroll;
+                float fingerMove=event.getRawX()-mXDown;
+                Log.e("fingerMove",String.valueOf(fingerMove));
+                if(getScrollX()>0){
+                    if(fingerMove<0){
+                        dx=getMeasuredWidth()-hasScroll;
+                    }else {
+                        dx=-hasScroll;
+                    }
+                }else {
+                    if(fingerMove<0){
+                        dx=hasScroll;
+                    }else {
+                        dx=hasScroll-getMeasuredWidth();
+
+                    }
                 }
+
+                Log.e("dx",String.valueOf(dx));
                 mScroller.startScroll(getScrollX(), 0, dx, 0);
                 invalidate();
                 break;
@@ -215,7 +228,6 @@ public class ReaderPageGroup extends ViewGroup {
     }
 
     private void flushLayout() {
-        Log.e("flushLayout", "flushLayout");
         if (getScrollX() == leftBorder) {
             addLeftView();
         } else if (getScrollX() + getMeasuredWidth() == rightBorder) {

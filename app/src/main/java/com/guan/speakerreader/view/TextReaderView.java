@@ -70,7 +70,6 @@ public class TextReaderView extends View {
             mContentController.initUtils();
         }
         mContent = mContentController.getContent(position);
-        Log.e("ContentLength", mContent);
 //        if(position==0){
 //            mContentController.notifyPageChanged(position);
 //        }
