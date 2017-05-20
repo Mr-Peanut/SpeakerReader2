@@ -5,7 +5,7 @@ import android.support.v4.view.ViewConfigurationCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
-import android.view.GestureDetector;
+//import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -45,7 +45,6 @@ public class ReaderPageGroup extends ViewGroup {
 //    private GestureDetector mGestureDetector;
 //    private GestureDetector.SimpleOnGestureListener mSimpleOnGestureListener;
     private SparseArray<View> viewHashMap;
-    private Context mContext;
 
     public ReaderPageGroup(Context context) {
         super(context);
@@ -53,7 +52,6 @@ public class ReaderPageGroup extends ViewGroup {
 
     public ReaderPageGroup(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mContext=context;
         ViewConfiguration configuration = ViewConfiguration.get(context);
         mTouchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
         mScroller = new Scroller(context);
@@ -139,16 +137,15 @@ public class ReaderPageGroup extends ViewGroup {
 
         @Override
     public boolean onTouchEvent(MotionEvent event) {
-            if(event.getAction()==MotionEvent.ACTION_MOVE) {
-                mXMove = event.getRawX();
-                mXLastMove = mXMove;
-            }
-
+//            if(event.getAction()==MotionEvent.ACTION_MOVE) {
+//                mXMove = event.getRawX();
+//                mXLastMove = mXMove;
+//            }
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
 //                return mGestureDetector.onTouchEvent(event);
                 mXMove = event.getRawX();
-                int scrolledX = (int) ((mXDown - mXLastMove));
+                int scrolledX = (int) (mXDown - mXLastMove);
                 if (hasScrolledX + scrolledX < leftBorder) {
                     scrollTo(leftBorder, 0);
                     return true;
@@ -174,10 +171,8 @@ public class ReaderPageGroup extends ViewGroup {
 //                        dx = -hasScroll;
 //                }
                 int hasScroll = (getScrollX() >= 0 ? getScrollX() : -getScrollX()) % getMeasuredWidth();
-                Log.e("hasScroll",String.valueOf(hasScroll));
                 int dx;
                 float fingerMove=event.getRawX()-mXDown;
-                Log.e("fingerMove",String.valueOf(fingerMove));
                 if(getScrollX()>0){
                     if(fingerMove<0){
                         dx=getMeasuredWidth()-hasScroll;
@@ -189,11 +184,8 @@ public class ReaderPageGroup extends ViewGroup {
                         dx=hasScroll;
                     }else {
                         dx=hasScroll-getMeasuredWidth();
-
                     }
                 }
-
-                Log.e("dx",String.valueOf(dx));
                 mScroller.startScroll(getScrollX(), 0, dx, 0);
                 invalidate();
                 break;
@@ -222,7 +214,6 @@ public class ReaderPageGroup extends ViewGroup {
                     addRightView();
                 if (!isFirstLayout)
                     flushLayout();
-                Log.e("scroll", String.valueOf(getScrollX()));
             }
         }
     }
@@ -249,7 +240,6 @@ public class ReaderPageGroup extends ViewGroup {
             Log.e("leftadd", "addLeft");
         }
     }
-
     private void addRightView() {
         if (mContentController.getPageEnd().indexOfKey(onShowPosition) >= 0 && mContentController.getPageEnd().get(onShowPosition) != -1 && mContentController.getPageEnd().get(onShowPosition) < mContentController.getTotalWords() - 1) {
             if (getChildCount() >= 3)
@@ -275,13 +265,6 @@ public class ReaderPageGroup extends ViewGroup {
             mScroller.startScroll(getScrollX(), 0, getMeasuredWidth(), 0);
             invalidate();
         }
-    }
-
-    public void skipToChild() {
-        for(int i=0;i<getChildCount();i++){
-            getChildAt(i).invalidate();
-        }
-        pagerAdapter.invalidateViews();
     }
 
     public ReaderPagerAdapter getAdapter() {
