@@ -5,7 +5,6 @@ import android.support.v4.view.ViewConfigurationCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
-//import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -14,6 +13,8 @@ import android.widget.Scroller;
 
 import com.guan.speakerreader.adapter.ReaderPagerAdapter;
 import com.guan.speakerreader.util.ContentController;
+
+//import android.view.GestureDetector;
 
 /**
  * Created by guans on 2017/4/20.
@@ -171,23 +172,32 @@ public class ReaderPageGroup extends ViewGroup {
 //                        dx = -hasScroll;
 //                }
                 int hasScroll = (getScrollX() >= 0 ? getScrollX() : -getScrollX()) % getMeasuredWidth();
-                int dx;
+                int dx = 0;
                 float fingerMove=event.getRawX()-mXDown;
                 if(getScrollX()>0){
                     if(fingerMove<0){
+                        if (getScrollX() != rightBorder - getMeasuredWidth())
                         dx=getMeasuredWidth()-hasScroll;
                     }else {
-                        dx=-hasScroll;
+                        if (getScrollX() != leftBorder)
+                            dx = -hasScroll;
                     }
                 }else {
                     if(fingerMove<0){
-                        dx=hasScroll;
+                        if (getScrollX() != rightBorder - getMeasuredWidth()) {
+                            dx = hasScroll;
+                        }
                     }else {
-                        dx=hasScroll-getMeasuredWidth();
+                        if (getScrollX() != leftBorder) {
+                            dx = hasScroll - getMeasuredWidth();
+                        }
                     }
                 }
-                mScroller.startScroll(getScrollX(), 0, dx, 0);
-                invalidate();
+                if (dx != 0) {
+                    Log.e("dx", String.valueOf(dx));
+                    mScroller.startScroll(getScrollX(), 0, dx, 0);
+                    invalidate();
+                }
                 break;
         }
         return super.onTouchEvent(event);
