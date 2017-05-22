@@ -120,6 +120,7 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
             readRecordAdapter.setItemOnLongClickedListener(WelcomeActivity.this);
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(WelcomeActivity.this, LinearLayoutManager.VERTICAL, false);
             recordList.setLayoutManager(layoutManager);
+
             recordList.setAdapter(readRecordAdapter);
         }
     }
@@ -187,7 +188,6 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
             case REQUEST_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getPermission = true;
-                    Log.e("getPerssion", "getPerssion");
                     if (settingButton != null) {
                         rootContainer.removeView(settingButton);
                         settingButton = null;

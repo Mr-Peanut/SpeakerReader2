@@ -690,6 +690,8 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         saveSettingInSharedPreferences("TextColor", textPaint.getColor());
         Log.e("textcolortosave", String.valueOf(textPaint.getColor()));
         saveSettingInSharedPreferences("TextSize", textSize);
+        Log.e("textsizetosave", String.valueOf(textSize));
+        Log.e("onDestory","onDestory");
         super.onDestroy();
     }
 
