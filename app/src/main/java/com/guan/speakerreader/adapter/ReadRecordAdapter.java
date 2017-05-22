@@ -7,12 +7,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.guan.speakerreader.R;
+import com.guan.speakerreader.view.RecordItemGroup;
 
 import java.io.File;
 
@@ -29,11 +29,20 @@ public class ReadRecordAdapter extends RecyclerView.Adapter<ReadRecordAdapter.MH
     private Cursor recordCursor;
     private DeleteItemOnClickedListener mDeleteItemOnClickedListener;
     private ItemOnLongClickedListener mItemOnLongClickedListener;
+    private int openChildPosition = -1;
 
     public ReadRecordAdapter(Context context, SQLiteOpenHelper mHelper) {
         this.context = context;
         this.mHelper = mHelper;
         getData();
+    }
+
+    public int getOpenChildPosition() {
+        return openChildPosition;
+    }
+
+    public void setOpenChildPosition(int openChildPosition) {
+        this.openChildPosition = openChildPosition;
     }
 
     public void setItemOnLongClickedListener(ItemOnLongClickedListener mItemOnLongClickedListener) {
@@ -83,19 +92,19 @@ public class ReadRecordAdapter extends RecyclerView.Adapter<ReadRecordAdapter.MH
     @Override
     public void onBindViewHolder(MHolder holder, final int position) {
         TextView itemContent = holder.item;
-        TextView deleteItemText = holder.deleteItem;
+        final TextView deleteItemText = holder.deleteItem;
         recordCursor.moveToPosition(recordCursor.getCount() - position - 1);
         //记录的显示方法
         itemContent.setText(recordCursor.getInt(recordCursor.getColumnIndex("_id")) + " " + recordCursor.getString(recordCursor.getColumnIndex("filename")) + " " + recordCursor.getString(recordCursor.getColumnIndex("preview")));
-        itemContent.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return false;
-            }
-        });
         itemContent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (deleteItemText.getParent() != null) {
+                    if (((RecordItemGroup) deleteItemText.getParent()).isDrawerOpen) {
+                        ((RecordItemGroup) deleteItemText.getParent()).backTo0();
+                        return;
+                    }
+                }
                 mItemOnClickedListener.onRecordItemClick(position);
             }
         });
@@ -109,6 +118,9 @@ public class ReadRecordAdapter extends RecyclerView.Adapter<ReadRecordAdapter.MH
             @Override
             public void onClick(View v) {
                 ReadRecordAdapter.this.deleteDataItem(position);
+                if (deleteItemText.getParent() != null) {
+                    ((RecordItemGroup) deleteItemText.getParent()).backTo0();
+                }
 //                mDeleteItemOnClickedListener.onDeleteClick(position);
             }
         });
