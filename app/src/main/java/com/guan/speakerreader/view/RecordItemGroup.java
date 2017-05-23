@@ -16,8 +16,10 @@ import android.widget.Scroller;
  */
 
 public class RecordItemGroup extends ViewGroup {
+    public boolean isDrawerOpen = false;
     private int leftBorder;
-    private int totalChildrenWidth; private int mTouchSlop;
+    private int totalChildrenWidth;
+    private int mTouchSlop;
     private float mXDown;
     private float mXMove;
     private float mXLastMove;
@@ -113,6 +115,8 @@ public class RecordItemGroup extends ViewGroup {
             scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
             invalidate();
         }
+        isDrawerOpen = !(getScrollX() == 0);
+        Log.e("isDrawerOpen", String.valueOf(isDrawerOpen));
     }
     public void backTo0(){
         scrollTo(0,0);
