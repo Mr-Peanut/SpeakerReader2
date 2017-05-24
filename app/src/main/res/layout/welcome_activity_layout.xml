@@ -8,16 +8,17 @@
     android:orientation="vertical">
     <android.support.v7.widget.Toolbar
         android:id="@+id/welcome_toolbar"
-        android:background="@color/bar_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/bar_background"
         android:paddingTop="@dimen/toolbar_padding_top"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
         <TextView
             android:id="@+id/search_file"
-            android:drawableStart="@mipmap/ic_launcher_round"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#66ffdd"
+            android:drawableStart="@mipmap/ic_launcher_round"
             android:gravity="center"
             android:text="@string/search_root_file"/>
     </android.support.v7.widget.Toolbar>

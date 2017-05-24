@@ -13,10 +13,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.WelcomeActivity"
+        <activity
+            android:name=".view.WelcomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -24,12 +26,20 @@
         <activity
             android:name=".view.FileActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".view.ReaderActivity"
             android:theme="@style/AppTheme.NoActionBar">
-            <!--android:hardwareAccelerated="false"-->
+
+            <!-- android:hardwareAccelerated="false" -->
         </activity>
+        <activity
+            android:name=".view.SearchFileActivity"
+            android:label="@string/title_activity_search_file"
+            android:theme="@style/AppTheme" />
+
+        <service
+            android:name=".service.FileSearchService"
+            android:exported="false"></service>
     </application>
 
 </manifest>
