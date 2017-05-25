@@ -61,6 +61,7 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
     private Toast permissionToast;
     private Toolbar welcomeToolbar;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,6 +144,14 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
         }
         welcomeToolbar = (Toolbar) findViewById(R.id.welcome_toolbar);
         setSupportActionBar(welcomeToolbar);
+        TextView searchFile = (TextView) findViewById(R.id.search_file);
+        searchFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent startSearchFileActivityIntent = new Intent(WelcomeActivity.this, SearchFileActivity.class);
+                startActivity(startSearchFileActivityIntent);
+            }
+        });
         permissionToast = Toast.makeText(this, "权限检查", Toast.LENGTH_SHORT);
         rootContainer = (LinearLayout) findViewById(R.id.root_container);
         fileChoose = (Button) findViewById(R.id.file_choose);
