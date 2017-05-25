@@ -17,7 +17,7 @@ import java.util.List;
 
 public class PathUtil {
     @TargetApi(24)
-    public static String[] getSDcardPath(Context context) {
+    public static String[] getSDCardPath(Context context) {
         List<String> pathList = new ArrayList<String>();
         try {
             Method getPath = getPathMethod();
@@ -28,19 +28,16 @@ public class PathUtil {
                     pathList.add(volumePath);
                 }
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
             String volumePath = Environment.getExternalStorageDirectory().getAbsolutePath();
             pathList.add(volumePath);
         }
-
         return pathList.toArray(new String[pathList.size()]);
     }
 
     @TargetApi(24)
-    public static HashMap<String, String> getSDcardStatu(Context context) {
+    public static HashMap<String, String> getSDCardStatue(Context context) {
         HashMap<String, String> volumeMap = new HashMap<String, String>();
         try {
             Method getPath = getPathMethod();
@@ -86,7 +83,6 @@ public class PathUtil {
                     volumeInfo.setVolumeName(volumePath.substring(volumePath.lastIndexOf(File.separator) + 1));
                     volumeInfoList.add(volumeInfo);
                 }
-
             }
         } catch (Exception e) {
             e.printStackTrace();

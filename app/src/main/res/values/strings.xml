@@ -24,4 +24,5 @@
     <string name="search_button">搜索</string>
     <string name="search_root_file">搜索本机文件</string>
     <string name="title_activity_search_file">SearchFileActivity</string>
+    <string name="search_file_name_input_hint">请输入要搜索的文件名</string>
 </resources>

@@ -169,7 +169,6 @@ public class ScanFileAdapter extends RecyclerView.Adapter<ScanFileAdapter.FileHo
 
     public interface ProcessBarController {
         void showProcessBar();
-
         void disMissProcessBar();
     }
 

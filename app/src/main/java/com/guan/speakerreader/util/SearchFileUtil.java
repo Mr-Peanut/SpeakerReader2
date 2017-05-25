@@ -9,7 +9,7 @@ import java.io.File;
 public class SearchFileUtil {
     private SearchRequirement mSearchRequirement;
     private OnResultFindListener mOnResultFindListener;
-
+    private boolean run = true;
     public void setSearchRequirement(SearchRequirement mSearchRequirement) {
         this.mSearchRequirement = mSearchRequirement;
     }
@@ -22,6 +22,8 @@ public class SearchFileUtil {
         if (mOnResultFindListener == null || mSearchRequirement == null) {
             throw new UnsupportedOperationException("SearchRequirement or OnResultFindListener is not implemented");
         }
+        if (!run)
+            return;
         if (parentFile.isDirectory()) {
             File[] files = parentFile.listFiles();
             for (File file : files) {
@@ -34,6 +36,9 @@ public class SearchFileUtil {
         }
     }
 
+    public void stopTask() {
+        run = false;
+    }
     public void searchFile(String filePath) {
         searchFile(new File(filePath));
     }
