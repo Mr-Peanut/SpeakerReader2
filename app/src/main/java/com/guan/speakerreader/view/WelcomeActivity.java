@@ -123,7 +123,6 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
             readRecordAdapter.setItemOnLongClickedListener(WelcomeActivity.this);
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(WelcomeActivity.this, LinearLayoutManager.VERTICAL, false);
             recordList.setLayoutManager(layoutManager);
-
             recordList.setAdapter(readRecordAdapter);
             recordList.setOnScrollChangeListener(new View.OnScrollChangeListener() {
                 @Override

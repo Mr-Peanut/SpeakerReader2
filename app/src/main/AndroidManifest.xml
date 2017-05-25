@@ -36,7 +36,6 @@
             android:name=".view.SearchFileActivity"
             android:label="@string/title_activity_search_file"
             android:theme="@style/AppTheme" />
-
         <service
             android:name=".service.FileSearchService"
             android:exported="false"></service>

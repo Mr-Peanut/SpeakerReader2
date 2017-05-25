@@ -14,7 +14,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -55,6 +54,7 @@ import com.guan.speakerreader.util.SearchAsyncTask;
 import com.guan.speakerreader.util.SearchContentAsyncTask;
 import com.guan.speakerreader.util.StringSearcher;
 import com.guan.speakerreader.util.TxtTaker;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -76,20 +76,6 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
      */
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
-        }
-    };
     private ReaderPageGroup contentPager;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -150,6 +136,20 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         @Override
         public void run() {
             hide();
+        }
+    };
+    /**
+     * Touch listener to use for in-layout UI controls to delay hiding the
+     * system UI. This is to prevent the jarring behavior of controls going away
+     * while interacting with activity UI.
+     */
+    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (AUTO_HIDE) {
+                delayedHide(AUTO_HIDE_DELAY_MILLIS);
+            }
+            return false;
         }
     };
     private SearchContentAsyncTask searchContentAsyncTask;
@@ -524,6 +524,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             final EditText searchContentInput = (EditText) contentSearchPopupView.findViewById(R.id.search_content_input);
             final ContentSearchResultAdapter resultAdapter = new ContentSearchResultAdapter(stringSearcher.getResultParsList(), this);
             resultView.setAdapter(resultAdapter);
+            searchContentInput.setSelection(0, 1);
             resultView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

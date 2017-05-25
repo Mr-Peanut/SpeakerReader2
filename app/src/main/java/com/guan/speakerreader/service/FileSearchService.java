@@ -4,6 +4,11 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 
+import com.guan.speakerreader.util.SearchFileUtil;
+
+import java.io.File;
+import java.util.ArrayList;
+
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
@@ -12,80 +17,66 @@ import android.content.Intent;
  * helper methods.
  */
 public class FileSearchService extends IntentService {
-    // TODO: Rename actions, choose action names that describe tasks that this
-    // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    private static final String ACTION_FOO = "com.guan.speakerreader.action.FOO";
-    private static final String ACTION_BAZ = "com.guan.speakerreader.action.BAZ";
-
-    // TODO: Rename parameters
-    private static final String EXTRA_PARAM1 = "com.guan.speakerreader.extra.PARAM1";
-    private static final String EXTRA_PARAM2 = "com.guan.speakerreader.extra.PARAM2";
+    public static final String FILE_FIND_ACTION = "com.guan.speakerreader.FILE_FIND";
+    public static final String SEARCH_TASK_FINISHED = "com.guan.speakerreader.SEARCH_TASK_FINISHED";
+    private static final String ACTION_SEARCH_FILE = "com.guan.speakerreader.action.ACTION_SEARCH_FILE";
+    private static final String SEARCH_PATH = "com.guan.speakerreader.SEARCH_PATH";
+    private static final String SEARCH_NAME = "com.guan.speakerreader.SEARCH_NAME";
+    private static ArrayList<File> resultList;
 
     public FileSearchService() {
         super("FileSearchService");
     }
 
-    /**
-     * Starts this service to perform action Foo with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
-    public static void startActionFoo(Context context, String param1, String param2) {
+    public static void startActionSearchFile(Context context, String path, String name, ArrayList<File> resultList) {
         Intent intent = new Intent(context, FileSearchService.class);
-        intent.setAction(ACTION_FOO);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
+        intent.setAction(ACTION_SEARCH_FILE);
+        intent.putExtra(SEARCH_PATH, path);
+        intent.putExtra(SEARCH_NAME, name);
+        setResultList(resultList);
         context.startService(intent);
     }
 
-    /**
-     * Starts this service to perform action Baz with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
-    public static void startActionBaz(Context context, String param1, String param2) {
-        Intent intent = new Intent(context, FileSearchService.class);
-        intent.setAction(ACTION_BAZ);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
-        context.startService(intent);
+    public static void setResultList(ArrayList<File> resultList) {
+        FileSearchService.resultList = resultList;
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             final String action = intent.getAction();
-            if (ACTION_FOO.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionFoo(param1, param2);
-            } else if (ACTION_BAZ.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionBaz(param1, param2);
+            if (ACTION_SEARCH_FILE.equals(action)) {
+                final String path = intent.getStringExtra(SEARCH_PATH);
+                final String name = intent.getStringExtra(SEARCH_NAME);
+                handleActionSearchFile(path, name);
             }
         }
     }
 
-    /**
-     * Handle action Foo in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionFoo(String param1, String param2) {
-        // TODO: Handle action Foo
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    /**
-     * Handle action Baz in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionBaz(String param1, String param2) {
-        // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
+    private void handleActionSearchFile(String path, final String name) {
+        SearchFileUtil searchFileUtil = new SearchFileUtil();
+        final Intent searchTaskIntent = new Intent(FILE_FIND_ACTION);
+        searchFileUtil.setOnResultFindListener(new SearchFileUtil.OnResultFindListener() {
+            @Override
+            public void onFileFind(File resultFile) {
+                resultList.add(resultFile);
+                sendBroadcast(searchTaskIntent);
+            }
+        });
+        searchFileUtil.setSearchRequirement(new SearchFileUtil.SearchRequirement() {
+            @Override
+            public boolean isSatisfied(File file) {
+                String fileName = file.getName();
+                if (fileName.contains(".txt") || fileName.contains(".TXT")) {
+                    if (fileName.contains(name))
+                        return true;
+                }
+                return false;
+            }
+        });
+        searchFileUtil.searchFile(path);
+        searchTaskIntent.setAction(SEARCH_TASK_FINISHED);
+        sendBroadcast(searchTaskIntent);
+        setResultList(null);
     }
 }
