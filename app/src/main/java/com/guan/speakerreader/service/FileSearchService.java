@@ -103,7 +103,6 @@ public class FileSearchService extends IntentService {
     class TaskController extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(STOP_ACTION))
                 if (searchFileUtil != null) {
                     searchFileUtil.stopTask();
                 }
