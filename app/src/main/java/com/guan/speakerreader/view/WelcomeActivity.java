@@ -124,15 +124,8 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(WelcomeActivity.this, LinearLayoutManager.VERTICAL, false);
             recordList.setLayoutManager(layoutManager);
             recordList.setAdapter(readRecordAdapter);
-            recordList.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-                @Override
-                public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-
-                }
-            });
         }
     }
-
     /*
     初始化控件
      */

@@ -50,7 +50,7 @@ public class FileSearchAdapter extends RecyclerView.Adapter<FileSearchAdapter.Se
         return resultList.size();
     }
 
-    public void setmItemClickedListener(OnItemClickedListener mItemClickedListener) {
+    public void setItemClickedListener(OnItemClickedListener mItemClickedListener) {
         this.mItemClickedListener = mItemClickedListener;
     }
 

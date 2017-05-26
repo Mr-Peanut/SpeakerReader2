@@ -43,7 +43,6 @@ public class SearchFileActivity extends AppCompatActivity implements FileSearchA
         setContentView(R.layout.activity_search_file);
         initData();
         initView();
-        initData();
         initReceiver();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -66,7 +65,8 @@ public class SearchFileActivity extends AppCompatActivity implements FileSearchA
         resultList = new ArrayList<>();
         sdCardsPath = PathUtil.getSDCardPath(getApplicationContext());
         mFileSearchAdapter = new FileSearchAdapter(resultList, SearchFileActivity.this);
-        mFileSearchAdapter.setmItemClickedListener(this);
+        mFileSearchAdapter.setItemClickedListener(this);
+
     }
 
     private void initView() {
@@ -87,9 +87,8 @@ public class SearchFileActivity extends AppCompatActivity implements FileSearchA
                 String targetName = searchNameInput.getText().toString().trim();
                 if (targetName.length() != 0) {
                     searchProgressBar.setVisibility(View.VISIBLE);
-                    for (String path : sdCardsPath) {
-                        FileSearchService.startActionSearchFile(SearchFileActivity.this, path, targetName, resultList);
-                    }
+                    searchStatue.setText("搜索中。。。");
+                    FileSearchService.startActionSearchFile(SearchFileActivity.this, sdCardsPath, targetName, resultList);
                 } else {
                     Toast.makeText(SearchFileActivity.this, "请输入正确的文件名，不能为空", Toast.LENGTH_SHORT).show();
                 }

@@ -29,7 +29,7 @@ public class FileSearchService extends IntentService {
     private static ArrayList<File> resultList;
     private static SearchFileUtil searchFileUtil;
     private Intent searchTaskIntent;
-    private String taskPath;
+    private String[] taskPath;
     private TaskController taskController;
     public FileSearchService() {
         super("FileSearchService");
@@ -39,10 +39,10 @@ public class FileSearchService extends IntentService {
         return searchFileUtil;
     }
 
-    public static void startActionSearchFile(Context context, String path, String name, ArrayList<File> resultList) {
+    public static void startActionSearchFile(Context context, String[] paths, String name, ArrayList<File> resultList) {
         Intent intent = new Intent(context, FileSearchService.class);
         intent.setAction(ACTION_SEARCH_FILE);
-        intent.putExtra(SEARCH_PATH, path);
+        intent.putExtra(SEARCH_PATH, paths);
         intent.putExtra(SEARCH_NAME, name);
         setResultList(resultList);
         context.startService(intent);
@@ -71,13 +71,14 @@ public class FileSearchService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_SEARCH_FILE.equals(action)) {
-                final String path = intent.getStringExtra(SEARCH_PATH);
+                final String[] paths = intent.getStringArrayExtra(SEARCH_PATH);
                 final String name = intent.getStringExtra(SEARCH_NAME);
-                handleActionSearchFile(path, name);
+                handleActionSearchFile(paths, name);
             }
         }
     }
-    private void handleActionSearchFile(String path, final String name) {
+
+    private void handleActionSearchFile(String[] paths, final String name) {
         searchFileUtil = new SearchFileUtil();
         searchTaskIntent = new Intent(FILE_FIND_ACTION);
         searchFileUtil.setOnResultFindListener(new SearchFileUtil.OnResultFindListener() {
@@ -99,8 +100,10 @@ public class FileSearchService extends IntentService {
                 return false;
             }
         });
-        taskPath = path;
-        searchFileUtil.searchFile(path);
+        taskPath = paths;
+        for (String path : paths) {
+            searchFileUtil.searchFile(path);
+        }
         onTaskFinished();
     }
 
