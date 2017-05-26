@@ -37,14 +37,13 @@
                     android:text="@string/search_button" />
             </LinearLayout>
 
-
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
     <include
         layout="@layout/content_search_file2"
-        tools:layout_editor_absoluteY="99dp" />
+        tools:layout_editor_absoluteY="79dp" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
