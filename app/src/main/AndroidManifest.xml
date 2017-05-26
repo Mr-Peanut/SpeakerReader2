@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.guan.speakerreader">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -29,7 +30,11 @@
         <activity
             android:name=".view.ReaderActivity"
             android:theme="@style/AppTheme.NoActionBar">
-
+            <intent-filter tools:ignore="AppLinkUrlError">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
             <!-- android:hardwareAccelerated="false" -->
         </activity>
         <activity
@@ -38,7 +43,7 @@
             android:theme="@style/AppTheme" />
         <service
             android:name=".service.FileSearchService"
-            android:exported="false"></service>
+            android:exported="false" />
     </application>
 
 </manifest>

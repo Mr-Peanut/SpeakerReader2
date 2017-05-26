@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -179,6 +180,14 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
 
     private void chooseStartType(Bundle savedInstanceState) {
         Intent startIntent = getIntent();
+        String action = startIntent.getAction();
+        if (action.equals(Intent.ACTION_VIEW)) {
+            Uri uri = startIntent.getData();
+            ContentResolver resolver = getContentResolver();
+            textPath = uri.getPath();
+            getTotalWords();
+            return;
+        }
         int startIntentFlag = startIntent.getIntExtra("StartFlag", 0);
         switch (startIntentFlag) {
             case WelcomeActivity.START_FROM_FILE:
