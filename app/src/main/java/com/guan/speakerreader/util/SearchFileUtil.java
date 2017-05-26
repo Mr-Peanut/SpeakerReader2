@@ -10,6 +10,11 @@ public class SearchFileUtil {
     private SearchRequirement mSearchRequirement;
     private OnResultFindListener mOnResultFindListener;
     private boolean run = true;
+
+    public boolean isRun() {
+        return run;
+    }
+
     public void setSearchRequirement(SearchRequirement mSearchRequirement) {
         this.mSearchRequirement = mSearchRequirement;
     }

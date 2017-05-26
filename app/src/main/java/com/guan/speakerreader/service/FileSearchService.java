@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.util.Log;
 
 import com.guan.speakerreader.util.SearchFileUtil;
 
@@ -26,11 +27,16 @@ public class FileSearchService extends IntentService {
     private static final String SEARCH_PATH = "com.guan.speakerreader.SEARCH_PATH";
     private static final String SEARCH_NAME = "com.guan.speakerreader.SEARCH_NAME";
     private static ArrayList<File> resultList;
-    private SearchFileUtil searchFileUtil;
+    private static SearchFileUtil searchFileUtil;
+    private Intent searchTaskIntent;
+    private String taskPath;
     private TaskController taskController;
-
     public FileSearchService() {
         super("FileSearchService");
+    }
+
+    public static SearchFileUtil getSearchFileUtil() {
+        return searchFileUtil;
     }
 
     public static void startActionSearchFile(Context context, String path, String name, ArrayList<File> resultList) {
@@ -71,14 +77,14 @@ public class FileSearchService extends IntentService {
             }
         }
     }
-
     private void handleActionSearchFile(String path, final String name) {
         searchFileUtil = new SearchFileUtil();
-        final Intent searchTaskIntent = new Intent(FILE_FIND_ACTION);
+        searchTaskIntent = new Intent(FILE_FIND_ACTION);
         searchFileUtil.setOnResultFindListener(new SearchFileUtil.OnResultFindListener() {
             @Override
             public void onFileFind(File resultFile) {
                 resultList.add(resultFile);
+                Log.e("findPath", resultFile.getAbsolutePath());
                 sendBroadcast(searchTaskIntent);
             }
         });
@@ -93,18 +99,25 @@ public class FileSearchService extends IntentService {
                 return false;
             }
         });
+        taskPath = path;
         searchFileUtil.searchFile(path);
-        searchTaskIntent.setAction(SEARCH_TASK_FINISHED);
-        searchTaskIntent.putExtra("TASK_TAG", path);
-        sendBroadcast(searchTaskIntent);
-        setResultList(null);
+        onTaskFinished();
     }
 
+    private void onTaskFinished() {
+        searchTaskIntent.setAction(SEARCH_TASK_FINISHED);
+        searchTaskIntent.putExtra("TASK_TAG", taskPath);
+        sendBroadcast(searchTaskIntent);
+        setResultList(null);
+        searchFileUtil = null;
+        taskPath = null;
+    }
     class TaskController extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
                 if (searchFileUtil != null) {
                     searchFileUtil.stopTask();
+                    onTaskFinished();
                 }
         }
     }

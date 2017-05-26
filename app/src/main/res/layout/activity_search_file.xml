@@ -18,23 +18,32 @@
             android:background="#6644ff"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
-            <EditText
-                android:id="@+id/search_file_input"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:hint="@string/search_file_name_input_hint" />
+                android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/search_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/search_file_name_input_hint" />
+                <EditText
+                    android:id="@+id/search_file_input"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:hint="@string/search_file_name_input_hint" />
+
+                <Button
+                    android:id="@+id/search_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/search_button" />
+            </LinearLayout>
+
+
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
     <include
-        layout="@layout/content_search_file"
+        layout="@layout/content_search_file2"
         tools:layout_editor_absoluteY="99dp" />
 
     <android.support.design.widget.FloatingActionButton
