@@ -16,7 +16,6 @@ import android.graphics.Paint;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
@@ -51,6 +50,7 @@ import com.guan.speakerreader.adapter.ReaderPagerAdapter;
 import com.guan.speakerreader.bean.ContentSearchBean;
 import com.guan.speakerreader.bean.ContentSearchResultValuePairs;
 import com.guan.speakerreader.database.RecordDatabaseHelper;
+import com.guan.speakerreader.util.NameMD5;
 import com.guan.speakerreader.util.SearchAsyncTask;
 import com.guan.speakerreader.util.SearchContentAsyncTask;
 import com.guan.speakerreader.util.StringSearcher;
@@ -77,6 +77,20 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
      */
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
+    /**
+     * Touch listener to use for in-layout UI controls to delay hiding the
+     * system UI. This is to prevent the jarring behavior of controls going away
+     * while interacting with activity UI.
+     */
+    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (AUTO_HIDE) {
+                delayedHide(AUTO_HIDE_DELAY_MILLIS);
+            }
+            return false;
+        }
+    };
     private ReaderPageGroup contentPager;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -139,20 +153,6 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             hide();
         }
     };
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
-        }
-    };
     private SearchContentAsyncTask searchContentAsyncTask;
 
     @Override
@@ -181,9 +181,9 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     private void chooseStartType(Bundle savedInstanceState) {
         Intent startIntent = getIntent();
         String action = startIntent.getAction();
-        if (action.equals(Intent.ACTION_VIEW)) {
+//        Log.e("action",action);
+        if (action != null && action.equals(Intent.ACTION_VIEW)) {
             Uri uri = startIntent.getData();
-            ContentResolver resolver = getContentResolver();
             textPath = uri.getPath();
             getTotalWords();
             return;
@@ -195,13 +195,9 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
                 break;
             case WelcomeActivity.START_FROM_RECORD:
                 totalWords = startIntent.getIntExtra("totalWords", 0);
-//           Log.e("totalWords",String.valueOf(totalWords));
                 targetPath = startIntent.getStringExtra("formatPath");
-//           Log.e("targetPath",targetPath);
                 textPath = startIntent.getStringExtra("FILEPATH");
-//           Log.e("textPath",textPath);
                 marked = startIntent.getIntExtra("position", 0);
-//           Log.e("marked",String.valueOf(marked));
                 if (totalWords == 0 || targetPath == null || !new File(targetPath).exists()) {
                     //删除该条记录
                     marked = 0;
@@ -222,9 +218,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
                 }
                 break;
         }
-
     }
-
     private void initDataBase() {
         if (recordDatabaseHelper == null) {
             recordDatabaseHelper = new RecordDatabaseHelper(this, "recordDatabase", null, 1);
@@ -254,12 +248,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         if (textSize == 0)
             textPaint.setColor(Color.BLACK);
         else
-//                Log.e("textColor",String.valueOf(textColor));
-//                Log.e("Color.BLACK",String.valueOf(Color.BLACK));
-//                Log.e("White",String.valueOf(Color.WHITE));
             textPaint.setColor(textColor);
-//            textPaint.setColor(Color.BLACK);
-
         textPaint.setAntiAlias(true);
     }
 
@@ -299,7 +288,8 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
                 @Override
                 protected Integer doInBackground(Void... params) {
                     File originalFile = new File(textPath);
-                    File resultFile = new File(storageCachePath + File.separator + originalFile.getName().replace(".txt", ""));
+                    String targetName = NameMD5.getNameMD5(originalFile.getName(), targetPath);
+                    File resultFile = new File(storageCachePath + File.separator + targetName);
                     int totalWords;
                     if (resultFile.exists()) {
                         //进一步优化，当系统中有记录时弹出对话框，提示“系统中已经有记录是否要从记录中读取
@@ -308,7 +298,6 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
                         Cursor recordCursor = recordDB.query(ReadRecordAdapter.TABLE_NAME, null, "formatPath=?", new String[]{targetPath}, null, null, null);
                         Log.e("recordCount",String.valueOf(recordCursor.getCount()));
                         if(recordCursor.getCount()!=0){
-
                             Message chooseMSG = chooseHandler.obtainMessage();
                             chooseHandler.sendMessage(chooseMSG);
                             while (notChosen) {
@@ -391,7 +380,6 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-
                     if (progress >= totalWords - 100)
                         skipToTarget( totalWords - 100);
                     else if (progress < 100) {
@@ -412,7 +400,6 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         });
         readerPagerAdapter.setUpdateSeekBarController(this);
         readerPagerAdapter.setInnerViewOnClickedListener(this);
-
         contentPager.addOnPageChangeListener(new ReaderPageGroup.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -436,7 +423,6 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         }
         contentPager.setAdapter(readerPagerAdapter);
         readerPagerAdapter.getContentController().setPageGroup(contentPager);
-
     }
 
     private void addPositionRecord() {
@@ -454,17 +440,24 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         readerPagerAdapter.getContentController().setContentFromPage(contentPager.getOnShowPosition(),position);
         contentPager.getCurrentView().postInvalidate();
         readerPagerAdapter.invalidateViews();
-
     }
 
     private void initPath() {
         textPath = getIntent().getStringExtra("FILEPATH");
-        String appName;
-        appName = String.valueOf(getApplicationContext().getPackageManager().getApplicationLabel(getApplicationInfo()));
-        if (appName == null) {
-            appName = getApplicationContext().getString(R.string.app_name);
+//        String appName;
+//        appName = String.valueOf(getApplicationContext().getPackageManager().getApplicationLabel(getApplicationInfo()));
+//        if (appName == null) {
+//            appName = getApplicationContext().getString(R.string.app_name);
+//        }
+//        File storageCache = new File(Environment.getExternalStorageDirectory() + File.separator + appName);
+        File cacheFile = getApplicationContext().getExternalCacheDir();
+        Log.e("ExcacheFile", cacheFile.getAbsolutePath());
+        if (cacheFile == null) {
+            cacheFile = getApplicationContext().getCacheDir();
+            Log.e("cacheFile", cacheFile.getAbsolutePath());
+
         }
-        File storageCache = new File(Environment.getExternalStorageDirectory() + File.separator + appName);
+        File storageCache = new File(cacheFile + File.separator + "缓存");
         if (!storageCache.exists()) {
             storageCache.mkdirs();
         }
