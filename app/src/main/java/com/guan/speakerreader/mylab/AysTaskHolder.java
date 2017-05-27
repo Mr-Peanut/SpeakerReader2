@@ -1,4 +1,4 @@
-package mylab;
+package com.guan.speakerreader.mylab;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -27,7 +27,6 @@ public abstract class AysTaskHolder {
             fragmentTransaction.commit();
         }
     }
-
     public static AsyncTask getAsyncTask(String taskTag, Activity activity) {
         AsyncTask result = null;
         FragmentManager fragmentManager = activity.getFragmentManager();

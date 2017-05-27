@@ -13,6 +13,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewParent;
+
 import com.guan.speakerreader.util.ContentController;
 
 /**
@@ -193,6 +194,4 @@ public class TextReaderView extends View {
             return false;
         }
     }
-
-
 }
