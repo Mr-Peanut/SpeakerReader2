@@ -26,6 +26,7 @@ public abstract class AysTaskHolder {
             fragmentTransaction.add(dataFragment, DATA_FRAGMENT_TAG);
             fragmentTransaction.commit();
         }
+        dataFragment.addAsyncTask(taskTag, mAsyncTask);
     }
     public static AsyncTask getAsyncTask(String taskTag, Activity activity) {
         AsyncTask result = null;

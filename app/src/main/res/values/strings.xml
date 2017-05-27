@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SpeakerReader2</string>
+    <string name="app_name">SpeakerReader</string>
     <string name="fileChooseButtonText">请选择您想打开的文件</string>
     <string name="welcomeWords">欢迎使用本app</string>
     <string name="or">OR</string>
