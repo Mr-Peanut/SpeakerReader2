@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingEnd="@dimen/activity_padding_side"
+    android:paddingStart="@dimen/activity_padding_side">
     <android.support.v7.widget.Toolbar
         android:id="@+id/welcome_toolbar"
         android:layout_width="match_parent"

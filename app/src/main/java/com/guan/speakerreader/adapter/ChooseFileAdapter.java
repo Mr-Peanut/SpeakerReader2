@@ -34,7 +34,7 @@ public class ChooseFileAdapter extends RecyclerView.Adapter<ChooseFileAdapter.Fi
     public ChooseFileAdapter(Context mContext) {
         this.mContext = mContext;
         volumeInfoList = PathUtil.getVolumeInfoList(mContext);
-        rootPaths = new ArrayList<String>();
+        rootPaths = new ArrayList<>();
         for (PathUtil.VolumeInfo volumeInfo : volumeInfoList) {
             rootPaths.add(volumeInfo.getVolumePath());
         }
@@ -56,13 +56,12 @@ public class ChooseFileAdapter extends RecyclerView.Adapter<ChooseFileAdapter.Fi
             setFilePath(holder, position);
         } else {
             setRootPaths(holder, position);
-
         }
     }
 
     private void setRootPaths(FileHolder fileHolder, final int position) {
         fileHolder.fileName.setText(volumeInfoList.get(position).getVolumeName());
-        fileHolder.fileIcon.setImageResource(R.mipmap.ic_launcher);
+        fileHolder.fileIcon.setImageResource(R.drawable.folder);
         fileHolder.fileItem.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -78,16 +77,24 @@ public class ChooseFileAdapter extends RecyclerView.Adapter<ChooseFileAdapter.Fi
 
     private void setFilePath(FileHolder fileHolder, final int position) {
         fileHolder.fileName.setText(files[position].getName());
-        fileHolder.fileIcon.setImageResource(R.mipmap.ic_launcher);
+        final File fileItem = files[position];
+        if (fileItem.isDirectory()) {
+            fileHolder.fileIcon.setImageResource(R.drawable.folder);
+        } else if (fileItem.getName().endsWith(".TXT") || fileItem.getName().endsWith(".txt")) {
+            fileHolder.fileIcon.setImageResource(R.drawable.file_txt);
+        } else {
+            fileHolder.fileIcon.setImageResource(R.drawable.file_other);
+        }
+
         fileHolder.fileItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (files[position].isDirectory()) {
+                if (fileItem.isDirectory()) {
                     parentFile = files[position];
                     files = parentFile.listFiles();
                     notifyDataSetChanged();
                 } else {
-                    mFileItemOnClickListener.onItemClicked(files[position]);
+                    mFileItemOnClickListener.onItemClicked(fileItem);
                 }
             }
         });
@@ -135,7 +142,7 @@ public class ChooseFileAdapter extends RecyclerView.Adapter<ChooseFileAdapter.Fi
         TextView fileName;
         ImageView fileIcon;
 
-        public FileHolder(View itemView) {
+        FileHolder(View itemView) {
             super(itemView);
             fileItem = (LinearLayout) itemView.findViewById(R.id.file_item);
             fileName = (TextView) itemView.findViewById(R.id.file_item_name);

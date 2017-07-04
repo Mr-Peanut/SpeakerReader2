@@ -110,7 +110,7 @@ public class ScanFileAdapter extends RecyclerView.Adapter<ScanFileAdapter.FileHo
                     if (files != null) {
                         for (File childFile : files) {
                             if (childFile.isFile()) {
-                                if (childFile.getName().contains(".txt") || childFile.getName().contains(".TXT"))
+                                if (childFile.getName().endsWith(".txt") || childFile.getName().endsWith(".TXT"))
                                     publishProgress(childFile);
                                 if (this.isCancelled())
                                     return;
@@ -145,7 +145,7 @@ public class ScanFileAdapter extends RecyclerView.Adapter<ScanFileAdapter.FileHo
     @Override
     public void onBindViewHolder(FileHolder holder, final int position) {
         holder.fileName.setText(files.get(position).getName());
-        holder.fileIcon.setImageResource(R.mipmap.ic_launcher);
+        holder.fileIcon.setImageResource(R.drawable.file_txt);
         holder.fileItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

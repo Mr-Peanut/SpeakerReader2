@@ -2,4 +2,6 @@
     <dimen name="setting_margin">8dp</dimen>
     <dimen name="toolbar_padding_top">0dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="activity_padding_side">5dp</dimen>
+    <dimen name="activity_reader_padding">10dp</dimen>
 </resources>

@@ -77,20 +77,6 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
      */
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
-        }
-    };
     private ReaderPageGroup contentPager;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -153,6 +139,20 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             hide();
         }
     };
+    /**
+     * Touch listener to use for in-layout UI controls to delay hiding the
+     * system UI. This is to prevent the jarring behavior of controls going away
+     * while interacting with activity UI.
+     */
+    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (AUTO_HIDE) {
+                delayedHide(AUTO_HIDE_DELAY_MILLIS);
+            }
+            return false;
+        }
+    };
     private SearchContentAsyncTask searchContentAsyncTask;
 
     @Override
@@ -162,10 +162,6 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         setContentView(R.layout.reader_activity_layout);
 //        initStatueTextColor();
         initDataBase();
-        // Set up the user interaction to manually show or hide the system UI.
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
         initPath();
         initBroadCast();
         initView();
@@ -526,7 +522,8 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             final EditText searchContentInput = (EditText) contentSearchPopupView.findViewById(R.id.search_content_input);
             final ContentSearchResultAdapter resultAdapter = new ContentSearchResultAdapter(stringSearcher.getResultParsList(), this);
             resultView.setAdapter(resultAdapter);
-            searchContentInput.setSelection(0, 1);
+//            if(!searchContentInput.getText().equals(null))
+//            searchContentInput.setSelection(0, 1);
             resultView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -537,7 +534,6 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             });
             Button content_search_button= (Button) contentSearchPopupView.findViewById(R.id.content_search_button);
             content_search_button.setOnClickListener(new View.OnClickListener() {
-                @Override
                 public void onClick(View v) {
                     searchContentAsyncTask = new SearchContentAsyncTask(stringSearcher);
                     searchContentAsyncTask.setResultToShowTeller(ReaderActivity.this);

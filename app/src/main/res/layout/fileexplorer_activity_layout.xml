@@ -4,8 +4,10 @@
     android:id="@+id/file_explorer_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/toolbar_padding_top"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingEnd="@dimen/activity_padding_side"
+    android:paddingStart="@dimen/activity_padding_side"
+    android:paddingTop="@dimen/toolbar_padding_top">
     <RelativeLayout
         android:id="@+id/file_explorer_tittle"
         android:layout_width="match_parent"

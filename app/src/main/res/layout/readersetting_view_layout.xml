@@ -32,12 +32,12 @@
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/fit_system_lightness"
             android:layout_alignParentStart="true"
-            android:layout_alignStart="@+id/fit_system_lightness"
             android:layout_below="@+id/light_adjuster_name"
             android:layout_marginBottom="@dimen/setting_margin"
             android:layout_marginLeft="@dimen/setting_margin"
             android:layout_marginRight="@dimen/setting_margin"
-            android:layout_marginTop="@dimen/setting_margin" />
+            android:layout_marginTop="@dimen/setting_margin"
+            android:layout_toStartOf="@+id/fit_system_lightness" />
 
         <View
             android:id="@+id/separator1"
