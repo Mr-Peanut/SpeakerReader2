@@ -11,6 +11,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -72,6 +73,7 @@ public class FileActivity extends AppCompatActivity implements ScanFileAdapter.P
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void initView() {
+        setSupportActionBar((Toolbar) findViewById(R.id.fileexplorer_toolbar));
         fileExplorerRootView = (LinearLayout) findViewById(R.id.file_explorer_root_view);
         fileList = (RecyclerView) findViewById(R.id.file_list);
         backButton = (ImageButton) findViewById(R.id.back_button);
