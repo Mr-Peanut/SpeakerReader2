@@ -59,7 +59,6 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
     private Button settingButton;
     private boolean getPermission = false;
     private Toast permissionToast;
-    private Toolbar welcomeToolbar;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -134,7 +133,7 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
             WindowManager.LayoutParams localLayoutParams = getWindow().getAttributes();
             localLayoutParams.flags = (WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | localLayoutParams.flags);
         }
-        welcomeToolbar = (Toolbar) findViewById(R.id.welcome_toolbar);
+        Toolbar welcomeToolbar = (Toolbar) findViewById(R.id.welcome_toolbar);
         setSupportActionBar(welcomeToolbar);
         TextView searchFile = (TextView) findViewById(R.id.search_file);
         searchFile.setOnClickListener(new View.OnClickListener() {
