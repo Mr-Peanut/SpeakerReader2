@@ -65,9 +65,14 @@
 
 
     <TextView
+        android:background="#ffffff"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/recored"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_height="50dp"
+        android:text="@string/record"
+        android:gravity="center"
+        android:drawableEnd="@drawable/right_arrow"
         android:textSize="20sp" />
 
     <android.support.v7.widget.RecyclerView

@@ -4,4 +4,5 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="activity_padding_side">5dp</dimen>
     <dimen name="activity_reader_padding">10dp</dimen>
+    <dimen name="margin_side">10dp</dimen>
 </resources>

@@ -4,7 +4,7 @@
     <string name="welcomeWords">欢迎使用本app</string>
     <string name="or">OR</string>
     <string name="scanFilesButton">扫描本地所有支持文件</string>
-    <string name="recored">历史记录：</string>
+    <string name="record">累了，看会儿新闻</string>
     <string name="backToPre">返回上一层</string>
     <string name="deleteItem">删除记录</string>
     <string name="cleanAll">清空记录</string>

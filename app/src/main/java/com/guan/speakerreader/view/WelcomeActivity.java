@@ -48,8 +48,8 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
     private final static String TABLE_NAME = "ReadRecord";
     private static final int REQUEST_CODE = 1;
     private static final String PACKAGE_URL_SCHEME = "package:";
-    private Button fileChoose;
-    private Button scanFiles;
+    private TextView fileChoose;
+    private TextView scanFiles;
     private RecyclerView recordList;
     private SQLiteOpenHelper recordDatabaseHelper;
     private ReadRecordAdapter readRecordAdapter;
@@ -146,8 +146,8 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
         });
         permissionToast = Toast.makeText(this, "权限检查", Toast.LENGTH_SHORT);
         rootContainer = (LinearLayout) findViewById(R.id.root_container);
-        fileChoose = (Button) findViewById(R.id.file_choose);
-        scanFiles = (Button) findViewById(R.id.scan_files);
+        fileChoose = (TextView) findViewById(R.id.file_choose);
+        scanFiles = (TextView) findViewById(R.id.scan_files);
         recordList = (RecyclerView) findViewById(R.id.record_list);
         fileChoose.setOnClickListener(new View.OnClickListener() {
             @Override
