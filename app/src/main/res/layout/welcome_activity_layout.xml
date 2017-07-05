@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
+    android:background="@color/activity_background"
     android:paddingEnd="@dimen/activity_padding_side"
     android:paddingStart="@dimen/activity_padding_side">
     <android.support.v7.widget.Toolbar
@@ -14,40 +15,54 @@
         android:layout_height="wrap_content"
         android:background="@color/bar_background"
         android:paddingTop="@dimen/toolbar_padding_top"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:weightSum="1">
         <TextView
             android:id="@+id/search_file"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#66ffdd"
+            android:layout_height="38dp"
+            android:background="#ffffff"
             android:drawableStart="@mipmap/ic_launcher_round"
             android:gravity="center"
-            android:text="@string/search_root_file"/>
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:text="@string/search_root_file"
+            android:layout_weight="0.18" />
     </android.support.v7.widget.Toolbar>
-
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/welcomeWords"
-        android:textSize="20sp" />
+        android:layout_height="94dp"
+        android:orientation="horizontal">
+        <TextView
+            android:background="#ffffff"
+            android:gravity="center"
+            android:layout_margin="10dp"
+            android:id="@+id/file_choose"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/fileChooseButtonText"
+            android:layout_weight="1"/>
+        <!--<View-->
+            <!--android:background="#000000"-->
+            <!--android:layout_width="1dp"-->
+            <!--android:layout_marginBottom="10dp"-->
+            <!--android:layout_marginTop="10dp"-->
+            <!--android:layout_height="match_parent"/>-->
 
-    <Button
-        android:id="@+id/file_choose"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/fileChooseButtonText" />
+        <TextView
+            android:background="#ffffff"
+            android:gravity="center"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:id="@+id/scan_files"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/scanFilesButton" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/or"
-        android:textSize="20sp" />
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/scan_files"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/scanFilesButton" />
 
     <TextView
         android:layout_width="match_parent"
