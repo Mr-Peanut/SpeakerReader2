@@ -5,30 +5,21 @@
     android:id="@+id/file_explorer_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingEnd="@dimen/activity_padding_side"
-    android:paddingStart="@dimen/activity_padding_side">
+    android:orientation="vertical">
     <android.support.v7.widget.Toolbar
         android:id="@+id/fileexplorer_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/black_overlay"
         android:paddingBottom="2dp"
         android:weightSum="1"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-        <LinearLayout
-            android:id="@+id/file_explorer_tittle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/bar_background"
-            android:orientation="horizontal"
-            android:paddingTop="27dp">
 
             <ImageButton
                 android:id="@+id/back_button"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
                 android:layout_weight="1"
                 android:scaleType="centerInside"
@@ -63,7 +54,6 @@
                 android:layout_weight="1"
                 android:scrollbarStyle="insideInset"
                 android:visibility="invisible" />
-        </LinearLayout>
     </android.support.v7.widget.Toolbar>
 
 

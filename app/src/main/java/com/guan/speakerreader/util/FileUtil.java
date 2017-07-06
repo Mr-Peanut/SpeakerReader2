@@ -47,7 +47,7 @@ public class FileUtil {
                 StatFs statFs;
                 for (String path : paths) {
                     if (!TextUtils.isEmpty(path) && new File(path).exists()) {
-                        statFs = new StatFs(path);
+                        statFs = new StatFs(path);//添加版本要求
                         if (statFs.getBlockCountLong() * statFs.getBlockSizeLong() != 0) {
                             filePaths.add(path);
                         }
