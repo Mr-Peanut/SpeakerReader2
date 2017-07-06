@@ -1,27 +1,34 @@
 package com.guan.speakerreader.view;
 
 import android.graphics.Bitmap;
+import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.guan.speakerreader.R;
 
 public class NewsActivity extends AppCompatActivity {
     private WebView newsWeb;
+    private ImageButton goBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,17 +40,27 @@ public class NewsActivity extends AppCompatActivity {
 
     private void initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.news_toolbar);
-        toolbar.setTitle(null);
+        toolbar.setTitle("");
+        goBack= (ImageButton) findViewById(R.id.back_button);
+        goBack.setBackground(null);
         setSupportActionBar(toolbar);
+        goBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void initView() {
         newsWeb = (WebView) findViewById(R.id.web_news);
         newsWeb.getSettings().setJavaScriptEnabled(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            newsWeb.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW); }
         newsWeb.getSettings().setSupportZoom(true);
         newsWeb.setWebViewClient(new NewsWebClient());
         newsWeb.setWebChromeClient(new NewsChromeClient());
-        newsWeb.loadUrl("https://news.sina.cn/?vt=4&pos=108");
+        newsWeb.loadUrl("https://news.sina.cn");
     }
 
     @Override
@@ -56,12 +73,12 @@ public class NewsActivity extends AppCompatActivity {
     }
 
     private class NewsWebClient extends WebViewClient {
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            view.loadUrl(request.getUrl().toString());
-            return false;
-        }
+//        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+//        @Override
+//        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+//            view.loadUrl(request.getUrl().toString());
+//            return false;
+//        }
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -91,6 +108,12 @@ public class NewsActivity extends AppCompatActivity {
         @Override
         public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
             super.onReceivedHttpError(view, request, errorResponse);
+        }
+
+        @Override
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+//            super.onReceivedSslError(view, handler, error);
+            handler.proceed();
         }
     }
 
@@ -145,6 +168,8 @@ public class NewsActivity extends AppCompatActivity {
 
         @Override
         public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+            Log.e("webView",consoleMessage.message());
+
             return super.onConsoleMessage(consoleMessage);
         }
 

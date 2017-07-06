@@ -20,7 +20,8 @@
             android:layout_marginStart="5dp"
             android:scaleType="centerInside"
             android:src="@drawable/back"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            android:layout_marginLeft="5dp" />
 
         <TextView
             android:id="@+id/load_statue"
