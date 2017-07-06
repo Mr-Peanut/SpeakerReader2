@@ -15,58 +15,61 @@
         android:paddingBottom="2dp"
         android:weightSum="1"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-        <RelativeLayout
+
+        <LinearLayout
             android:id="@+id/file_explorer_tittle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/bar_background">
+            android:layout_weight="1"
+            android:background="@color/bar_background"
+            android:orientation="horizontal"
+            android:paddingTop="27dp">
 
             <ImageButton
                 android:id="@+id/back_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="5dp"
+                android:layout_weight="1"
+                android:scaleType="centerInside"
                 android:src="@drawable/back"
                 tools:ignore="ContentDescription" />
 
-            <TextView
-                android:id="@+id/return_tip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@id/back_button"
-                android:text="@string/backToPre"
-                android:textColor="#ffffff"
-                android:textSize="15sp" />
+            <!--<TextView-->
+            <!--android:id="@+id/return_tip"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_toEndOf="@id/back_button"-->
+            <!--android:text="@string/backToPre"-->
+            <!--android:textColor="#ffffff"-->
+            <!--android:textSize="15sp" />-->
 
+            <TextView
+                android:id="@+id/file_search"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:hint="@string/searchViewName" />
             <ProgressBar
                 android:id="@+id/scan_progressbar"
                 style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Small"
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
                 android:scrollbarStyle="insideInset"
                 android:visibility="invisible" />
-
-            <TextView
-                android:id="@+id/file_search"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_toEndOf="@+id/return_tip"
-                android:layout_toStartOf="@+id/scan_progressbar"
-                android:background="#ffffff"
-                android:drawableStart="@mipmap/ic_launcher_round"
-                android:gravity="center"
-                android:hint="@string/searchViewName" />
-        </RelativeLayout>
+        </LinearLayout>
     </android.support.v7.widget.Toolbar>
 
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/file_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

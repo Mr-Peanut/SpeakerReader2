@@ -174,6 +174,13 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
                 startActivity(intent);
             }
         });
+        findViewById(R.id.goto_news).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(WelcomeActivity.this, NewsActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
