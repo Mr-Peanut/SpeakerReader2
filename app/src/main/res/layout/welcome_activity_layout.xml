@@ -27,6 +27,7 @@
             android:layout_marginTop="15dp"
             android:layout_weight="0.18"
             android:background="#ffffff"
+            android:drawableLeft="@mipmap/ic_launcher_round"
             android:drawableStart="@mipmap/ic_launcher_round"
             android:gravity="center"
             android:text="@string/search_root_file" />
@@ -72,13 +73,15 @@
         android:layout_marginStart="10dp"
         android:background="#ffffff"
         android:drawableEnd="@drawable/right_arrow"
+        android:drawableRight="@drawable/right_arrow"
         android:gravity="center"
         android:text="@string/record"
         android:textSize="20sp" />
 
-    <android.support.v7.widget.RecyclerView
+    <com.guan.speakerreader.view.RecordListView
         android:id="@+id/record_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp" />
 
 </LinearLayout>

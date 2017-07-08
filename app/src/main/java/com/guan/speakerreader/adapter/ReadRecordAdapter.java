@@ -6,7 +6,9 @@ import android.database.DataSetObserver;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -27,7 +29,6 @@ public class ReadRecordAdapter extends RecyclerView.Adapter<ReadRecordAdapter.MH
     private ItemOnClickedListener mItemOnClickedListener;
     private SQLiteDatabase mDatabase;
     private Cursor recordCursor;
-    private DeleteItemOnClickedListener mDeleteItemOnClickedListener;
     private ItemOnLongClickedListener mItemOnLongClickedListener;
     private int openChildPosition = -1;
 
@@ -50,7 +51,7 @@ public class ReadRecordAdapter extends RecyclerView.Adapter<ReadRecordAdapter.MH
     }
 
     public void setDeleteItemOnClickedListener(DeleteItemOnClickedListener mDeleteItemOnClickedListener) {
-        this.mDeleteItemOnClickedListener = mDeleteItemOnClickedListener;
+        DeleteItemOnClickedListener mDeleteItemOnClickedListener1 = mDeleteItemOnClickedListener;
     }
 
     public Cursor getRecordCursor() {
@@ -68,12 +69,6 @@ public class ReadRecordAdapter extends RecyclerView.Adapter<ReadRecordAdapter.MH
             mDatabase = mHelper.getReadableDatabase();
         if (recordCursor == null)
             recordCursor = mDatabase.query(TABLE_NAME, null, null, null, null, null, "updateTime DESC");
-//        recordCursor.registerContentObserver(new ContentObserver(new Handler(context.getMainLooper())) {
-//            @Override
-//            public void onChange(boolean selfChange) {
-//                super.onChange(selfChange);
-//            }
-//        });
         recordCursor.registerDataSetObserver(new DataSetObserver() {
             @Override
             public void onChanged() {

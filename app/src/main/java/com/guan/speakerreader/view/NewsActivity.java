@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
@@ -22,9 +23,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.guan.speakerreader.R;
+import com.squareup.leakcanary.LeakCanary;
 
 public class NewsActivity extends AppCompatActivity {
     private WebView newsWeb;
@@ -53,7 +56,11 @@ public class NewsActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        newsWeb = (WebView) findViewById(R.id.web_news);
+        if (newsWeb == null)
+            newsWeb = new WebView(NewsActivity.this);
+        LinearLayout container = (LinearLayout) findViewById(R.id.content_container);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        container.addView(newsWeb, layoutParams);
         newsWeb.getSettings().setJavaScriptEnabled(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             newsWeb.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW); }
@@ -70,6 +77,15 @@ public class NewsActivity extends AppCompatActivity {
             return;
         }
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        newsWeb.removeAllViews();
+        newsWeb.destroy();
+        newsWeb = null;
+        Log.e("webView:", String.valueOf(newsWeb == null));
+        super.onDestroy();
     }
 
     private class NewsWebClient extends WebViewClient {

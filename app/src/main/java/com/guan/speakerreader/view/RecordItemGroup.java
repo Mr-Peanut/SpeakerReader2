@@ -50,7 +50,7 @@ public class RecordItemGroup extends ViewGroup {
         if(changed){
             for(int i = 0; i<getChildCount(); i++){
                 View child=getChildAt(i);
-               child.layout(totalChildrenWidth,0,totalChildrenWidth+child.getMeasuredWidth(),getMeasuredHeight());
+                child.layout(totalChildrenWidth, 0, totalChildrenWidth + child.getMeasuredWidth(), getMeasuredHeight());
                 totalChildrenWidth+=child.getMeasuredWidth();
             }
             leftBorder=0;
@@ -59,6 +59,16 @@ public class RecordItemGroup extends ViewGroup {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (isDrawerOpen) {
+            if (ev.getRawX() < getMeasuredWidth() - getChildAt(1).getMeasuredWidth()) {
+                backTo0();
+                return true;
+            }
+        }
+        if (((RecordListView) getParent()).getOpenedItem() != null) {
+            ((RecordListView) getParent()).getOpenedItem().backTo0();
+            return true;
+        }
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mXDown = ev.getRawX();
@@ -77,6 +87,13 @@ public class RecordItemGroup extends ViewGroup {
         }
         return super.onInterceptTouchEvent(ev);
     }
+
+    @Override
+    public boolean performClick() {
+        Log.e(getClass().getName(), "performClick");
+        return super.performClick();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()){
@@ -115,10 +132,16 @@ public class RecordItemGroup extends ViewGroup {
             scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
             invalidate();
         }
-        isDrawerOpen = !(getScrollX() == 0);
+        if (mScroller.isFinished()) {
+            isDrawerOpen = !(getScrollX() == 0);
+            if (isDrawerOpen) {
+                ((RecordListView) getParent()).setOpenedItem(this);
+            }
+        }
         Log.e("isDrawerOpen", String.valueOf(isDrawerOpen));
     }
     public void backTo0(){
         scrollTo(0,0);
+        ((RecordListView) getParent()).setOpenedItem(null);
     }
 }

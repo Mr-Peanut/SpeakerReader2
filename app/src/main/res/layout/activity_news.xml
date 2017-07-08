@@ -17,11 +17,11 @@
             android:id="@+id/back_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:layout_marginLeft="5dp"
             android:layout_marginStart="5dp"
             android:scaleType="centerInside"
             android:src="@drawable/back"
-            tools:ignore="ContentDescription"
-            android:layout_marginLeft="5dp" />
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/load_statue"
@@ -30,11 +30,12 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <WebView
-        android:id="@+id/web_news"
+    <LinearLayout
+        android:id="@+id/content_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_below="@+id/news_toolbar"
-        android:background="#ffffff" />
+        android:orientation="vertical" />
 
 </RelativeLayout>

@@ -2,17 +2,18 @@
 <com.guan.speakerreader.view.RecordItemGroup xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:layout_marginTop="5dp"
-    android:background="#ffffff"
+    android:layout_height="60dp"
+    android:layout_marginEnd="@dimen/margin_side"
     android:layout_marginStart="@dimen/margin_side"
-    android:layout_marginEnd="@dimen/margin_side">
+    android:layout_marginTop="5dp"
+    android:background="#ffffff">
 
     <TextView
         android:id="@+id/recordItem"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
+        android:textColor="@color/colorPrimary"
         tools:text="测试数据" />
 
     <TextView
@@ -20,6 +21,7 @@
         android:layout_width="75dp"
         android:layout_height="match_parent"
         android:layout_toEndOf="@id/recordItem"
+        android:layout_toRightOf="@id/recordItem"
         android:background="@android:color/holo_red_dark"
         android:gravity="center"
         android:text="@string/deleteItem" />
