@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff"
-    android:padding="@dimen/activity_reader_padding"
     tools:context=".view.ReaderActivity">
     <com.guan.speakerreader.view.ReaderPageGroup
         android:id="@+id/content_pager"
@@ -29,8 +28,7 @@
                 android:id="@+id/search_textView"
                 android:layout_width="200dp"
                 android:layout_height="match_parent"
-                android:background="#ffffff"
-                android:drawableStart="@drawable/content_search" />
+                android:background="#ffffff" />
         </android.support.v7.widget.Toolbar>
 
         <LinearLayout

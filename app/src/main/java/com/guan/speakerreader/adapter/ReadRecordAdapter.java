@@ -89,17 +89,13 @@ public class ReadRecordAdapter extends RecyclerView.Adapter<ReadRecordAdapter.MH
         TextView itemContent = holder.item;
         final TextView deleteItemText = holder.deleteItem;
         recordCursor.moveToPosition(recordCursor.getCount() - position - 1);
+        String textContent = recordCursor.getInt(recordCursor.getColumnIndex("_id")) + " " + recordCursor.getString(recordCursor.getColumnIndex("filename")) + " " + recordCursor.getString(recordCursor.getColumnIndex("preview"));
         //记录的显示方法
-        itemContent.setText(recordCursor.getInt(recordCursor.getColumnIndex("_id")) + " " + recordCursor.getString(recordCursor.getColumnIndex("filename")) + " " + recordCursor.getString(recordCursor.getColumnIndex("preview")));
+        itemContent.setText(textContent);
+//        Log.e("record:第"+position+"条记录",textContent);
         itemContent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (deleteItemText.getParent() != null) {
-                    if (((RecordItemGroup) deleteItemText.getParent()).isDrawerOpen) {
-                        ((RecordItemGroup) deleteItemText.getParent()).backTo0();
-                        return;
-                    }
-                }
                 mItemOnClickedListener.onRecordItemClick(position);
             }
         });
@@ -139,13 +135,14 @@ public class ReadRecordAdapter extends RecyclerView.Adapter<ReadRecordAdapter.MH
     }
 
     public void notifyDataChanged() {
-        recordCursor.close();
+//        recordCursor.close();
         recordCursor = mDatabase.query(TABLE_NAME, null, null, null, null, null, "updateTime DESC");
-        ReadRecordAdapter.this.notifyDataSetChanged();
+        super.notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
+//        Log.e("RecordCount",String.valueOf(recordCursor.getCount()));
         return recordCursor.getCount();
     }
 
@@ -164,7 +161,6 @@ public class ReadRecordAdapter extends RecyclerView.Adapter<ReadRecordAdapter.MH
     class MHolder extends RecyclerView.ViewHolder {
         TextView item;
         TextView deleteItem;
-
         MHolder(View itemView) {
             super(itemView);
             item = (TextView) itemView.findViewById(R.id.recordItem);

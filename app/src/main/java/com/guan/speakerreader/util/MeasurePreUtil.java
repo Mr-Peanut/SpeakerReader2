@@ -142,7 +142,7 @@ public class MeasurePreUtil {
         //当两个回车键在一起时，一段长度为0此时加上一个回车键突然想到了个问题，每段前都有一个回车键的字符是不是漏掉了？
         if (paragraph.length() == 0) {
             lineRecord.add(1);
-            Log.e("空段", "空段");
+//            Log.e("空段", "空段");
             return lineRecord;
         }
         int lineWordCount = 0;

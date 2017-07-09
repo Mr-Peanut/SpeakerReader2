@@ -138,7 +138,7 @@ public class RecordItemGroup extends ViewGroup {
                 ((RecordListView) getParent()).setOpenedItem(this);
             }
         }
-        Log.e("isDrawerOpen", String.valueOf(isDrawerOpen));
+//        Log.e("isDrawerOpen", String.valueOf(isDrawerOpen));
     }
     public void backTo0(){
         scrollTo(0,0);

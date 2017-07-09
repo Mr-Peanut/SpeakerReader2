@@ -251,6 +251,9 @@ public class WelcomeActivity extends AppCompatActivity implements ReadRecordAdap
     protected void onDestroy() {
         if (recordDBUpdateReceiver != null)
             unregisterReceiver(recordDBUpdateReceiver);
+        if (readRecordAdapter.getRecordCursor() != null && !readRecordAdapter.getRecordCursor().isClosed()) {
+            readRecordAdapter.getRecordCursor().close();
+        }
         super.onDestroy();
     }
 

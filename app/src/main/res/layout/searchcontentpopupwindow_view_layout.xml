@@ -16,6 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="6"
+            android:drawableLeft="@mipmap/ic_launcher_round"
             android:drawableStart="@mipmap/ic_launcher_round"
             android:hint="@string/content_input_tip" />
         <Button
@@ -24,10 +25,11 @@
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="2dp"
+            android:layout_marginLeft="5dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="2dp"
             android:layout_weight="1"
-            android:text="@string/search_button"/>
+            android:text="@string/search_button" />
 
     </LinearLayout>
 

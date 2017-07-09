@@ -62,9 +62,9 @@ public class TextReaderView extends View {
         this.showCount = showCount;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.e("onDraw:", "第" + position + "页更新了");
         if (mContentController.getShowHeight() != getMeasuredHeight() - getPaddingTop() - getPaddingBottom()) {
             mContentController.setShowHeight(getMeasuredHeight() - getPaddingTop() - getPaddingBottom());
             mContentController.setShowWidth(getMeasuredWidth() - Math.max(getPaddingLeft(), getPaddingStart()) - Math.max(getPaddingEnd(), getPaddingRight()));
@@ -86,6 +86,7 @@ public class TextReaderView extends View {
         super.onDraw(canvas);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void setContent(final String content, Canvas canvas) {
         char[] buffer = new char[1];
         float totalLineWidth = 0;

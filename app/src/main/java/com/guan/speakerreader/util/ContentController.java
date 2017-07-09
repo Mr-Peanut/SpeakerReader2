@@ -35,7 +35,7 @@ public class ContentController {
     public ContentController(String filePath, int totalWords, ReaderPagerAdapter readerPagerAdapter, Paint mPaint) {
         this.filePath = filePath;
         this.totalWords = totalWords;
-        Log.e("totalWordscons", String.valueOf(totalWords));
+//        Log.e("totalWordscons", String.valueOf(totalWords));
         this.mAdapter2 = readerPagerAdapter;
         this.mPaint = mPaint;
         pageContent = new SparseArray<>();
@@ -164,9 +164,9 @@ public class ContentController {
                 //对content start和end进行赋值修
                 try {
                     String content = TxtTaker.readerFromText(filePath, onShowEnd + 1, takenWords);
-                    Log.e("contentBeforeMeasure", String.valueOf(content.length()));
+//                    Log.e("contentBeforeMeasure", String.valueOf(content.length()));
                     content = measureContent(content);
-                    Log.e("contentAfterMeasure", String.valueOf(content.length()));
+//                    Log.e("contentAfterMeasure", String.valueOf(content.length()));
                     //对content start和end进行赋值修改
                     pageContent.put(position + 1, content);
 //                    Log.e("contentListNext",content);
@@ -203,7 +203,7 @@ public class ContentController {
                     pageContent.put(position - 1, content);
                     pageStart.put(position - 1, onShowStart - content.length());
                     pageEnd.put(position - 1, onShowStart - 1);
-                    Log.e("endpre" + String.valueOf(position - 1) + "page", String.valueOf(onShowStart - 1));
+//                    Log.e("endpre" + String.valueOf(position - 1) + "page", String.valueOf(onShowStart - 1));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -254,17 +254,17 @@ public class ContentController {
         pageContent.clear();
         pageStart.clear();
         pageEnd.clear();
-        Log.e("remeasure", "remeasure");
+//        Log.e("remeasure", "remeasure");
         fillContentList(onShowPage);
-        Log.e("onShowEndRemeasur", String.valueOf(onShowEnd));
-        Log.e("totalwords", String.valueOf(totalWords));
+//        Log.e("onShowEndRemeasur", String.valueOf(onShowEnd));
+//        Log.e("totalwords", String.valueOf(totalWords));
         if (onShowEnd >= totalWords - 1 && mPageGroup != null) {
             //删除最后一个view
-            Log.e("detory", "detoryRight");
+//            Log.e("detory", "detoryRight");
             mPageGroup.destroyRight();
         }
         if (onShowStart == 0 && mPageGroup != null) {
-            Log.e("detory", "detoryLeft");
+//            Log.e("detory", "detoryLeft");
             mPageGroup.destroyLeft();
         }
     }

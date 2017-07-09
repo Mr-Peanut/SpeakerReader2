@@ -58,6 +58,7 @@ import com.guan.speakerreader.util.TxtTaker;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdapter.InnerViewOnClickedListener, ReaderPagerAdapter.UpdateSeekBarController, SearchContentAsyncTask.ResultToShowTeller {
@@ -77,6 +78,20 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
      */
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
+    /**
+     * Touch listener to use for in-layout UI controls to delay hiding the
+     * system UI. This is to prevent the jarring behavior of controls going away
+     * while interacting with activity UI.
+     */
+    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (AUTO_HIDE) {
+                delayedHide(AUTO_HIDE_DELAY_MILLIS);
+            }
+            return false;
+        }
+    };
     private ReaderPageGroup contentPager;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -132,25 +147,12 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             mControlsView.setVisibility(View.VISIBLE);
         }
     };
+    private int backgroundColor;
     private boolean mVisible;
     private final Runnable mHideRunnable = new Runnable() {
         @Override
         public void run() {
             hide();
-        }
-    };
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
         }
     };
     private SearchContentAsyncTask searchContentAsyncTask;
@@ -165,8 +167,25 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
         initPath();
         initBroadCast();
         initView();
+        initBackgroundColor(savedInstanceState);
         initPaint(savedInstanceState);
         chooseStartType(savedInstanceState);
+        Log.e("ReaderActivity", "OnCreate");
+    }
+
+    private void initBackgroundColor(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            backgroundColor = savedInstanceState.getInt("BackgroundColor", 0);
+            Log.e("backgroundfromstate", String.valueOf(backgroundColor));
+        } else {
+            backgroundColor = getSettingFromSharedPreferences("BackgroundColor");
+            Log.e("backgroundfromsshare", String.valueOf(backgroundColor));
+
+
+        }
+        if (backgroundColor == 0)
+            backgroundColor = Color.parseColor("#ffffff");
+        contentPager.setBackgroundColor(backgroundColor);
     }
 //    private void initStatueTextColor() {
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -227,23 +246,25 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             textPaint = new Paint();
         }
         //默认值
-        int textSize = 0;
-        if (savedInstanceState != null)
+        int textSize;
+        if (savedInstanceState != null) {
             textSize = savedInstanceState.getInt("TextSize", 0);
-        if (textSize == 0)
+            Log.e("textSizefromState", String.valueOf(textSize));
+        } else {
             textSize = getSettingFromSharedPreferences("TextSize");
+            Log.e("TextsizeFromShare", String.valueOf(textSize));
+        }
         if (textSize == 0)
-            textPaint.setTextSize(30.0f);
-        else
+            textSize = 30;
             textPaint.setTextSize(textSize);
-        int textColor = 0;
-        if (savedInstanceState != null)
+        int textColor;
+        if (savedInstanceState != null) {
             textColor = savedInstanceState.getInt("TextColor", 0);
-        if (textColor == 0)
+        } else {
             textColor = getSettingFromSharedPreferences("TextColor");
+        }
         if (textSize == 0)
-            textPaint.setColor(Color.BLACK);
-        else
+            textColor = Color.BLACK;
             textPaint.setColor(textColor);
         textPaint.setAntiAlias(true);
     }
@@ -280,91 +301,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             //格式化文本，新建一个缓存文件，将源文件读取到缓存文件中，并替换掉当中的\r\n为\n（要新建一个工具类）
             //注意删除该条记录的时候要将缓存文件删除
             //在阅读记录生成前执行该逻辑
-            AsyncTask<Void, Void, Integer> formatTask = new AsyncTask<Void, Void, Integer>() {
-                @Override
-                protected Integer doInBackground(Void... params) {
-                    File originalFile = new File(textPath);
-                    String targetName = NameMD5.getNameMD5(originalFile.getName(), targetPath);
-                    File resultFile = new File(storageCachePath + File.separator + targetName);
-                    int totalWords;
-                    if (resultFile.exists()) {
-                        //进一步优化，当系统中有记录时弹出对话框，提示“系统中已经有记录是否要从记录中读取
-                        targetPath = resultFile.getAbsolutePath();
-                        SQLiteDatabase recordDB = recordDatabaseHelper.getReadableDatabase();
-                        Cursor recordCursor = recordDB.query(ReadRecordAdapter.TABLE_NAME, null, "formatPath=?", new String[]{targetPath}, null, null, null);
-                        Log.e("recordCount",String.valueOf(recordCursor.getCount()));
-                        if(recordCursor.getCount()!=0){
-                            Message chooseMSG = chooseHandler.obtainMessage();
-                            chooseHandler.sendMessage(chooseMSG);
-                            while (notChosen) {
-                            }
-                            //注意int和long
-                            recordCursor.moveToFirst();
-                            totalWords = recordCursor.getInt(recordCursor.getColumnIndex("totalWords"));
-                            if (fromRecord) {
-                                marked = recordCursor.getInt(recordCursor.getColumnIndex("position"));
-                            } else {
-                                marked = 0;
-                            }
-
-                            //设置对话框阻塞掉
-                            return totalWords;
-                        }else {
-                            resultFile.delete();
-                            totalWords=formatFile(originalFile,resultFile);
-                            if(totalWords!=0)
-                                return totalWords;
-                        }
-                        recordCursor.close();
-                    } else {
-                        totalWords=formatFile(originalFile,resultFile);
-                        if(totalWords!=0)
-                        return totalWords;
-                    }
-                    //当无法建立格式化文件时，读取原始文件；
-                    targetPath = textPath;
-                    totalWords = TxtTaker.getTotalWords(textPath);
-                    recordDatabaseHelper.insert(ReadRecordAdapter.TABLE_NAME, originalFile.getName(), textPath, null, totalWords, 0, null);
-                    return totalWords;
-                }
-                private int formatFile(File originalFile,File resultFile){
-                    int totalWords;
-                    try {
-                        resultFile.createNewFile();
-                        targetPath = resultFile.getAbsolutePath();
-                        totalWords = TxtTaker.formatTxtFile(originalFile, resultFile);
-                        marked = 0;
-                        //下面的代码可以优化到一个方法中
-                        Log.e("insertName", originalFile.getName());
-                        Log.e("insert textPath", textPath);
-                        Log.e("insert totalWords", String.valueOf(totalWords));
-                        Log.e("insert targetPath", targetPath);
-                        recordDatabaseHelper.insert(ReadRecordAdapter.TABLE_NAME, originalFile.getName(), textPath, null, totalWords, 0, targetPath);
-                        return totalWords;
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        resultFile.deleteOnExit();
-                    }
-                    return 0;
-
-                }
-
-                @Override
-                protected void onPostExecute(Integer integer) {
-                    totalWords = integer;
-                    initAdapter();
-                    getTotalWordsDialog.dismiss();
-                }
-
-                @Override
-                protected void onPreExecute() {
-                    getTotalWordsDialog = new ProgressDialog(ReaderActivity.this);
-                    getTotalWordsDialog.setMessage("正在读取文件，请稍后");
-                    getTotalWordsDialog.show();
-                    super.onPreExecute();
-                }
-            };
+            AsyncTask<Void, Void, Integer> formatTask = new CheckAsyncTask(this);
             formatTask.execute();
         }
     }
@@ -686,11 +623,13 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
 //        SQLiteDatabase recordDB= recordDatabaseHelper.getWritableDatabase();
 //        recordDB.update(ReadRecordAdapter.TABLE_NAME,values,"filepath=?",new String[]{textPath});
 //        recordDB.close();
-        saveSettingInSharedPreferences("TextColor", textPaint.getColor());
+        if (saveSettingInSharedPreferences("TextColor", textPaint.getColor()))
         Log.e("textcolortosave", String.valueOf(textPaint.getColor()));
-        saveSettingInSharedPreferences("TextSize", textSize);
+        if (saveSettingInSharedPreferences("TextSize", textSize))
         Log.e("textsizetosave", String.valueOf(textSize));
-        Log.e("onDestory","onDestory");
+        if (saveSettingInSharedPreferences("BackGroundColor", backgroundColor))
+            Log.e("backgroundcolor", String.valueOf(backgroundColor));
+        Log.e("ReaderActivity", "onDestory");
         super.onDestroy();
     }
 
@@ -698,6 +637,7 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt("TextColor", textPaint.getColor());
         outState.putInt("TextSize", textSize);
+        outState.putInt("BackGroundColor", backgroundColor);
         outState.putInt("ReadMarked", readerPagerAdapter.getContentController().getMarked());
         outState.putInt("TotalWords", totalWords);
         outState.putString("TargetPath", targetPath);
@@ -783,14 +723,14 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
     }
 
     private boolean saveSettingInSharedPreferences(String type, int value) {
-        SharedPreferences preferences = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences("ReaderActivity", Context.MODE_MULTI_PROCESS);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt(type, value);
         return editor.commit();
     }
 
     private int getSettingFromSharedPreferences(String type) {
-        SharedPreferences preferences = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences("ReaderActivity", Context.MODE_MULTI_PROCESS);
         return preferences.getInt(type, 0);
     }
 
@@ -832,6 +772,127 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
             searchContentAsyncTask.setResultToShowTeller(null);
     }
 
+    private int doSth() {
+        File originalFile = new File(textPath);
+        String targetName = NameMD5.getNameMD5(originalFile.getName(), targetPath);
+        File resultFile = new File(storageCachePath + File.separator + targetName);
+        int totalWords;
+        if (resultFile.exists()) {
+            //进一步优化，当系统中有记录时弹出对话框，提示“系统中已经有记录是否要从记录中读取
+            targetPath = resultFile.getAbsolutePath();
+            SQLiteDatabase recordDB = recordDatabaseHelper.getReadableDatabase();
+            Cursor recordCursor = recordDB.query(ReadRecordAdapter.TABLE_NAME, null, "formatPath=?", new String[]{targetPath}, null, null, null);
+            Log.e("recordCount", String.valueOf(recordCursor.getCount()));
+            if (recordCursor.getCount() != 0) {
+                Message chooseMSG = chooseHandler.obtainMessage();
+                chooseHandler.sendMessage(chooseMSG);
+                while (notChosen) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //注意int和long
+                recordCursor.moveToFirst();
+                totalWords = recordCursor.getInt(recordCursor.getColumnIndex("totalWords"));
+                if (fromRecord) {
+                    marked = recordCursor.getInt(recordCursor.getColumnIndex("position"));
+                } else {
+                    marked = 0;
+                }
+
+                //设置对话框阻塞掉
+                return totalWords;
+            } else {
+                resultFile.delete();
+                totalWords = formatFile(originalFile, resultFile);
+                if (totalWords != 0)
+                    return totalWords;
+            }
+            recordCursor.close();
+        } else {
+            totalWords = formatFile(originalFile, resultFile);
+            if (totalWords != 0)
+                return totalWords;
+        }
+        //当无法建立格式化文件时，读取原始文件；
+        targetPath = textPath;
+        totalWords = TxtTaker.getTotalWords(textPath);
+        recordDatabaseHelper.insert(ReadRecordAdapter.TABLE_NAME, originalFile.getName(), textPath, null, totalWords, 0, null);
+        return totalWords;
+
+    }
+
+    private int formatFile(File originalFile, File resultFile) {
+        int totalWords;
+        try {
+            resultFile.createNewFile();
+            targetPath = resultFile.getAbsolutePath();
+            totalWords = TxtTaker.formatTxtFile(originalFile, resultFile);
+            marked = 0;
+            //下面的代码可以优化到一个方法中
+            Log.e("insertName", originalFile.getName());
+            Log.e("insert textPath", textPath);
+            Log.e("insert totalWords", String.valueOf(totalWords));
+            Log.e("insert targetPath", targetPath);
+            recordDatabaseHelper.insert(ReadRecordAdapter.TABLE_NAME, originalFile.getName(), textPath, null, totalWords, 0, targetPath);
+            return totalWords;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            resultFile.deleteOnExit();
+        }
+        return 0;
+
+    }
+
+    private void onPostCheckTask(Integer integer) {
+        totalWords = integer;
+        initAdapter();
+        getTotalWordsDialog.dismiss();
+    }
+
+    private void onPreCheckTask() {
+        getTotalWordsDialog = new ProgressDialog(ReaderActivity.this);
+        getTotalWordsDialog.setMessage("正在读取文件，请稍后");
+        getTotalWordsDialog.show();
+    }
+
+    private static class CheckAsyncTask extends AsyncTask<Void, Void, Integer> {
+
+        private WeakReference<ReaderActivity> reference;
+
+        public CheckAsyncTask(ReaderActivity readerActivity) {
+            reference = new WeakReference<ReaderActivity>(readerActivity);
+        }
+
+        @Override
+        protected Integer doInBackground(Void... params) {
+            if (reference.get() != null)
+                return reference.get().doSth();
+            return 0;
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            if (reference.get() != null) {
+                reference.get().onPostCheckTask(integer);
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            if (reference.get() != null) {
+                reference.get().onPreCheckTask();
+            }
+
+            super.onPreExecute();
+        }
+
+
+    }
+
     class ShowFinishedReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -842,7 +903,19 @@ public class ReaderActivity extends AppCompatActivity implements ReaderPagerAdap
 
         @Override
         public void onClick(View v) {
-            contentPager.setBackground(v.getBackground());
+//            contentPager.setBackground(v.getBackground());
+            switch (v.getId()) {
+                case R.id.white:
+                    backgroundColor = Color.parseColor("#ffffff");
+                    break;
+                case R.id.yellow:
+                    backgroundColor = Color.parseColor("#ffcc00");
+                    break;
+                case R.id.black:
+                    backgroundColor = Color.parseColor("#000000");
+                    break;
+            }
+            contentPager.setBackgroundColor(backgroundColor);
             textPaint.setColor(((TextView) v).getPaint().getColor());
             contentPager.invalidate();
             readerPagerAdapter.invalidateViews();
